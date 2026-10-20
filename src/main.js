@@ -1,15 +1,11 @@
 /**
  * Devaion · Aion 2 Tracker
- * Desktop-first redesign
+ * Desktop-first · Multi-color neon
  */
 
-import { hasSupabase, loadAll, saveAll, getSyncStatus, S, localGet, localSet } from './storage.js';
+import { hasSupabase, saveAll, getSyncStatus, S, localGet } from './storage.js';
 
-// ─────────────────────────────────────────────
-// Constants & base data
-// ─────────────────────────────────────────────
-
-const CHAR_COLORS = ["#ff2a44","#ff00aa","#b0ff00","#ffcc00","#c77dff","#00d4ff","#ff8c42","#7bffb2"];
+const CHAR_COLORS = ["#22d3ee","#c084fc","#34d399","#fbbf24","#ff3b5c","#60a5fa","#f472b6","#a3e635"];
 
 const DEFAULT_ROSTER = [
   { id: "c1", name: "Main", role: "main", class: "Cleric", color: CHAR_COLORS[0], gs: 0 },
@@ -18,46 +14,29 @@ const DEFAULT_ROSTER = [
 ];
 
 const D_BASE = [
-  { id:"duty", p:"d", n:"Duty Quests", ic:"📜", f:"Daily", s:"shared", c:5,
-    t:"Server-wide pool. Do once on main after login." },
-  { id:"emer", p:"d", n:"Emergency Supply Requests", ic:"🚨", f:"Daily", s:"shared", c:1,
-    t:"Only turn in if the mats are cheap." },
-  { id:"att", p:"d", n:"Attendance / Daeva Pass / Codes", ic:"📅", f:"Daily", s:"shared", c:1,
-    t:"Claim attendance, advance pass tracks, redeem codes." },
-  { id:"odyle", p:"d", n:"Spend Odyle Energy", ic:"💠", f:"Daily", s:"char", c:3,
-    t:"15 every 3h (120/day). Cap 560 / 840 membership. Never sit at cap." },
-  { id:"shugo", p:"d", n:"Shugo Festival Keys", ic:"🎁", f:"Daily", s:"shared", c:3,
-    t:"3 keys/day · cap 12 (21 with membership). Shared. Don't sit at cap." },
-  { id:"nm", p:"d", n:"Nightmare Tickets", ic:"🌑", f:"Daily", s:"char", c:2,
-    t:"+2/day · cap 14. Tracked per character." },
-  { id:"dim", p:"d", n:"Dimensional Invasion Key", ic:"🕳", f:"Daily", s:"shared", c:1,
-    t:"1 key/day · cap 7. Shared across characters." },
-
-  { id:"ascw", p:"w", n:"Ascension Trial", ic:"🗼", f:"Weekly", s:"char", c:3,
-    t:"Solo. Save for later in the week to push higher difficulty." },
-  { id:"dd", p:"w", n:"Daily Dungeon (weekly)", ic:"⏱", f:"Weekly", s:"main", c:14,
-    t:"Main / server shared. Can clear all 14 in one sitting." },
-  { id:"bf", p:"w", n:"Battlefield Victories", ic:"⚔", f:"Weekly", s:"char", c:3,
-    t:"Do the 3 wins whenever convenient." },
-  { id:"morph", p:"w", n:"Substance Morph (Odyle)", ic:"⚗", f:"Weekly", s:"char", c:4,
-    t:"25 Odyle + 5 Fine + 1 Pure + 50k Kina → +40 Energy. 4 per character." },
-  { id:"sub", p:"w", n:"Shop Odyle Stones", ic:"🛒", f:"Weekly", s:"char", c:4,
-    t:"Wind Breeze Merchant. 4 per character (+ 16 server-wide)." },
-  { id:"soul", p:"w", n:"Soul Crystals (Genus)", ic:"🔮", f:"Weekly", s:"main", c:1,
-    t:"Wind Breeze Merchant · regular weekly limit (membership). Not event-only." },
-  { id:"pve", p:"w", n:"PvE Weekly Quest Scrolls", ic:"🗺", f:"Weekly", s:"shared", c:12,
-    t:"Command Merchant. Buy before reset if you need them later." },
-  { id:"pvp", p:"w", n:"PvP Weekly Quest Scrolls", ic:"🛡", f:"Weekly", s:"shared", c:20,
-    t:"Abyss merchant. Shared limit." },
-  { id:"corr", p:"w", n:"Abyss Corridors", ic:"🌀", f:"After Siege", s:"char", c:3,
-    t:"Count depends on artifacts your faction won (max 3)." }
+  { id:"duty", p:"d", n:"Duty Quests", ic:"📜", f:"Daily", s:"shared", c:5, t:"Server-wide pool. Do once on main after login." },
+  { id:"emer", p:"d", n:"Emergency Supply Requests", ic:"🚨", f:"Daily", s:"shared", c:1, t:"Only turn in if the mats are cheap." },
+  { id:"att", p:"d", n:"Attendance / Daeva Pass / Codes", ic:"📅", f:"Daily", s:"shared", c:1, t:"Claim attendance, advance pass tracks, redeem codes." },
+  { id:"odyle", p:"d", n:"Spend Odyle Energy", ic:"💠", f:"Daily", s:"char", c:3, t:"15 every 3h (120/day). Cap 560 / 840 membership. Never sit at cap." },
+  { id:"shugo", p:"d", n:"Shugo Festival Keys", ic:"🎁", f:"Daily", s:"shared", c:3, t:"3 keys/day · cap 12 (21 with membership). Shared." },
+  { id:"nm", p:"d", n:"Nightmare Tickets", ic:"🌑", f:"Daily", s:"char", c:2, t:"+2/day · cap 14. Tracked per character." },
+  { id:"dim", p:"d", n:"Dimensional Invasion Key", ic:"🕳", f:"Daily", s:"shared", c:1, t:"1 key/day · cap 7. Shared across characters." },
+  { id:"ascw", p:"w", n:"Ascension Trial", ic:"🗼", f:"Weekly", s:"char", c:3, t:"Solo. Save for later in the week to push higher difficulty." },
+  { id:"dd", p:"w", n:"Daily Dungeon (Weekly)", ic:"⏱", f:"Weekly", s:"main", c:14, t:"Main / server shared. Can clear all 14 in one sitting." },
+  { id:"bf", p:"w", n:"Battlefield Victories", ic:"⚔", f:"Weekly", s:"char", c:3, t:"Do the 3 wins whenever convenient." },
+  { id:"morph", p:"w", n:"Substance Morph (Odyle)", ic:"⚗", f:"Weekly", s:"char", c:4, t:"25 Odyle + 5 Fine + 1 Pure + 50k Kina → +40 Energy. 4 per character." },
+  { id:"sub", p:"w", n:"Shop Odyle Stones", ic:"🛒", f:"Weekly", s:"char", c:4, t:"Wind Breeze Merchant. 4 per character (+ 16 server-wide)." },
+  { id:"soul", p:"w", n:"Soul Crystals (Genus)", ic:"🔮", f:"Weekly", s:"main", c:1, t:"Wind Breeze Merchant · regular weekly limit (membership)." },
+  { id:"pve", p:"w", n:"PvE Weekly Quest Scrolls", ic:"🗺", f:"Weekly", s:"shared", c:12, t:"Command Merchant. Buy before reset if you need them later." },
+  { id:"pvp", p:"w", n:"PvP Weekly Quest Scrolls", ic:"🛡", f:"Weekly", s:"shared", c:20, t:"Abyss merchant. Shared limit." },
+  { id:"corr", p:"w", n:"Abyss Corridors", ic:"🌀", f:"After Siege", s:"char", c:3, t:"Count depends on artifacts your faction won (max 3)." }
 ];
 
 const REG = [
-  ["Odyle Energy", "15 / 3h (120/day)", "560 / 840 membership", "Per character"],
-  ["Shugo Festival Keys", "3 / day", "12 / 21 membership", "Shared"],
-  ["Nightmare Tickets", "2 / day", "14", "Per character"],
-  ["Dimensional Invasion", "1 / day", "7", "Shared"]
+  ["Odyle Energy", "15 / 3h (120/day)", "560 / 840 Membership", "Per Character"],
+  ["Shugo Festival Keys", "3 / Day", "12 / 21 Membership", "Shared"],
+  ["Nightmare Tickets", "2 / Day", "14", "Per Character"],
+  ["Dimensional Invasion", "1 / Day", "7", "Shared"]
 ];
 
 const EV = [
@@ -70,44 +49,26 @@ const EV = [
   ["Rift Domination", "⚔", 20, [1,4,6], [18,21], 0, "5 min prep + 15 min match."],
   ["Guardian Lord Nahma", "🐲", 30, [5,0], [19], 0, "Weekend-eve boss (Fri & Sun)."],
   ["Abyss Rift Zone", "🌌", 30, [2,4], [20], 0, "Battlefield queue, Tue & Thu."],
-  ["Arena of Tactics (day)", "🏟", 180, null, [9], 0, "Open window 09:00–12:00 UTC."],
-  ["Arena of Tactics (evening)", "🏟", 120, null, [17], 0, "Open window 17:00–19:00 UTC."]
+  ["Arena of Tactics (Day)", "🏟", 180, null, [9], 0, "Open window 09:00–12:00 UTC."],
+  ["Arena of Tactics (Evening)", "🏟", 120, null, [17], 0, "Open window 17:00–19:00 UTC."]
 ];
 
 const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const P2 = x => String(x).padStart(2,"0");
-const CAT = {Gear:"#ffcc00", Farming:"#b0ff00", PvP:"#ff4466", Social:"#c77dff", Other:"#8b9bb8"};
-const NC = ["#ff2a44","#ff00aa","#b0ff00","#ffcc00","#c77dff"];
-const TPL = [
-  ["Clear Nightmare tickets","🌑","d",2,"char","Farming"],
-  ["Spend Odyle before cap","💠","d",1,"char","Farming"],
-  ["Win 3 Battlefields","⚔","w",3,"char","PvP"],
-  ["Ascension Trial","🗼","w",3,"char","Gear"],
-  ["Weapon to +10","🗡","l",10,"char","Gear"]
-];
+const CAT = { Gear:"#fbbf24", Farming:"#34d399", PvP:"#f87171", Social:"#c084fc", Other:"#9aadc8" };
+const NC = ["#22d3ee","#c084fc","#34d399","#fbbf24","#ff3b5c"];
 
-// ─────────────────────────────────────────────
-// State
-// ─────────────────────────────────────────────
+const EMOJIS = ["🎯","⚔","🗼","🌑","💠","🔮","🗡","🛡","🏟","🌀","⭐","🔥","💎","🏆","📜","🎁","👁","🐉","⚡","🧪"];
 
 let roster = localGet("devaion_roster") || DEFAULT_ROSTER.slice();
 roster.forEach((c,i) => { if (!c.color) c.color = CHAR_COLORS[i % CHAR_COLORS.length]; });
 
 let st = Object.assign({
-  tab: "missions",
-  sub: "d",
-  gsub: "d",
-  gcat: "All",
+  tab: "missions", sub: "d", gsub: "d", gcat: "All",
   activeChar: roster[0]?.id || "c1",
-  hid: [],
-  ord: [],
-  evHide: [],
-  evPin: [],
-  mEdit: false,
-  evEdit: false,
-  gEdit: null,
-  showArch: false,
-  noTpl: false
+  hid: [], ord: [], evHide: [], evPin: [],
+  mEdit: false, evEdit: false, gEdit: null, showArch: false,
+  goalEmoji: "🎯"
 }, localGet("devaion_st") || {});
 
 if (!roster.find(c => c.id === st.activeChar)) st.activeChar = roster[0]?.id || "c1";
@@ -121,10 +82,7 @@ function persist() {
   saveAll({ roster, st, goals, notes, customs });
 }
 
-// ─────────────────────────────────────────────
 // Odyle
-// ─────────────────────────────────────────────
-
 const ODYLE_HOURS = [0, 3, 6, 9, 12, 15, 18, 21];
 const ODYLE_PER_TICK = 15;
 
@@ -148,7 +106,6 @@ function lastUtcTick(before = Date.now()) {
   if (t > before) return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - 1, 21, 0, 0, 0);
   return t;
 }
-
 function nextUtcTick(from = Date.now()) {
   const d = new Date(from);
   for (const x of ODYLE_HOURS) {
@@ -157,24 +114,19 @@ function nextUtcTick(from = Date.now()) {
   }
   return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1, 0, 0, 0, 0);
 }
-
 function applyOdyleTicks() {
   const now = Date.now();
   const latest = lastUtcTick(now);
   let last = getLastAppliedTick();
   if (!last) { setLastAppliedTick(latest); return; }
   if (latest <= last) return;
-
-  let ticks = 0;
-  let cursor = last;
+  let ticks = 0, cursor = last;
   while (cursor < latest) {
     cursor = nextUtcTick(cursor);
-    if (cursor <= latest) ticks++;
-    else break;
+    if (cursor <= latest) ticks++; else break;
     if (ticks > 100) break;
   }
   if (ticks <= 0) { setLastAppliedTick(latest); return; }
-
   const cap = getOdyleCap();
   roster.forEach(c => {
     const v = getOdyleVal(c.id);
@@ -182,7 +134,6 @@ function applyOdyleTicks() {
   });
   setLastAppliedTick(latest);
 }
-
 function getOdyle(charId) {
   applyOdyleTicks();
   const v = getOdyleVal(charId);
@@ -190,10 +141,15 @@ function getOdyle(charId) {
   return { v, nextIn: Math.max(0, next - Date.now()), nextAt: next };
 }
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
+function batteryLevel(v, cap) {
+  const p = v / cap;
+  if (p >= 0.95) return "full";
+  if (p >= 0.55) return "high";
+  if (p >= 0.25) return "mid";
+  return "low";
+}
 
+// Helpers
 function lastReset(w) {
   const n = new Date(), d = new Date();
   d.setUTCHours(7, 0, 0, 0);
@@ -231,16 +187,13 @@ function getAllMissions() {
     s: c.s || "char", c: c.c || 1, t: c.t || "Custom mission", custom: true
   })));
 }
-
 function prog(p) {
   let a = 0, b = 0;
   getAllMissions().filter(i => i.p === p && !dis(i) && !hid(i)).forEach(i => {
-    b += max(i);
-    a += Math.min(val(i), max(i));
+    b += max(i); a += Math.min(val(i), max(i));
   });
   return b ? Math.round(a / b * 100) : 0;
 }
-
 function fmt(ms) {
   const s = Math.max(0, ms / 1e3 | 0);
   const d = s / 86400 | 0, h = s % 86400 / 3600 | 0, m = s % 3600 / 60 | 0;
@@ -252,13 +205,10 @@ function fmtShort(ms) {
   if (h > 0) return h + "h " + m + "m";
   return m + "m " + sec + "s";
 }
-
 function nxt(e) {
-  const n = Date.now();
-  let best = null;
+  const n = Date.now(); let best = null;
   for (let k = -1; k < 10; k++) {
-    const b = new Date();
-    b.setUTCDate(b.getUTCDate() + k);
+    const b = new Date(); b.setUTCDate(b.getUTCDate() + k);
     if (e[3] && !e[3].includes(b.getUTCDay())) continue;
     for (const h of e[4]) {
       const s = Date.UTC(b.getUTCFullYear(), b.getUTCMonth(), b.getUTCDate(), h, e[5]);
@@ -271,7 +221,11 @@ function nxt(e) {
 const gkey = (g, c) => `g|${g.id}|${g.sc === "char" ? c : "x"}|${pk(g.ty)}`;
 const gmax = g => g.steps?.length || g.tg;
 const gval = (g, c) => g.ty === "l" ? (g.steps?.length ? g.steps.filter(x => x.d).length : g.v || 0) : (+S.get(gkey(g, c)) || 0);
-const vis = (g, c) => g.ty !== "l" || g.sc !== "char" || g.ch === c;
+const vis = (g, c) => {
+  if (g.sc === "all") return true;
+  if (g.ty === "l" && g.sc === "char") return g.ch === c;
+  return true;
+};
 const glist = (ty, c) => goals.filter(g => g.ty === ty && vis(g, c)).sort((a, b) => (+!!b.hi) - (+!!a.hi));
 const gcnt = (ty, c) => {
   const l = glist(ty, c).filter(g => !g.pause && !g.arch);
@@ -283,13 +237,12 @@ function urg(g) {
   if (g.ty === "l") {
     if (!g.due) return null;
     const ms = new Date(g.due + "T23:59:59Z") - n;
-    return ms < 0 ? ["late", "overdue"] : ms < 3 * 864e5 ? ["warn", fmt(ms) + " left"] : null;
+    return ms < 0 ? ["late", "Overdue"] : ms < 3 * 864e5 ? ["warn", fmt(ms) + " Left"] : null;
   }
   const ms = nextReset(g.ty === "w") - n;
-  return ms < (g.ty === "w" ? 12 : 3) * 36e5 ? ["warn", "resets in " + fmt(ms)] : null;
+  return ms < (g.ty === "w" ? 12 : 3) * 36e5 ? ["warn", "Resets In " + fmt(ms)] : null;
 }
 
-// Purge old keys
 (function purge() {
   try {
     const cd = pk("d"), cw = pk("w");
@@ -302,17 +255,14 @@ function urg(g) {
   } catch {}
 })();
 
-// ─────────────────────────────────────────────
 // Render helpers
-// ─────────────────────────────────────────────
-
 function card(it, ed) {
   const m = max(it), v = val(it), d = dis(it) && !ed, done = v >= m && !d && !ed;
-  const sc = { char: "Per character", shared: "Shared", main: "Main only" }[it.s];
+  const sc = { char: "Per Character", shared: "Shared", main: "Main Only" }[it.s];
   const scClass = { char: "char", shared: "shared", main: "main" }[it.s];
   const isCustom = !!it.custom;
   const ctl = d
-    ? `<span style="font-size:12px;color:var(--muted)">Main only</span>`
+    ? `<span style="font-size:12px;color:var(--muted)">Main Only</span>`
     : ed
       ? `<div class="ctl">
           <button data-mv="${it.id}" data-d="-1">▲</button>
@@ -345,6 +295,7 @@ function card(it, ed) {
 function gcard(g, c) {
   const m = gmax(g), v = gval(g, c), L = g.ty === "l", done = v >= m, u = !done && urg(g);
   const cat = CAT[g.cat] || CAT.Other;
+  const assignLabel = g.sc === "all" ? "All Characters" : (roster.find(r => r.id === g.ch)?.name || "Character");
   const stp = L && g.steps?.length
     ? `<div class="steps">${g.steps.map((x, i) =>
         `<label><input type="checkbox" data-st="${g.id}|${i}" ${x.d ? "checked" : ""}> ${esc(x.x)}</label>`
@@ -366,9 +317,9 @@ function gcard(g, c) {
       <div class="hd">
         <h3>${g.hi ? "★ " : ""}${esc(g.n)}</h3>
         <span class="tg" style="color:${cat};border-color:${cat}55">${g.cat}</span>
-        <span class="tg ${g.sc === "char" ? "char" : "shared"}">${g.sc === "char" ? "Per character" : "Account"}</span>
+        <span class="tg ${g.sc === "all" ? "shared" : "char"}">${assignLabel}</span>
         ${g.due ? `<span class="tg">Due ${g.due}</span>` : ""}
-        ${u ? `<span class="tg" style="color:var(--warn)">⏰ ${u[1]}</span>` : ""}
+        ${u ? `<span class="tg" style="color:var(--amber)">⏰ ${u[1]}</span>` : ""}
         ${g.pause ? '<span class="tg">Paused</span>' : ""}
       </div>
       ${g.nt ? `<div class="tip">${esc(g.nt)}</div>` : ""}${stp}
@@ -377,10 +328,6 @@ function gcard(g, c) {
     ${ctl}
   </div>`;
 }
-
-// ─────────────────────────────────────────────
-// Views
-// ─────────────────────────────────────────────
 
 function drawMissions(app) {
   const D = getAllMissions();
@@ -397,25 +344,22 @@ function drawMissions(app) {
           <button data-s="w" class="${st.sub === "w" ? "on" : ""}">Weekly</button>
         </div>
         <span class="pct"><b>${pct}%</b> · ${esc(char.name)}</span>
-        <button data-me="1" class="btn-sm">${st.mEdit ? "Done" : "Edit list"}</button>
+        <button data-me="1" class="btn-sm">${st.mEdit ? "Done" : "Edit List"}</button>
       </div>
-
       ${st.mEdit ? `
-        <div class="hint">Reorder with ▲▼. Hidden missions are removed from your list. Add custom missions below.</div>
         <div class="custom-form">
-          <input type="text" id="cmIc" value="⭐" maxlength="2" style="width:44px;text-align:center" title="Icon">
-          <input type="text" id="cmN" placeholder="Custom mission name" maxlength="40" style="width:220px">
+          <input type="text" id="cmIc" value="⭐" maxlength="2" style="width:48px;text-align:center">
+          <input type="text" id="cmN" placeholder="Custom Mission Name" maxlength="40" style="width:240px">
           <select id="cmS">
-            <option value="char">Per character</option>
+            <option value="char">Per Character</option>
             <option value="shared">Shared</option>
-            <option value="main">Main only</option>
+            <option value="main">Main Only</option>
           </select>
-          <input type="number" id="cmC" value="1" min="1" max="99" style="width:60px" title="Count">
-          <button id="cmAdd" class="btn-sm on">+ Add custom</button>
+          <input type="number" id="cmC" value="1" min="1" max="99" style="width:64px">
+          <button id="cmAdd" class="btn-sm on">+ Add Custom</button>
         </div>
       ` : ""}
-
-      <div>${L.map(i => card(i, st.mEdit)).join("") || '<p class="tip" style="padding:12px 0">No missions for this character / filter.</p>'}</div>
+      <div>${L.map(i => card(i, st.mEdit)).join("") || '<p class="tip" style="padding:14px 0">No Missions For This Character.</p>'}</div>
     </div>`;
 }
 
@@ -427,6 +371,8 @@ function drawResources(app) {
   const atCap = o.v >= cap;
   const nextLocal = new Date(o.nextAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
   const char = activeChar();
+  const pct = Math.min(100, Math.round(o.v / cap * 100));
+  const level = batteryLevel(o.v, cap);
 
   app.innerHTML = `
     <div class="panel">
@@ -440,7 +386,17 @@ function drawResources(app) {
     <div class="panel">
       <h2>Odyle Energy · ${esc(char.name)}</h2>
       <div class="cap-banner ${atCap ? "show" : nearCap ? "show warn" : ""}">
-        ${atCap ? "At cap — natural regen is stopped. Spend some energy." : "Approaching cap. Spend soon to avoid waste."}
+        ${atCap ? "At Cap — Natural Regen Is Stopped. Spend Some Energy." : "Approaching Cap. Spend Soon To Avoid Waste."}
+      </div>
+
+      <div class="battery" style="margin-bottom:20px">
+        <div class="battery-body">
+          <div class="battery-fill ${level}" style="width:${pct}%"></div>
+        </div>
+        <div class="battery-meta">
+          <div class="val" id="odyle-live-val">${o.v} <span style="font-size:14px;color:var(--muted)">/ ${cap}</span></div>
+          <div class="sub">Next +15 In <b id="odyle-next" style="color:var(--cyan)">${fmtShort(o.nextIn)}</b> · ${nextLocal}</div>
+        </div>
       </div>
 
       <div class="ctrl-bar">
@@ -450,54 +406,45 @@ function drawResources(app) {
         <label class="tg" style="cursor:pointer">
           <input type="checkbox" id="om" ${om ? "checked" : ""}> Membership (840)
         </label>
-        <button id="oe-save" class="btn-sm on">Update value</button>
+        <button id="oe-save" class="btn-sm on">Update Value</button>
       </div>
 
-      <div class="odyle-box" id="oc">
+      <div class="odyle-box">
         <div class="res ${atCap ? "cap-hit" : nearCap ? "cap-warn" : ""}">
-          <b id="odyle-live-val">${o.v}</b><small>current energy</small>
+          <b>${Math.floor(o.v / 40)}</b><small>Cubes Now</small>
         </div>
         <div class="res">
-          <b id="odyle-next">${fmtShort(o.nextIn)}</b><small>next +15 · ${nextLocal}</small>
+          <b>${o.v >= 80 ? Math.floor(o.v / 80) : 0}</b><small>Double Claims</small>
         </div>
-        <div class="res"><b>${Math.floor(o.v / 40)}</b><small>cubes now</small></div>
-        <div class="res"><b>${o.v >= 80 ? Math.floor(o.v / 80) : 0}</b><small>double claims</small></div>
         <div class="res">
-          <b>${atCap ? "CAPPED" : ((cap - o.v) / 15 * 3 / 24).toFixed(1) + "d"}</b>
-          <small>${atCap ? "spend now" : "to cap"}</small>
+          <b>${atCap ? "Capped" : ((cap - o.v) / 15 * 3 / 24).toFixed(1) + "d"}</b>
+          <small>${atCap ? "Spend Now" : "To Cap"}</small>
         </div>
-        <div class="res"><b>${Math.min(o.v + 120 * 7, cap)}</b><small>after 7 days</small></div>
-      </div>
-
-      <div class="hint" style="margin-top:14px">
-        Global tick every 3h UTC (00 · 03 · 06 · 09 · 12 · 15 · 18 · 21). Same for all characters.<br>
-        Updating the number only changes the value — it never resets the timer.
+        <div class="res">
+          <b>${Math.min(o.v + 120 * 7, cap)}</b><small>After 7 Days</small>
+        </div>
       </div>
     </div>
 
     <div class="panel">
       <h2>Odyle Sources</h2>
-      <div style="font-size:13.5px;color:var(--mut);line-height:1.7">
-        ⏳ Natural regen · 120 / day (15 every 3h UTC)<br>
-        ⚗ Substance Morph · +40 each (4 per character)<br>
-        🛒 Wind Breeze Shop · +40 each (4 per character + 16 server)<br>
-        🎟 Daeva Pass & events
+      <div style="font-size:13.5px;color:var(--mut);line-height:1.75">
+        ⏳ Natural Regen · 120 / Day (15 Every 3h UTC)<br>
+        ⚗ Substance Morph · +40 Each (4 Per Character)<br>
+        🛒 Wind Breeze Shop · +40 Each (4 Per Character + 16 Server)<br>
+        🎟 Daeva Pass & Events
       </div>
     </div>`;
 
   document.getElementById("oe-save").onclick = () => {
     setOdyleVal(st.activeChar, document.getElementById("oe").value);
     S.set("a2om", document.getElementById("om").checked ? "1" : "0");
-    persist();
-    render();
+    persist(); render();
   };
   document.getElementById("om").onchange = () => {
     S.set("a2om", document.getElementById("om").checked ? "1" : "0");
     const cap2 = getOdyleCap();
-    roster.forEach(c => {
-      const v = getOdyleVal(c.id);
-      if (v > cap2) setOdyleVal(c.id, cap2);
-    });
+    roster.forEach(c => { const v = getOdyleVal(c.id); if (v > cap2) setOdyleVal(c.id, cap2); });
     render();
   };
 }
@@ -515,14 +462,13 @@ function drawEvents(app) {
         <h2 style="margin:0">Event Timers</h2>
         <button data-ee="1" class="btn-sm" style="margin-left:auto">${ed ? "Done" : "Filter"}</button>
       </div>
-      ${ed ? '<div class="hint">Hide events you never do, pin the ones you care about.</div>' : ""}
       <div id="evlist">
         ${items.map(({ e, s }) => {
           const on = s <= n, end = s + e[2] * 6e4, d = new Date(s);
           const h = st.evHide.includes(e[0]), p = st.evPin.includes(e[0]);
           const local = d.toLocaleString(undefined, { weekday: "short", hour: "2-digit", minute: "2-digit" });
           const when = e[4].length === 24
-            ? `Every hour at :${P2(e[5])}`
+            ? `Every Hour At :${P2(e[5])}`
             : (e[3] ? e[3].map(x => DN[x]).join("/") + " " : "Daily ") + e[4].map(h => P2(h) + ":" + P2(e[5])).join(", ") + " UTC";
           return `<div class="event-row ${on && !h ? "open" : ""}" ${h ? 'style="opacity:.45"' : ""}>
             <span class="ic">${e[1]}</span>
@@ -532,7 +478,7 @@ function drawEvents(app) {
               <div class="tip">${e[6]}</div>
             </div>
             <div style="text-align:right">
-              <div class="status ${on ? "open" : (s - n < 36e5 ? "soon" : "")}">${on ? "OPEN · " + fmt(end - n) : "in " + fmt(s - n)}</div>
+              <div class="status ${on ? "open" : (s - n < 36e5 ? "soon" : "")}">${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}</div>
               ${ed ? `<div class="ctl" style="justify-content:flex-end;margin-top:4px">
                 <button data-ep="${esc(e[0])}">${p ? "Unpin" : "★ Pin"}</button>
                 <button data-eh="${esc(e[0])}">${h ? "Show" : "Hide"}</button>
@@ -564,34 +510,28 @@ function drawDash(app) {
       <b>${b ? a + "/" + b : "—"}</b>
     </div>`;
 
-  const oeBar = (v) => {
-    const pct = Math.min(100, Math.round(v / cap * 100));
-    return `<div class="mb">
-      <span>Odyle</span>
-      <div class="bt"><i style="width:${pct}%;${v >= cap ? "background:var(--danger);box-shadow:0 0 6px var(--danger)" : v >= cap - 30 ? "background:var(--warn);box-shadow:0 0 6px var(--warn)" : ""}"></i></div>
-      <b>${v}/${cap}</b>
-    </div>`;
-  };
-
   app.innerHTML = `
     <div class="panel">
       <div class="grid-4">
-        <div class="stat-box"><b>${roster.length}</b><small>characters</small></div>
-        <div class="stat-box"><b>${avg || "—"}</b><small>average GS</small></div>
-        <div class="stat-box"><b>${+top?.gs ? esc(top.name) : "—"}</b><small>top GS${+top?.gs ? " · " + top.gs : ""}</small></div>
-        <div class="stat-box"><b>${tb ? Math.round(ta / tb * 100) + "%" : "—"}</b><small>daily missions (all)</small></div>
+        <div class="stat-box"><b>${roster.length}</b><small>Characters</small></div>
+        <div class="stat-box"><b>${avg || "—"}</b><small>Average GS</small></div>
+        <div class="stat-box"><b>${+top?.gs ? esc(top.name) : "—"}</b><small>Top GS${+top?.gs ? " · " + top.gs : ""}</small></div>
+        <div class="stat-box"><b>${tb ? Math.round(ta / tb * 100) + "%" : "—"}</b><small>Daily Missions (All)</small></div>
       </div>
-      <div style="margin-top:12px;text-align:center;color:var(--muted);font-size:13px">
-        Next Odyle +15 in <b style="color:var(--neon)">${fmtShort(Math.max(0, odNext - Date.now()))}</b>
+      <div style="margin-top:14px;text-align:center;color:var(--muted);font-size:13px">
+        Next Odyle +15 In <b style="color:var(--cyan)">${fmtShort(Math.max(0, odNext - Date.now()))}</b>
       </div>
     </div>
 
     <div class="dgrid">
-      ${rows.map(({ r, md, mw, gd, gw, oe }) => `
+      ${rows.map(({ r, md, mw, gd, gw, oe }) => {
+        const pct = Math.min(100, Math.round(oe / cap * 100));
+        const level = batteryLevel(oe, cap);
+        return `
         <div class="dc" style="border-left:3px solid ${r.color}">
           <div class="top">
             <div>
-              <div class="name" style="font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px">
+              <div style="font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px">
                 <span class="char-dot" style="background:${r.color}"></span>
                 ${esc(r.name)} ${r.role === "main" ? '<span class="tg main">Main</span>' : ""}
               </div>
@@ -599,13 +539,24 @@ function drawDash(app) {
             </div>
             <label class="gs">GS <input type="number" min="0" data-gs="${r.id}" value="${r.gs || 0}"></label>
           </div>
-          ${oeBar(oe)}
-          ${bar("Missions · daily", md)}
-          ${bar("Missions · weekly", mw)}
-          ${bar("Goals · daily", gd)}
-          ${bar("Goals · weekly", gw)}
-          <button data-open="${r.id}" class="btn-sm" style="margin-top:8px">Open missions →</button>
-        </div>`).join("")}
+
+          <div class="battery" style="margin-bottom:12px">
+            <div class="battery-body" style="width:120px;height:36px">
+              <div class="battery-fill ${level}" style="width:${pct}%"></div>
+            </div>
+            <div class="battery-meta">
+              <div class="val" style="font-size:16px">${oe}<span style="font-size:12px;color:var(--muted)">/${cap}</span></div>
+              <div class="sub">Odyle</div>
+            </div>
+          </div>
+
+          ${bar("Missions · Daily", md)}
+          ${bar("Missions · Weekly", mw)}
+          ${bar("Goals · Daily", gd)}
+          ${bar("Goals · Weekly", gw)}
+          <button data-open="${r.id}" class="btn-sm" style="margin-top:10px">Open Missions →</button>
+        </div>`;
+      }).join("")}
     </div>`;
 }
 
@@ -626,11 +577,11 @@ function drawRoster(app) {
         <input type="hidden" id="newColor" value="${CHAR_COLORS[0]}">
         <button id="addChar" class="btn-sm on">Add</button>
       </div>
-      <div class="roster-grid" id="rosterList">
+      <div class="roster-grid">
         ${roster.map(c => `
           <div class="char-card ${c.id === st.activeChar ? "active" : ""}" data-id="${c.id}" style="border-left:3px solid ${c.color}">
             <div class="name">
-              <button type="button" class="char-dot" data-recolor="${c.id}" style="background:${c.color}" title="Change color"></button>
+              <button type="button" class="char-dot" data-recolor="${c.id}" style="background:${c.color}" title="Change Color"></button>
               ${esc(c.name)} ${c.role === "main" ? '<span class="tg main">Main</span>' : ""}
             </div>
             <div class="meta">${esc(c.class || "—")} · GS ${c.gs || "—"}</div>
@@ -645,56 +596,75 @@ function drawRoster(app) {
     <div class="panel">
       <h2>Backup</h2>
       <div class="config-form">
-        <button id="bkEx" class="btn-sm">Export backup</button>
-        <button id="bkIm" class="btn-sm">Import backup</button>
+        <button id="bkEx" class="btn-sm">Export Backup</button>
+        <button id="bkIm" class="btn-sm">Import Backup</button>
         <input type="file" id="bkF" accept=".json" hidden>
       </div>
-      <p class="hint" style="margin:0">Local only. Export regularly. Cloud sync via Supabase is automatic when configured.</p>
     </div>`;
 }
 
 function drawGoals(app) {
   const c = st.activeChar;
   const ed = goals.find(g => g.id === st.gEdit);
-  const f = ed || { n: "", ic: "🎯", ty: st.gsub, tg: 1, sc: "char", cat: "Other", hi: false, due: "", nt: "", steps: [] };
+  const f = ed || { n: "", ic: st.goalEmoji || "🎯", ty: st.gsub, tg: 1, sc: "char", cat: "Other", hi: false, due: "", nt: "", steps: [], ch: st.activeChar };
   const gd = gcnt("d", c), gw = gcnt("w", c);
   const gl = glist("l", c).filter(g => !g.arch && !g.pause);
   const ld = gl.filter(g => gval(g, c) >= gmax(g)).length;
   const na = goals.filter(g => g.arch).length;
   const list = glist(st.gsub, c).filter(g => (st.gcat === "All" || g.cat === st.gcat) && (st.showArch || !g.arch));
-  const tpl = st.noTpl || ed ? [] : TPL.map((t, i) => [t, i]).filter(([t]) => t[2] === st.gsub && !goals.some(g => g.n === t[0]));
   const o = (v, k, l) => `<option value="${k}" ${v === k ? "selected" : ""}>${l}</option>`;
   const char = activeChar();
+  const currentEmoji = ed ? ed.ic : (st.goalEmoji || "🎯");
 
   app.innerHTML = `
     <div class="panel">
       <div class="grid-3">
-        <div class="stat-box"><b>${gd[0]}/${gd[1]}</b><small>Daily goals · ${esc(char.name)}</small></div>
-        <div class="stat-box"><b>${gw[0]}/${gw[1]}</b><small>Weekly goals</small></div>
-        <div class="stat-box"><b>${ld}/${gl.length}</b><small>Long-term done</small></div>
+        <div class="stat-box"><b>${gd[0]}/${gd[1]}</b><small>Daily Goals · ${esc(char.name)}</small></div>
+        <div class="stat-box"><b>${gw[0]}/${gw[1]}</b><small>Weekly Goals</small></div>
+        <div class="stat-box"><b>${ld}/${gl.length}</b><small>Long-Term Done</small></div>
       </div>
     </div>
 
     <div class="panel">
-      <h2>${ed ? "Edit goal" : "New goal"}</h2>
-      <div class="config-form" style="margin-bottom:8px">
-        <input type="text" id="gI" value="${esc(f.ic)}" maxlength="2" style="width:44px;text-align:center">
-        <input type="text" id="gN" value="${esc(f.n)}" placeholder="Goal title" maxlength="60" style="width:220px">
-        <select id="gT">${o(f.ty,"d","Daily")}${o(f.ty,"w","Weekly")}${o(f.ty,"l","Long-term")}</select>
-        <label>Target <input type="number" id="gG" min="1" value="${f.tg}"></label>
-        <select id="gS">${o(f.sc,"char","Per character")}${o(f.sc,"acc","Account")}</select>
-        <select id="gC">${Object.keys(CAT).map(k => o(f.cat, k, k)).join("")}</select>
-        <label class="tg" style="cursor:pointer"><input type="checkbox" id="gH" ${f.hi ? "checked" : ""}> ★ High</label>
+      <h2>${ed ? "Edit Goal" : "New Goal"}</h2>
+
+      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Icon</div>
+          <div class="emoji-picker" id="emojiPick">
+            ${EMOJIS.map(em =>
+              `<button type="button" data-emoji="${em}" class="${em === currentEmoji ? "on" : ""}">${em}</button>`
+            ).join("")}
+          </div>
+          <input type="hidden" id="gI" value="${esc(currentEmoji)}">
+        </div>
+
+        <div style="flex:1">
+          <div class="config-form" style="margin-bottom:10px">
+            <input type="text" id="gN" value="${esc(f.n)}" placeholder="Goal Title" maxlength="60" style="width:260px">
+            <select id="gT">${o(f.ty,"d","Daily")}${o(f.ty,"w","Weekly")}${o(f.ty,"l","Long-Term")}</select>
+            <label>Target <input type="number" id="gG" min="1" value="${f.tg}"></label>
+          </div>
+          <div class="config-form" style="margin-bottom:10px">
+            <select id="gS">
+              <option value="char" ${f.sc === "char" ? "selected" : ""}>One Character</option>
+              <option value="all" ${f.sc === "all" ? "selected" : ""}>All Characters</option>
+            </select>
+            <select id="gCh" ${f.sc === "all" ? "disabled" : ""}>
+              ${roster.map(r => `<option value="${r.id}" ${(f.ch || st.activeChar) === r.id ? "selected" : ""}>${esc(r.name)}</option>`).join("")}
+            </select>
+            <select id="gC">${Object.keys(CAT).map(k => o(f.cat, k, k)).join("")}</select>
+            <label class="tg" style="cursor:pointer"><input type="checkbox" id="gH" ${f.hi ? "checked" : ""}> ★ High Priority</label>
+          </div>
+          <div class="config-form">
+            <input type="text" id="gO" value="${esc(f.nt)}" placeholder="Note (Optional)" style="width:240px">
+            <input type="text" id="gP" value="${esc((f.steps || []).map(x => x.x).join(", "))}" placeholder="Steps, Comma Separated (Long-Term)" style="width:280px">
+            <label>Deadline <input type="date" id="gD" value="${f.due || ""}"></label>
+            <button id="gAdd" class="btn-sm on">${ed ? "Save Goal" : "Add Goal"}</button>
+            ${ed ? '<button data-ga="cancel" class="btn-sm">Cancel</button>' : ""}
+          </div>
+        </div>
       </div>
-      <div class="config-form">
-        <input type="text" id="gO" value="${esc(f.nt)}" placeholder="Note (optional)" style="width:220px">
-        <input type="text" id="gP" value="${esc((f.steps || []).map(x => x.x).join(", "))}" placeholder="Steps, comma separated (long-term)" style="width:280px">
-        <label>Deadline <input type="date" id="gD" value="${f.due || ""}"></label>
-        <button id="gAdd" class="btn-sm on">${ed ? "Save" : "Add goal"}</button>
-        ${ed ? '<button data-ga="cancel" class="btn-sm">Cancel</button>' : ""}
-      </div>
-      <div class="hint">Long-term goals marked "per character" belong to the character active when you create them. Drag rows to reorder.</div>
-      ${tpl.length ? `<div class="chips">Quick start: ${tpl.map(([t, i]) => `<button data-ga="tpl" data-i="${i}">${t[1]} ${t[0]}</button>`).join("")}<button data-ga="notpl" title="Hide suggestions">✕</button></div>` : ""}
     </div>
 
     <div class="panel">
@@ -702,26 +672,42 @@ function drawGoals(app) {
         <div class="seg">
           <button data-gsub="d" class="${st.gsub === "d" ? "on" : ""}">Daily</button>
           <button data-gsub="w" class="${st.gsub === "w" ? "on" : ""}">Weekly</button>
-          <button data-gsub="l" class="${st.gsub === "l" ? "on" : ""}">Long-term</button>
+          <button data-gsub="l" class="${st.gsub === "l" ? "on" : ""}">Long-Term</button>
         </div>
-        <select id="gF">${["All", ...Object.keys(CAT)].map(k => o(st.gcat, k, k === "All" ? "All categories" : k)).join("")}</select>
+        <select id="gF">${["All", ...Object.keys(CAT)].map(k => o(st.gcat, k, k === "All" ? "All Categories" : k)).join("")}</select>
         ${na ? `<label class="tg" style="cursor:pointer"><input type="checkbox" id="gArch" ${st.showArch ? "checked" : ""}> Archived (${na})</label>` : ""}
       </div>
-      <div id="goal-list">${list.length ? list.map(g => gcard(g, c)).join("") : '<p class="tip" style="padding:10px 0">Nothing here yet. Add a goal above.</p>'}</div>
+      <div id="goal-list">${list.length ? list.map(g => gcard(g, c)).join("") : '<p class="tip" style="padding:12px 0">No Goals Yet.</p>'}</div>
     </div>
 
     <div class="panel">
       <h2>Notes <button id="nAdd" class="btn-sm" style="float:right">+ Note</button></h2>
       <div class="notes">${notes.map((n, i) => `
-        <div class="note" style="--nc:${n.c};transform:rotate(${(i % 3 - 1) * 0.7}deg)">
+        <div class="note" style="--nc:${n.c};transform:rotate(${(i % 3 - 1) * 0.6}deg)">
           <div class="nh">
             ${NC.map(k => `<button class="dot" data-nc="${n.id}|${k}" style="background:${k}"></button>`).join("")}
             <button class="x" data-nd="${n.id}">×</button>
           </div>
-          <textarea data-nid="${n.id}" placeholder="Write something…">${esc(n.tx)}</textarea>
-        </div>`).join("") || '<p class="tip">No notes yet.</p>'}
+          <textarea data-nid="${n.id}" placeholder="Write Something…">${esc(n.tx)}</textarea>
+        </div>`).join("") || '<p class="tip">No Notes Yet.</p>'}
       </div>
     </div>`;
+
+  // Emoji picker interaction
+  document.getElementById("emojiPick")?.addEventListener("click", e => {
+    const btn = e.target.closest("[data-emoji]");
+    if (!btn) return;
+    document.querySelectorAll("#emojiPick button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    document.getElementById("gI").value = btn.dataset.emoji;
+    st.goalEmoji = btn.dataset.emoji;
+  });
+
+  // Toggle character select when scope changes
+  document.getElementById("gS")?.addEventListener("change", e => {
+    const ch = document.getElementById("gCh");
+    if (ch) ch.disabled = e.target.value === "all";
+  });
 
   setupGoalDrag();
 }
@@ -732,39 +718,25 @@ function setupGoalDrag() {
   let dragId = null;
   list.querySelectorAll(".row[draggable]").forEach(row => {
     row.addEventListener("dragstart", e => {
-      dragId = row.dataset.gid;
-      row.classList.add("dragging");
-      e.dataTransfer.effectAllowed = "move";
+      dragId = row.dataset.gid; row.classList.add("dragging"); e.dataTransfer.effectAllowed = "move";
     });
     row.addEventListener("dragend", () => {
-      row.classList.remove("dragging");
-      dragId = null;
+      row.classList.remove("dragging"); dragId = null;
       list.querySelectorAll(".drag-over").forEach(el => el.classList.remove("drag-over"));
     });
-    row.addEventListener("dragover", e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "move";
-      row.classList.add("drag-over");
-    });
+    row.addEventListener("dragover", e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; row.classList.add("drag-over"); });
     row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
     row.addEventListener("drop", e => {
-      e.preventDefault();
-      row.classList.remove("drag-over");
+      e.preventDefault(); row.classList.remove("drag-over");
       if (!dragId || dragId === row.dataset.gid) return;
       const from = goals.findIndex(g => g.id === dragId);
       const to = goals.findIndex(g => g.id === row.dataset.gid);
       if (from < 0 || to < 0) return;
-      const [item] = goals.splice(from, 1);
-      goals.splice(to, 0, item);
-      persist();
-      render();
+      const [item] = goals.splice(from, 1); goals.splice(to, 0, item);
+      persist(); render();
     });
   });
 }
-
-// ─────────────────────────────────────────────
-// Shell + render
-// ─────────────────────────────────────────────
 
 const TABS = [
   ["missions", "📜", "Missions"],
@@ -784,15 +756,11 @@ function render() {
     <div class="app-shell">
       <aside class="sidebar">
         <div class="logo">DEV<span>AION</span></div>
-
         <nav class="side-nav">
           ${TABS.map(([k, icon, label]) =>
-            `<button data-t="${k}" class="${st.tab === k ? "on" : ""}">
-              <span class="icon">${icon}</span>${label}
-            </button>`
+            `<button data-t="${k}" class="${st.tab === k ? "on" : ""}"><span class="icon">${icon}</span>${label}</button>`
           ).join("")}
         </nav>
-
         <div class="side-section">
           <h4>Characters</h4>
           <div class="char-list">
@@ -804,10 +772,9 @@ function render() {
               </div>`).join("")}
           </div>
         </div>
-
         <div class="side-footer">
           <div class="sync-pill ${hasSupabase ? (sync === "error" ? "warn" : "ok") : ""}">
-            ${hasSupabase ? (sync === "synced" ? "● Cloud synced" : sync === "syncing" ? "● Syncing…" : "● Cloud ready") : "○ Local only"}
+            ${hasSupabase ? (sync === "synced" ? "● Cloud Synced" : sync === "syncing" ? "● Syncing…" : "● Cloud Ready") : "○ Local Only"}
           </div>
           <div>v5.1 · Desktop</div>
         </div>
@@ -822,11 +789,9 @@ function render() {
             <div>Weekly <b id="cw">--</b> <span class="prog-mini"><i id="pw"></i></span></div>
           </div>
         </header>
-
         <div class="content" id="view"></div>
       </div>
-    </div>
-  `;
+    </div>`;
 
   const view = document.getElementById("view");
   if (st.tab === "missions") drawMissions(view);
@@ -835,7 +800,6 @@ function render() {
   else if (st.tab === "dash") drawDash(view);
   else if (st.tab === "roster") drawRoster(view);
   else if (st.tab === "goals") drawGoals(view);
-
   tick();
 }
 
@@ -848,19 +812,17 @@ function tick() {
     const bar = document.getElementById("p" + id);
     if (bar) bar.style.width = prog(p) + "%";
   }
-
   if (st.tab === "resources") {
     const o = getOdyle(st.activeChar);
     const next = document.getElementById("odyle-next");
     if (next) next.textContent = fmtShort(o.nextIn);
     const live = document.getElementById("odyle-live-val");
-    if (live && document.activeElement?.id !== "oe") live.textContent = o.v;
+    if (live && document.activeElement?.id !== "oe") {
+      const cap = getOdyleCap();
+      live.innerHTML = `${o.v} <span style="font-size:14px;color:var(--muted)">/ ${cap}</span>`;
+    }
   }
 }
-
-// ─────────────────────────────────────────────
-// Events
-// ─────────────────────────────────────────────
 
 document.addEventListener("click", e => {
   const b = e.target.closest("button, .char-card, .char-item");
@@ -889,10 +851,7 @@ document.addEventListener("click", e => {
   }
   else if (b.dataset.recolor) {
     const c = roster.find(x => x.id === b.dataset.recolor);
-    if (c) {
-      const i = CHAR_COLORS.indexOf(c.color);
-      c.color = CHAR_COLORS[(i + 1) % CHAR_COLORS.length];
-    }
+    if (c) { const i = CHAR_COLORS.indexOf(c.color); c.color = CHAR_COLORS[(i + 1) % CHAR_COLORS.length]; }
   }
   else if (b.id === "addChar") {
     const name = document.getElementById("newName").value.trim() || "Alt";
@@ -914,19 +873,11 @@ document.addEventListener("click", e => {
   else if (b.dataset.edit) {
     const c = roster.find(x => x.id === b.dataset.edit);
     if (!c) return;
-    const name = prompt("Name", c.name);
-    if (name === null) return;
-    const cls = prompt("Class", c.class || "");
-    if (cls === null) return;
-    const gs = prompt("Gear score", c.gs || 0);
-    if (gs === null) return;
-    c.gs = +gs || 0;
-    c.name = name.trim() || c.name;
-    c.class = cls.trim();
-    if (confirm("Set as Main?")) {
-      roster.forEach(x => x.role = "alt");
-      c.role = "main";
-    }
+    const name = prompt("Name", c.name); if (name === null) return;
+    const cls = prompt("Class", c.class || ""); if (cls === null) return;
+    const gs = prompt("Gear Score", c.gs || 0); if (gs === null) return;
+    c.gs = +gs || 0; c.name = name.trim() || c.name; c.class = cls.trim();
+    if (confirm("Set As Main?")) { roster.forEach(x => x.role = "alt"); c.role = "main"; }
   }
   else if (b.dataset.me) st.mEdit = !st.mEdit;
   else if (b.dataset.mv) {
@@ -938,20 +889,17 @@ document.addEventListener("click", e => {
   }
   else if (b.dataset.hd) tog(st.hid, b.dataset.hd);
   else if (b.dataset.cdel) {
-    if (!confirm("Delete this custom mission?")) return;
+    if (!confirm("Delete This Custom Mission?")) return;
     customs = customs.filter(c => c.id !== b.dataset.cdel);
   }
   else if (b.id === "cmAdd") {
     const n = document.getElementById("cmN").value.trim();
     if (!n) { document.getElementById("cmN").focus(); return; }
     customs.push({
-      id: "cm" + Date.now(),
-      n,
+      id: "cm" + Date.now(), n,
       ic: document.getElementById("cmIc").value.trim() || "⭐",
-      p: st.sub,
-      s: document.getElementById("cmS").value,
-      c: Math.max(1, +document.getElementById("cmC").value || 1),
-      t: "Custom mission"
+      p: st.sub, s: document.getElementById("cmS").value,
+      c: Math.max(1, +document.getElementById("cmC").value || 1), t: "Custom Mission"
     });
   }
   else if (b.dataset.ee) st.evEdit = !st.evEdit;
@@ -960,25 +908,19 @@ document.addEventListener("click", e => {
   else if (b.dataset.open) { st.activeChar = b.dataset.open; st.tab = "missions"; }
   else if (b.dataset.gsub) { st.gsub = b.dataset.gsub; st.gEdit = null; }
   else if (b.dataset.gk) {
-    const g = goals.find(x => x.id === b.dataset.gk);
-    if (!g) return;
+    const g = goals.find(x => x.id === b.dataset.gk); if (!g) return;
     const c = st.activeChar, m = gmax(g), d = b.dataset.d;
     const v = d === "all" ? m : Math.min(m, Math.max(0, gval(g, c) + +d));
     g.ty === "l" ? (g.v = v) : S.set(gkey(g, c), v);
   }
   else if (b.dataset.ga) {
     const a = b.dataset.ga, g = goals.find(x => x.id === b.dataset.gid);
-    if (a === "tpl") {
-      const t = TPL[+b.dataset.i];
-      goals.push({ id: "g" + Date.now(), n: t[0], ic: t[1], ty: t[2], tg: t[3], sc: t[4], cat: t[5], hi: false, due: "", nt: "", steps: [], v: 0, ch: st.activeChar });
-    }
-    else if (a === "notpl") st.noTpl = true;
-    else if (a === "cancel") st.gEdit = null;
+    if (a === "cancel") st.gEdit = null;
     else if (!g) return;
     else if (a === "edit") st.gEdit = g.id;
     else if (a === "pause") g.pause = !g.pause;
     else if (a === "arch") g.arch = !g.arch;
-    else if (a === "del") { if (!confirm("Delete this goal?")) return; goals = goals.filter(x => x !== g); }
+    else if (a === "del") { if (!confirm("Delete This Goal?")) return; goals = goals.filter(x => x !== g); }
     else {
       const sib = goals.filter(x => x.ty === g.ty), k = sib.indexOf(g) + (a === "up" ? -1 : 1);
       if (k < 0 || k >= sib.length) return;
@@ -988,30 +930,29 @@ document.addEventListener("click", e => {
   }
   else if (b.id === "gAdd") {
     const $ = i => document.getElementById(i);
-    const n = $("gN").value.trim();
-    if (!n) { $("gN").focus(); return; }
+    const n = $("gN").value.trim(); if (!n) { $("gN").focus(); return; }
+    const sc = $("gS").value;
     const o = {
       n, ic: $("gI").value.trim() || "🎯", ty: $("gT").value,
-      tg: Math.max(1, +$("gG").value || 1), sc: $("gS").value, cat: $("gC").value,
-      hi: $("gH").checked, due: $("gD").value, nt: $("gO").value.trim()
+      tg: Math.max(1, +$("gG").value || 1), sc,
+      ch: sc === "all" ? null : $("gCh").value,
+      cat: $("gC").value, hi: $("gH").checked, due: $("gD").value, nt: $("gO").value.trim()
     };
     const old = goals.find(g => g.id === st.gEdit);
     const names = $("gP").value.split(",").map(x => x.trim()).filter(Boolean);
     o.steps = o.ty === "l" ? names.map(x => ({ x, d: !!old?.steps?.find(z => z.x === x && z.d) })) : [];
     if (old) Object.assign(old, o);
-    else goals.push({ id: "g" + Date.now(), v: 0, ch: st.activeChar, ...o });
-    st.gEdit = null;
-    st.gsub = o.ty;
+    else goals.push({ id: "g" + Date.now(), v: 0, ...o });
+    st.gEdit = null; st.gsub = o.ty;
   }
   else if (b.id === "nAdd") notes.push({ id: "n" + Date.now(), tx: "", c: NC[notes.length % NC.length] });
   else if (b.dataset.nc) {
     const [id, col] = b.dataset.nc.split("|");
-    const n = notes.find(x => x.id === id);
-    if (n) n.c = col;
+    const n = notes.find(x => x.id === id); if (n) n.c = col;
   }
   else if (b.dataset.nd) {
     const n = notes.find(x => x.id === b.dataset.nd);
-    if (n && n.tx && !confirm("Delete this note?")) return;
+    if (n && n.tx && !confirm("Delete This Note?")) return;
     notes = notes.filter(x => x !== n);
   }
   else if (b.id === "bkEx") {
@@ -1025,14 +966,12 @@ document.addEventListener("click", e => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([JSON.stringify(o)], { type: "application/json" }));
     a.download = "devaion-backup-" + new Date().toISOString().slice(0, 10) + ".json";
-    a.click();
-    return;
+    a.click(); return;
   }
   else if (b.id === "bkIm") { document.getElementById("bkF").click(); return; }
   else return;
 
-  persist();
-  render();
+  persist(); render();
 });
 
 document.addEventListener("input", e => {
@@ -1062,15 +1001,13 @@ document.addEventListener("change", e => {
         const o = JSON.parse(x);
         Object.keys(o).forEach(k => { if (/^(devaion_|d2\||g\||a2)/.test(k)) S.set(k, o[k]); });
         location.reload();
-      } catch { alert("That file isn't a valid backup."); }
+      } catch { alert("That File Isn't A Valid Backup."); }
     });
   }
 });
 
-// Boot
 applyOdyleTicks();
 render();
 setInterval(tick, 1000);
 
-console.log("%cDevaion v5.1 — Desktop", "color:#ff2a44;font-weight:bold");
-console.log("Supabase:", hasSupabase ? "configured" : "local only");
+console.log("%cDevaion v5.1 — Desktop", "color:#22d3ee;font-weight:bold");
