@@ -1,9 +1,10 @@
 /**
  * Devaion · Aion 2 Tracker
- * Desktop-first · Multi-color neon
+ * Desktop-first
  */
 
 import { hasSupabase, saveAll, getSyncStatus, S, localGet } from './storage.js';
+import { CATEGORIES, categoryEmoji, categoryColor } from './goals.js';
 
 const CHAR_COLORS = ["#22d3ee","#c084fc","#34d399","#fbbf24","#ff3b5c","#60a5fa","#f472b6","#a3e635"];
 
@@ -55,10 +56,7 @@ const EV = [
 
 const DN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const P2 = x => String(x).padStart(2,"0");
-const CAT = { Gear:"#fbbf24", Farming:"#34d399", PvP:"#f87171", Social:"#c084fc", Other:"#9aadc8" };
 const NC = ["#22d3ee","#c084fc","#34d399","#fbbf24","#ff3b5c"];
-
-const EMOJIS = ["🎯","⚔","🗼","🌑","💠","🔮","🗡","🛡","🏟","🌀","⭐","🔥","💎","🏆","📜","🎁","👁","🐉","⚡","🧪"];
 
 let roster = localGet("devaion_roster") || DEFAULT_ROSTER.slice();
 roster.forEach((c,i) => { if (!c.color) c.color = CHAR_COLORS[i % CHAR_COLORS.length]; });
@@ -68,7 +66,7 @@ let st = Object.assign({
   activeChar: roster[0]?.id || "c1",
   hid: [], ord: [], evHide: [], evPin: [],
   mEdit: false, evEdit: false, gEdit: null, showArch: false,
-  goalEmoji: "🎯"
+  showGoalForm: false, editingChar: null
 }, localGet("devaion_st") || {});
 
 if (!roster.find(c => c.id === st.activeChar)) st.activeChar = roster[0]?.id || "c1";
@@ -82,7 +80,7 @@ function persist() {
   saveAll({ roster, st, goals, notes, customs });
 }
 
-// Odyle
+// ─── Odyle ───────────────────────────────────
 const ODYLE_HOURS = [0, 3, 6, 9, 12, 15, 18, 21];
 const ODYLE_PER_TICK = 15;
 
@@ -140,7 +138,6 @@ function getOdyle(charId) {
   const next = nextUtcTick();
   return { v, nextIn: Math.max(0, next - Date.now()), nextAt: next };
 }
-
 function batteryLevel(v, cap) {
   const p = v / cap;
   if (p >= 0.95) return "full";
@@ -149,7 +146,7 @@ function batteryLevel(v, cap) {
   return "low";
 }
 
-// Helpers
+// ─── Helpers ─────────────────────────────────
 function lastReset(w) {
   const n = new Date(), d = new Date();
   d.setUTCHours(7, 0, 0, 0);
@@ -184,7 +181,7 @@ const nextReset = w => +lastReset(w) + (w ? 6048e5 : 864e5);
 function getAllMissions() {
   return D_BASE.concat(customs.map(c => ({
     id: c.id, p: c.p, n: c.n, ic: c.ic || "⭐", f: c.p === "w" ? "Weekly" : "Daily",
-    s: c.s || "char", c: c.c || 1, t: c.t || "Custom mission", custom: true
+    s: c.s || "char", c: c.c || 1, t: c.t || "Custom Mission", custom: true
   })));
 }
 function prog(p) {
@@ -219,11 +216,11 @@ function nxt(e) {
 }
 
 const gkey = (g, c) => `g|${g.id}|${g.sc === "char" ? c : "x"}|${pk(g.ty)}`;
-const gmax = g => g.steps?.length || g.tg;
+const gmax = g => g.steps?.length || g.tg || 1;
 const gval = (g, c) => g.ty === "l" ? (g.steps?.length ? g.steps.filter(x => x.d).length : g.v || 0) : (+S.get(gkey(g, c)) || 0);
 const vis = (g, c) => {
   if (g.sc === "all") return true;
-  if (g.ty === "l" && g.sc === "char") return g.ch === c;
+  if (g.sc === "char") return g.ch === c;
   return true;
 };
 const glist = (ty, c) => goals.filter(g => g.ty === ty && vis(g, c)).sort((a, b) => (+!!b.hi) - (+!!a.hi));
@@ -255,7 +252,7 @@ function urg(g) {
   } catch {}
 })();
 
-// Render helpers
+// ─── Mission card ────────────────────────────
 function card(it, ed) {
   const m = max(it), v = val(it), d = dis(it) && !ed, done = v >= m && !d && !ed;
   const sc = { char: "Per Character", shared: "Shared", main: "Main Only" }[it.s];
@@ -268,7 +265,7 @@ function card(it, ed) {
           <button data-mv="${it.id}" data-d="-1">▲</button>
           <button data-mv="${it.id}" data-d="1">▼</button>
           <button data-hd="${it.id}">${hid(it) ? "Show" : "Hide"}</button>
-          ${isCustom ? `<button data-cdel="${it.id}" style="color:var(--danger)">Del</button>` : ""}
+          ${isCustom ? `<button data-cdel="${it.id}" class="btn-danger">Del</button>` : ""}
         </div>`
       : `<div class="ctl">
           <button data-k="${it.id}" data-d="-1">−</button>
@@ -292,43 +289,7 @@ function card(it, ed) {
   </div>`;
 }
 
-function gcard(g, c) {
-  const m = gmax(g), v = gval(g, c), L = g.ty === "l", done = v >= m, u = !done && urg(g);
-  const cat = CAT[g.cat] || CAT.Other;
-  const assignLabel = g.sc === "all" ? "All Characters" : (roster.find(r => r.id === g.ch)?.name || "Character");
-  const stp = L && g.steps?.length
-    ? `<div class="steps">${g.steps.map((x, i) =>
-        `<label><input type="checkbox" data-st="${g.id}|${i}" ${x.d ? "checked" : ""}> ${esc(x.x)}</label>`
-      ).join("")}</div>` : "";
-  const ctl = L && g.steps?.length
-    ? `<div class="ctl"><b>${v}/${m}</b></div>`
-    : `<div class="ctl">
-        <button data-gk="${g.id}" data-d="-1">−</button>
-        <b>${v}/${m}</b>
-        <button data-gk="${g.id}" data-d="1">+</button>
-        ${m >= 20 ? `<button data-gk="${g.id}" data-d="10">+10</button>` : ""}
-        <button data-gk="${g.id}" data-d="all">Max</button>
-      </div>`;
-  const a = (k, l) => `<button data-ga="${k}" data-gid="${g.id}">${l}</button>`;
-
-  return `<div class="row ${done ? "done" : ""} ${g.pause ? "hid" : ""} ${u ? u[0] : ""}" draggable="true" data-gid="${g.id}">
-    <span class="ic">${esc(g.ic)}</span>
-    <div>
-      <div class="hd">
-        <h3>${g.hi ? "★ " : ""}${esc(g.n)}</h3>
-        <span class="tg" style="color:${cat};border-color:${cat}55">${g.cat}</span>
-        <span class="tg ${g.sc === "all" ? "shared" : "char"}">${assignLabel}</span>
-        ${g.due ? `<span class="tg">Due ${g.due}</span>` : ""}
-        ${u ? `<span class="tg" style="color:var(--amber)">⏰ ${u[1]}</span>` : ""}
-        ${g.pause ? '<span class="tg">Paused</span>' : ""}
-      </div>
-      ${g.nt ? `<div class="tip">${esc(g.nt)}</div>` : ""}${stp}
-      <div class="acts">${a("edit","Edit")}${a("up","▲")}${a("down","▼")}${a("pause", g.pause ? "Resume" : "Pause")}${L && (done || g.arch) ? a("arch", g.arch ? "Restore" : "Archive") : ""}${a("del","Delete")}</div>
-    </div>
-    ${ctl}
-  </div>`;
-}
-
+// ─── Views ───────────────────────────────────
 function drawMissions(app) {
   const D = getAllMissions();
   const all = ordered(D.filter(i => i.p === st.sub));
@@ -577,19 +538,52 @@ function drawRoster(app) {
         <input type="hidden" id="newColor" value="${CHAR_COLORS[0]}">
         <button id="addChar" class="btn-sm on">Add</button>
       </div>
+
       <div class="roster-grid">
-        ${roster.map(c => `
-          <div class="char-card ${c.id === st.activeChar ? "active" : ""}" data-id="${c.id}" style="border-left:3px solid ${c.color}">
+        ${roster.map(c => {
+          if (st.editingChar === c.id) {
+            return `
+            <div class="char-card active" style="border-left:3px solid ${c.color}">
+              <div class="inline-form">
+                <div class="row-fields">
+                  <input type="text" id="editName" value="${esc(c.name)}" maxlength="20" style="width:140px">
+                  <input type="text" id="editClass" value="${esc(c.class || "")}" maxlength="16" style="width:120px" placeholder="Class">
+                  <input type="number" id="editGS" value="${c.gs || 0}" min="0" style="width:80px">
+                </div>
+                <div class="row-fields">
+                  <select id="editRole">
+                    <option value="main" ${c.role === "main" ? "selected" : ""}>Main</option>
+                    <option value="alt" ${c.role === "alt" ? "selected" : ""}>Alt</option>
+                  </select>
+                  <div class="color-pick" id="editColorPick">
+                    ${CHAR_COLORS.map(col =>
+                      `<button type="button" class="color-swatch ${col === c.color ? "on" : ""}" data-color="${col}" style="background:${col}"></button>`
+                    ).join("")}
+                  </div>
+                  <input type="hidden" id="editColor" value="${c.color}">
+                </div>
+                <div class="actions">
+                  <button data-save-char="${c.id}" class="btn-sm on">Save</button>
+                  <button data-cancel-char class="btn-sm">Cancel</button>
+                </div>
+              </div>
+            </div>`;
+          }
+
+          return `
+          <div class="char-card ${c.id === st.activeChar ? "active" : ""}" style="border-left:3px solid ${c.color}">
             <div class="name">
-              <button type="button" class="char-dot" data-recolor="${c.id}" style="background:${c.color}" title="Change Color"></button>
+              <span class="char-dot" style="background:${c.color}"></span>
               ${esc(c.name)} ${c.role === "main" ? '<span class="tg main">Main</span>' : ""}
             </div>
             <div class="meta">${esc(c.class || "—")} · GS ${c.gs || "—"}</div>
             <div class="stats">
-              <button data-edit="${c.id}" class="btn-sm">Edit</button>
-              ${roster.length > 1 ? `<button data-del="${c.id}" class="btn-sm" style="color:var(--danger)">Delete</button>` : ""}
+              <button data-edit-char="${c.id}" class="btn-sm">Edit</button>
+              <button data-set-active="${c.id}" class="btn-sm">Select</button>
+              ${roster.length > 1 ? `<button data-del="${c.id}" class="btn-sm btn-danger">Delete</button>` : ""}
             </div>
-          </div>`).join("")}
+          </div>`;
+        }).join("")}
       </div>
     </div>
 
@@ -601,20 +595,34 @@ function drawRoster(app) {
         <input type="file" id="bkF" accept=".json" hidden>
       </div>
     </div>`;
+
+  // Color pickers for edit mode
+  document.querySelectorAll("#editColorPick .color-swatch").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("#editColorPick .color-swatch").forEach(s => s.classList.remove("on"));
+      btn.classList.add("on");
+      const hidden = document.getElementById("editColor");
+      if (hidden) hidden.value = btn.dataset.color;
+    };
+  });
 }
 
+// ─── GOALS PAGE (from scratch) ───────────────
 function drawGoals(app) {
   const c = st.activeChar;
-  const ed = goals.find(g => g.id === st.gEdit);
-  const f = ed || { n: "", ic: st.goalEmoji || "🎯", ty: st.gsub, tg: 1, sc: "char", cat: "Other", hi: false, due: "", nt: "", steps: [], ch: st.activeChar };
   const gd = gcnt("d", c), gw = gcnt("w", c);
   const gl = glist("l", c).filter(g => !g.arch && !g.pause);
   const ld = gl.filter(g => gval(g, c) >= gmax(g)).length;
   const na = goals.filter(g => g.arch).length;
   const list = glist(st.gsub, c).filter(g => (st.gcat === "All" || g.cat === st.gcat) && (st.showArch || !g.arch));
-  const o = (v, k, l) => `<option value="${k}" ${v === k ? "selected" : ""}>${l}</option>`;
   const char = activeChar();
-  const currentEmoji = ed ? ed.ic : (st.goalEmoji || "🎯");
+  const editing = goals.find(g => g.id === st.gEdit);
+
+  // Form defaults
+  const f = editing || {
+    n: "", ty: st.gsub, tg: 1, sc: "char", ch: st.activeChar,
+    cat: "Other", hi: false, due: "", nt: "", steps: []
+  };
 
   app.innerHTML = `
     <div class="panel">
@@ -625,65 +633,104 @@ function drawGoals(app) {
       </div>
     </div>
 
-    <div class="panel">
-      <h2>${ed ? "Edit Goal" : "New Goal"}</h2>
-
-      <div style="display:flex;gap:20px;align-items:flex-start;margin-bottom:14px">
-        <div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.08em">Icon</div>
-          <div class="emoji-picker" id="emojiPick">
-            ${EMOJIS.map(em =>
-              `<button type="button" data-emoji="${em}" class="${em === currentEmoji ? "on" : ""}">${em}</button>`
-            ).join("")}
-          </div>
-          <input type="hidden" id="gI" value="${esc(currentEmoji)}">
-        </div>
-
-        <div style="flex:1">
-          <div class="config-form" style="margin-bottom:10px">
-            <input type="text" id="gN" value="${esc(f.n)}" placeholder="Goal Title" maxlength="60" style="width:260px">
-            <select id="gT">${o(f.ty,"d","Daily")}${o(f.ty,"w","Weekly")}${o(f.ty,"l","Long-Term")}</select>
-            <label>Target <input type="number" id="gG" min="1" value="${f.tg}"></label>
-          </div>
-          <div class="config-form" style="margin-bottom:10px">
-            <select id="gS">
-              <option value="char" ${f.sc === "char" ? "selected" : ""}>One Character</option>
-              <option value="all" ${f.sc === "all" ? "selected" : ""}>All Characters</option>
-            </select>
-            <select id="gCh" ${f.sc === "all" ? "disabled" : ""}>
-              ${roster.map(r => `<option value="${r.id}" ${(f.ch || st.activeChar) === r.id ? "selected" : ""}>${esc(r.name)}</option>`).join("")}
-            </select>
-            <select id="gC">${Object.keys(CAT).map(k => o(f.cat, k, k)).join("")}</select>
-            <label class="tg" style="cursor:pointer"><input type="checkbox" id="gH" ${f.hi ? "checked" : ""}> ★ High Priority</label>
-          </div>
-          <div class="config-form">
-            <input type="text" id="gO" value="${esc(f.nt)}" placeholder="Note (Optional)" style="width:240px">
-            <input type="text" id="gP" value="${esc((f.steps || []).map(x => x.x).join(", "))}" placeholder="Steps, Comma Separated (Long-Term)" style="width:280px">
-            <label>Deadline <input type="date" id="gD" value="${f.due || ""}"></label>
-            <button id="gAdd" class="btn-sm on">${ed ? "Save Goal" : "Add Goal"}</button>
-            ${ed ? '<button data-ga="cancel" class="btn-sm">Cancel</button>' : ""}
-          </div>
-        </div>
+    <div class="ctrl-bar">
+      <div class="seg">
+        <button data-gsub="d" class="${st.gsub === "d" ? "on" : ""}">Daily</button>
+        <button data-gsub="w" class="${st.gsub === "w" ? "on" : ""}">Weekly</button>
+        <button data-gsub="l" class="${st.gsub === "l" ? "on" : ""}">Long-Term</button>
       </div>
+      <select id="gF">
+        <option value="All" ${st.gcat === "All" ? "selected" : ""}>All Categories</option>
+        ${Object.keys(CATEGORIES).map(k => `<option value="${k}" ${st.gcat === k ? "selected" : ""}>${categoryEmoji(k)} ${k}</option>`).join("")}
+      </select>
+      ${na ? `<label class="tg" style="cursor:pointer"><input type="checkbox" id="gArch" ${st.showArch ? "checked" : ""}> Archived (${na})</label>` : ""}
+      <button id="toggleGoalForm" class="btn-sm on" style="margin-left:auto">
+        ${st.showGoalForm || editing ? "Close Form" : "+ New Goal"}
+      </button>
     </div>
 
-    <div class="panel">
-      <div class="ctrl-bar">
-        <div class="seg">
-          <button data-gsub="d" class="${st.gsub === "d" ? "on" : ""}">Daily</button>
-          <button data-gsub="w" class="${st.gsub === "w" ? "on" : ""}">Weekly</button>
-          <button data-gsub="l" class="${st.gsub === "l" ? "on" : ""}">Long-Term</button>
+    ${(st.showGoalForm || editing) ? `
+    <div class="goal-form">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Title</label>
+          <input type="text" id="gN" value="${esc(f.n)}" placeholder="What do you want to achieve?" maxlength="80">
         </div>
-        <select id="gF">${["All", ...Object.keys(CAT)].map(k => o(st.gcat, k, k === "All" ? "All Categories" : k)).join("")}</select>
-        ${na ? `<label class="tg" style="cursor:pointer"><input type="checkbox" id="gArch" ${st.showArch ? "checked" : ""}> Archived (${na})</label>` : ""}
+
+        <div class="field">
+          <label>Category</label>
+          <select id="gC">
+            ${Object.keys(CATEGORIES).map(k =>
+              `<option value="${k}" ${f.cat === k ? "selected" : ""}>${categoryEmoji(k)} ${k}</option>`
+            ).join("")}
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Type</label>
+          <select id="gT">
+            <option value="d" ${f.ty === "d" ? "selected" : ""}>Daily</option>
+            <option value="w" ${f.ty === "w" ? "selected" : ""}>Weekly</option>
+            <option value="l" ${f.ty === "l" ? "selected" : ""}>Long-Term</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Target</label>
+          <input type="number" id="gG" min="1" value="${f.tg || 1}">
+        </div>
+
+        <div class="field">
+          <label>Assign To</label>
+          <select id="gS">
+            <option value="char" ${f.sc === "char" ? "selected" : ""}>One Character</option>
+            <option value="all" ${f.sc === "all" ? "selected" : ""}>All Characters</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Character</label>
+          <select id="gCh" ${f.sc === "all" ? "disabled" : ""}>
+            ${roster.map(r => `<option value="${r.id}" ${(f.ch || st.activeChar) === r.id ? "selected" : ""}>${esc(r.name)}</option>`).join("")}
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Deadline (Optional)</label>
+          <input type="date" id="gD" value="${f.due || ""}">
+        </div>
+
+        <div class="field full">
+          <label>Note (Optional)</label>
+          <input type="text" id="gO" value="${esc(f.nt || "")}" placeholder="Extra details…">
+        </div>
+
+        <div class="field full">
+          <label>Steps (Long-Term Only, Comma Separated)</label>
+          <input type="text" id="gP" value="${esc((f.steps || []).map(x => x.x).join(", "))}" placeholder="Step 1, Step 2, Step 3…">
+        </div>
       </div>
-      <div id="goal-list">${list.length ? list.map(g => gcard(g, c)).join("") : '<p class="tip" style="padding:12px 0">No Goals Yet.</p>'}</div>
+
+      <div class="form-actions">
+        <label class="tg" style="cursor:pointer;margin-right:auto">
+          <input type="checkbox" id="gH" ${f.hi ? "checked" : ""}> High Priority
+        </label>
+        <button id="gAdd" class="btn-sm on">${editing ? "Save Changes" : "Create Goal"}</button>
+        <button data-ga="cancel" class="btn-sm">Cancel</button>
+      </div>
+    </div>
+    ` : ""}
+
+    <div class="panel" style="padding-top:8px">
+      ${list.length === 0
+        ? '<p class="tip" style="padding:20px 0;text-align:center">No Goals Yet. Create One Above.</p>'
+        : list.map(g => goalCard(g, c)).join("")}
     </div>
 
     <div class="panel">
       <h2>Notes <button id="nAdd" class="btn-sm" style="float:right">+ Note</button></h2>
       <div class="notes">${notes.map((n, i) => `
-        <div class="note" style="--nc:${n.c};transform:rotate(${(i % 3 - 1) * 0.6}deg)">
+        <div class="note" style="--nc:${n.c}">
           <div class="nh">
             ${NC.map(k => `<button class="dot" data-nc="${n.id}|${k}" style="background:${k}"></button>`).join("")}
             <button class="x" data-nd="${n.id}">×</button>
@@ -693,51 +740,62 @@ function drawGoals(app) {
       </div>
     </div>`;
 
-  // Emoji picker interaction
-  document.getElementById("emojiPick")?.addEventListener("click", e => {
-    const btn = e.target.closest("[data-emoji]");
-    if (!btn) return;
-    document.querySelectorAll("#emojiPick button").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
-    document.getElementById("gI").value = btn.dataset.emoji;
-    st.goalEmoji = btn.dataset.emoji;
-  });
-
-  // Toggle character select when scope changes
+  // Scope → enable/disable character select
   document.getElementById("gS")?.addEventListener("change", e => {
     const ch = document.getElementById("gCh");
     if (ch) ch.disabled = e.target.value === "all";
   });
-
-  setupGoalDrag();
 }
 
-function setupGoalDrag() {
-  const list = document.getElementById("goal-list");
-  if (!list) return;
-  let dragId = null;
-  list.querySelectorAll(".row[draggable]").forEach(row => {
-    row.addEventListener("dragstart", e => {
-      dragId = row.dataset.gid; row.classList.add("dragging"); e.dataTransfer.effectAllowed = "move";
-    });
-    row.addEventListener("dragend", () => {
-      row.classList.remove("dragging"); dragId = null;
-      list.querySelectorAll(".drag-over").forEach(el => el.classList.remove("drag-over"));
-    });
-    row.addEventListener("dragover", e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; row.classList.add("drag-over"); });
-    row.addEventListener("dragleave", () => row.classList.remove("drag-over"));
-    row.addEventListener("drop", e => {
-      e.preventDefault(); row.classList.remove("drag-over");
-      if (!dragId || dragId === row.dataset.gid) return;
-      const from = goals.findIndex(g => g.id === dragId);
-      const to = goals.findIndex(g => g.id === row.dataset.gid);
-      if (from < 0 || to < 0) return;
-      const [item] = goals.splice(from, 1); goals.splice(to, 0, item);
-      persist(); render();
-    });
-  });
+function goalCard(g, c) {
+  const m = gmax(g), v = gval(g, c), done = v >= m, u = !done && urg(g);
+  const col = categoryColor(g.cat);
+  const em = categoryEmoji(g.cat);
+  const assignLabel = g.sc === "all" ? "All Characters" : (roster.find(r => r.id === g.ch)?.name || "Character");
+
+  const stepsHtml = g.ty === "l" && g.steps?.length
+    ? `<div class="steps" style="margin-top:8px">${g.steps.map((x, i) =>
+        `<label><input type="checkbox" data-st="${g.id}|${i}" ${x.d ? "checked" : ""}> ${esc(x.x)}</label>`
+      ).join("")}</div>` : "";
+
+  const progress = g.ty === "l" && g.steps?.length
+    ? `<div class="progress-row"><b>${v}/${m}</b></div>`
+    : `<div class="progress-row">
+        <button data-gk="${g.id}" data-d="-1" class="btn-sm">−</button>
+        <b>${v}/${m}</b>
+        <button data-gk="${g.id}" data-d="1" class="btn-sm">+</button>
+        <button data-gk="${g.id}" data-d="all" class="btn-sm">Max</button>
+      </div>`;
+
+  return `
+  <div class="goal-card ${done ? "done" : ""} ${u ? u[0] : ""} ${g.pause ? "hid" : ""}">
+    <div class="top">
+      <div>
+        <div class="title">
+          ${g.hi ? "★ " : ""}${em} ${esc(g.n)}
+        </div>
+        <div class="meta-row">
+          <span class="cat-badge" style="color:${col};border-color:${col}55;background:${col}18">${em} ${g.cat}</span>
+          <span class="tg ${g.sc === "all" ? "shared" : "char"}">${assignLabel}</span>
+          ${g.due ? `<span class="tg">Due ${g.due}</span>` : ""}
+          ${u ? `<span class="tg" style="color:var(--amber)">⏰ ${u[1]}</span>` : ""}
+          ${g.pause ? '<span class="tg">Paused</span>' : ""}
+        </div>
+        ${g.nt ? `<div class="tip" style="margin-top:4px">${esc(g.nt)}</div>` : ""}
+        ${stepsHtml}
+      </div>
+      <div class="actions">
+        <button data-ga="edit" data-gid="${g.id}" class="btn-sm">Edit</button>
+        <button data-ga="pause" data-gid="${g.id}" class="btn-sm">${g.pause ? "Resume" : "Pause"}</button>
+        ${g.ty === "l" && (done || g.arch) ? `<button data-ga="arch" data-gid="${g.id}" class="btn-sm">${g.arch ? "Restore" : "Archive"}</button>` : ""}
+        <button data-ga="del" data-gid="${g.id}" class="btn-sm btn-danger">Delete</button>
+      </div>
+    </div>
+    ${progress}
+  </div>`;
 }
 
+// ─── Shell ───────────────────────────────────
 const TABS = [
   ["missions", "📜", "Missions"],
   ["goals", "🎯", "Goals"],
@@ -824,11 +882,12 @@ function tick() {
   }
 }
 
+// ─── Events ──────────────────────────────────
 document.addEventListener("click", e => {
-  const b = e.target.closest("button, .char-card, .char-item");
+  const b = e.target.closest("button, .char-item");
   if (!b) return;
 
-  if (b.dataset.t) st.tab = b.dataset.t;
+  if (b.dataset.t) { st.tab = b.dataset.t; st.editingChar = null; st.showGoalForm = false; st.gEdit = null; }
   else if (b.dataset.s) st.sub = b.dataset.s;
   else if (b.dataset.c) st.activeChar = b.dataset.c;
   else if (b.dataset.k) {
@@ -840,18 +899,14 @@ document.addEventListener("click", e => {
     S.set(key(it), v);
   }
   else if (b.classList.contains("color-swatch") && b.dataset.color) {
-    const pick = document.getElementById("newColorPick");
-    if (pick && pick.contains(b)) {
+    const pick = b.closest(".color-pick");
+    if (pick) {
       pick.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("on"));
       b.classList.add("on");
-      const hidden = document.getElementById("newColor");
+      const hidden = pick.parentElement.querySelector("input[type=hidden]") || document.getElementById("newColor") || document.getElementById("editColor");
       if (hidden) hidden.value = b.dataset.color;
       return;
     }
-  }
-  else if (b.dataset.recolor) {
-    const c = roster.find(x => x.id === b.dataset.recolor);
-    if (c) { const i = CHAR_COLORS.indexOf(c.color); c.color = CHAR_COLORS[(i + 1) % CHAR_COLORS.length]; }
   }
   else if (b.id === "addChar") {
     const name = document.getElementById("newName").value.trim() || "Alt";
@@ -863,21 +918,34 @@ document.addEventListener("click", e => {
     roster.push({ id, name, role, class: cls, gs: +document.getElementById("newGS").value || 0, color });
     st.activeChar = id;
   }
-  else if (b.dataset.id && b.classList.contains("char-card")) st.activeChar = b.dataset.id;
+  else if (b.dataset.editChar) {
+    st.editingChar = b.dataset.editChar;
+  }
+  else if (b.dataset.cancelChar) {
+    st.editingChar = null;
+  }
+  else if (b.dataset.saveChar) {
+    const c = roster.find(x => x.id === b.dataset.saveChar);
+    if (c) {
+      c.name = document.getElementById("editName").value.trim() || c.name;
+      c.class = document.getElementById("editClass").value.trim();
+      c.gs = +document.getElementById("editGS").value || 0;
+      const role = document.getElementById("editRole").value;
+      if (role === "main") roster.forEach(x => x.role = "alt");
+      c.role = role;
+      c.color = document.getElementById("editColor")?.value || c.color;
+    }
+    st.editingChar = null;
+  }
+  else if (b.dataset.setActive) {
+    st.activeChar = b.dataset.setActive;
+  }
   else if (b.dataset.del) {
     if (roster.length <= 1) return;
     roster = roster.filter(c => c.id !== b.dataset.del);
     goals = goals.filter(g => g.ch !== b.dataset.del);
     if (st.activeChar === b.dataset.del) st.activeChar = roster[0].id;
-  }
-  else if (b.dataset.edit) {
-    const c = roster.find(x => x.id === b.dataset.edit);
-    if (!c) return;
-    const name = prompt("Name", c.name); if (name === null) return;
-    const cls = prompt("Class", c.class || ""); if (cls === null) return;
-    const gs = prompt("Gear Score", c.gs || 0); if (gs === null) return;
-    c.gs = +gs || 0; c.name = name.trim() || c.name; c.class = cls.trim();
-    if (confirm("Set As Main?")) { roster.forEach(x => x.role = "alt"); c.role = "main"; }
+    if (st.editingChar === b.dataset.del) st.editingChar = null;
   }
   else if (b.dataset.me) st.mEdit = !st.mEdit;
   else if (b.dataset.mv) {
@@ -889,7 +957,6 @@ document.addEventListener("click", e => {
   }
   else if (b.dataset.hd) tog(st.hid, b.dataset.hd);
   else if (b.dataset.cdel) {
-    if (!confirm("Delete This Custom Mission?")) return;
     customs = customs.filter(c => c.id !== b.dataset.cdel);
   }
   else if (b.id === "cmAdd") {
@@ -906,7 +973,11 @@ document.addEventListener("click", e => {
   else if (b.dataset.eh) tog(st.evHide, b.dataset.eh);
   else if (b.dataset.ep) tog(st.evPin, b.dataset.ep);
   else if (b.dataset.open) { st.activeChar = b.dataset.open; st.tab = "missions"; }
-  else if (b.dataset.gsub) { st.gsub = b.dataset.gsub; st.gEdit = null; }
+  else if (b.dataset.gsub) { st.gsub = b.dataset.gsub; st.gEdit = null; st.showGoalForm = false; }
+  else if (b.id === "toggleGoalForm") {
+    st.showGoalForm = !st.showGoalForm;
+    st.gEdit = null;
+  }
   else if (b.dataset.gk) {
     const g = goals.find(x => x.id === b.dataset.gk); if (!g) return;
     const c = st.activeChar, m = gmax(g), d = b.dataset.d;
@@ -915,35 +986,37 @@ document.addEventListener("click", e => {
   }
   else if (b.dataset.ga) {
     const a = b.dataset.ga, g = goals.find(x => x.id === b.dataset.gid);
-    if (a === "cancel") st.gEdit = null;
+    if (a === "cancel") { st.gEdit = null; st.showGoalForm = false; }
     else if (!g) return;
-    else if (a === "edit") st.gEdit = g.id;
+    else if (a === "edit") { st.gEdit = g.id; st.showGoalForm = true; }
     else if (a === "pause") g.pause = !g.pause;
     else if (a === "arch") g.arch = !g.arch;
-    else if (a === "del") { if (!confirm("Delete This Goal?")) return; goals = goals.filter(x => x !== g); }
-    else {
-      const sib = goals.filter(x => x.ty === g.ty), k = sib.indexOf(g) + (a === "up" ? -1 : 1);
-      if (k < 0 || k >= sib.length) return;
-      const i = goals.indexOf(g), j = goals.indexOf(sib[k]);
-      [goals[i], goals[j]] = [goals[j], goals[i]];
-    }
+    else if (a === "del") { goals = goals.filter(x => x !== g); }
   }
   else if (b.id === "gAdd") {
     const $ = i => document.getElementById(i);
     const n = $("gN").value.trim(); if (!n) { $("gN").focus(); return; }
     const sc = $("gS").value;
     const o = {
-      n, ic: $("gI").value.trim() || "🎯", ty: $("gT").value,
-      tg: Math.max(1, +$("gG").value || 1), sc,
+      n,
+      ic: categoryEmoji($("gC").value),
+      ty: $("gT").value,
+      tg: Math.max(1, +$("gG").value || 1),
+      sc,
       ch: sc === "all" ? null : $("gCh").value,
-      cat: $("gC").value, hi: $("gH").checked, due: $("gD").value, nt: $("gO").value.trim()
+      cat: $("gC").value,
+      hi: $("gH").checked,
+      due: $("gD").value,
+      nt: $("gO").value.trim()
     };
     const old = goals.find(g => g.id === st.gEdit);
     const names = $("gP").value.split(",").map(x => x.trim()).filter(Boolean);
     o.steps = o.ty === "l" ? names.map(x => ({ x, d: !!old?.steps?.find(z => z.x === x && z.d) })) : [];
     if (old) Object.assign(old, o);
     else goals.push({ id: "g" + Date.now(), v: 0, ...o });
-    st.gEdit = null; st.gsub = o.ty;
+    st.gEdit = null;
+    st.showGoalForm = false;
+    st.gsub = o.ty;
   }
   else if (b.id === "nAdd") notes.push({ id: "n" + Date.now(), tx: "", c: NC[notes.length % NC.length] });
   else if (b.dataset.nc) {
@@ -951,9 +1024,7 @@ document.addEventListener("click", e => {
     const n = notes.find(x => x.id === id); if (n) n.c = col;
   }
   else if (b.dataset.nd) {
-    const n = notes.find(x => x.id === b.dataset.nd);
-    if (n && n.tx && !confirm("Delete This Note?")) return;
-    notes = notes.filter(x => x !== n);
+    notes = notes.filter(x => x.id !== b.dataset.nd);
   }
   else if (b.id === "bkEx") {
     const o = {};
@@ -1001,7 +1072,7 @@ document.addEventListener("change", e => {
         const o = JSON.parse(x);
         Object.keys(o).forEach(k => { if (/^(devaion_|d2\||g\||a2)/.test(k)) S.set(k, o[k]); });
         location.reload();
-      } catch { alert("That File Isn't A Valid Backup."); }
+      } catch { alert("Invalid Backup File."); }
     });
   }
 });
@@ -1009,5 +1080,3 @@ document.addEventListener("change", e => {
 applyOdyleTicks();
 render();
 setInterval(tick, 1000);
-
-console.log("%cDevaion v5.1 — Desktop", "color:#22d3ee;font-weight:bold");
