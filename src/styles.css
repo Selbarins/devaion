@@ -67,16 +67,41 @@ body {
 }
 
 .logo {
-  font-weight: 800;
-  font-size: 18px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  padding: 2px 10px 24px;
-  color: var(--tx);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 26px;
+  user-select: none;
 }
-.logo span {
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
   color: var(--cyan);
-  text-shadow: 0 0 20px var(--cyan-glow), 0 0 40px rgba(46, 230, 255, 0.15);
+  background: linear-gradient(145deg, rgba(46,230,255,0.18), rgba(192,132,252,0.1));
+  border: 1px solid rgba(46,230,255,0.35);
+  border-radius: 10px;
+  box-shadow:
+    0 0 20px rgba(46,230,255,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  text-shadow: 0 0 12px rgba(46,230,255,0.6);
+}
+.logo-text {
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--tx);
+  background: linear-gradient(90deg, #eef3ff 0%, #2ee6ff 55%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(46,230,255,0.35));
+}
+.logo-text span {
+  /* keep gradient continuous */
 }
 
 .side-nav {
@@ -806,4 +831,43 @@ footer {
 .char-card:hover {
   border-color: rgba(46, 230, 255, 0.25);
   box-shadow: 0 0 20px rgba(46, 230, 255, 0.06);
+}
+
+
+/* 4-character overview grid */
+.dgrid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 1280px) {
+  .dgrid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+  .dgrid-4 { grid-template-columns: 1fr; }
+}
+
+.per-char-energy {
+  margin-bottom: 12px;
+  width: 100%;
+  justify-content: center;
+}
+.per-char-energy input {
+  width: 64px !important;
+  text-align: center;
+}
+
+.dc.cap-warn-card {
+  box-shadow: 0 0 0 1px rgba(251,191,36,0.25), 0 0 20px rgba(251,191,36,0.08);
+}
+.dc.cap-hit-card {
+  box-shadow: 0 0 0 1px rgba(248,113,113,0.3), 0 0 22px rgba(248,113,113,0.1);
+}
+
+.side-section h4::after {
+  content: " · Missions filter";
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  opacity: 0.7;
 }
