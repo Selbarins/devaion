@@ -21,18 +21,13 @@ export async function initNotifications() {
 function nextOccurrence(e) {
   const now = Date.now();
   let best = null;
-
   for (let k = 0; k < 4; k++) {
     const d = new Date();
     d.setUTCDate(d.getUTCDate() + k);
-
     if (e[3] && !e[3].includes(d.getUTCDay())) continue;
-
     for (const hour of e[4]) {
       const ts = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), hour, e[5] || 0);
-      if (ts > now && (best === null || ts < best)) {
-        best = ts;
-      }
+      if (ts > now && (best === null || ts < best)) best = ts;
     }
   }
   return best;
@@ -43,11 +38,12 @@ export function scheduleEventNotifications() {
   if (!navigator.serviceWorker?.controller) return;
 
   const st = getSt();
-  const hidden = st.evHide || [];
+  const notifyList = st.evNotify || [];
   const minutesBefore = [15, 10, 5];
 
   EV.forEach(event => {
-    if (hidden.includes(event[0])) return;
+    // only events the user enabled
+    if (!notifyList.includes(event[0])) return;
 
     const start = nextOccurrence(event);
     if (!start) return;
