@@ -893,3 +893,49 @@ footer {
   background: var(--cyan-soft);
 }
 .char-picker .btn-sm { font-size: 13px; }
+/* Scope visual hierarchy */
+.row.scope-shared { border-left: 3px solid var(--cyan); }
+.row.scope-char   { border-left: 3px solid var(--purple); }
+.row.scope-main   { border-left: 3px solid var(--amber); }
+
+.tg.shared { background: var(--cyan-soft); color: var(--cyan); border-color: rgba(46,230,255,0.35); }
+.tg.char   { background: var(--purple-soft); color: var(--purple); border-color: rgba(192,132,252,0.35); }
+.tg.main   { background: var(--amber-soft); color: var(--amber); border-color: rgba(251,191,36,0.35); }
+
+/* Ticket pills */
+.ticket-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.ticket-pill b { color: var(--cyan); min-width: 48px; text-align: center; }
+
+/* Mini lists on Overview */
+.mini-list { display: flex; flex-direction: column; gap: 6px; }
+.mini-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg2);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+.mini-row.open { border-color: rgba(52,211,153,0.4); }
+
+/* Themes */
+[data-theme="contrast"] {
+  --bg: #000;
+  --bg2: #0a0a0f;
+  --tx: #ffffff;
+  --mut: #c0c8d8;
+  --line: rgba(80,100,140,0.8);
+}
+[data-theme="dense"] .panel { padding: 12px 14px; margin-bottom: 10px; }
+[data-theme="dense"] .row { padding: 8px 10px; }
+[data-theme="dense"] .dgrid-4 { gap: 10px; }
