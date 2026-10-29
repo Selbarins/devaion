@@ -1,27 +1,49 @@
 /** Mission helpers + card rendering */
-import { D_BASE } from "./data.js";
-import { S, getSt, getCustoms, isMain } from "./state.js";
+import { D_BASE_SEED } from "./data.js";
+import { S, getSt, getCustoms, isMain, localGet, localSet } from "./state.js";
 import { pk, esc } from "./helpers.js";
+import { getTicketCap } from "./tickets.js";
 
-export function getAllMissions() {
-  return D_BASE.concat(
-    getCustoms().map(c => ({
-      id: c.id,
-      p: c.p,
-      n: c.n,
-      ic: c.ic || "⭐",
-      f: c.p === "w" ? "Weekly" : "Daily",
-      s: c.s || "char",
-      c: c.c || 1,
-      t: c.t || "Custom Mission",
-      custom: true,
-      goalId: c.goalId || null,
-      ch: c.ch || null
-    }))
-  );
+const BASE_KEY = "devaion_base_missions";
+
+/** Load editable base missions (seeded once) */
+export function getBaseMissions() {
+  let stored = localGet(BASE_KEY);
+  if (!Array.isArray(stored) || stored.length === 0) {
+    stored = D_BASE_SEED.map(m => ({ ...m }));
+    localSet(BASE_KEY, stored);
+  }
+  return stored;
 }
 
+export function setBaseMissions(list) {
+  localSet(BASE_KEY, list);
+}
+
+export function getAllMissions() {
+  const base = getBaseMissions();
+  const customs = getCustoms().map(c => ({
+    id: c.id,
+    p: c.p,
+    n: c.n,
+    ic: c.ic || "⭐",
+    f: c.p === "w" ? "Weekly" : "Daily",
+    s: c.s || "char",
+    c: c.c || 1,
+    t: c.t || "Custom Mission",
+    custom: true,
+    goalId: c.goalId || null,
+    ch: c.ch || null
+  }));
+  return base.concat(customs);
+}
+
+/** Dynamic max for corridors */
 export function max(it) {
+  if (it.id === "corr") {
+    const won = +S.get("a2corr_won") || 0;
+    return Math.max(0, Math.min(3, won));
+  }
   return typeof it.c === "object" ? (isMain() ? it.c.Main : it.c.alt) : it.c;
 }
 
@@ -97,15 +119,16 @@ export function card(it, ed) {
           <button type="button" data-mv="${it.id}" data-d="1">▼</button>
           <button type="button" data-hd="${it.id}">${hid(it) ? "Show" : "Hide"}</button>
           ${isCustom ? `<button type="button" data-cdel="${it.id}" class="btn-danger">Del</button>` : ""}
+          ${!isCustom ? `<button type="button" data-bedit="${it.id}" class="btn-sm">Edit</button>` : ""}
         </div>`
       : `<div class="ctl">
           <button type="button" data-k="${it.id}" data-d="-1">−</button>
-          <b>${v}/${m}</b>
+          <b data-mission-val="${it.id}">${v}/${m}</b>
           <button type="button" data-k="${it.id}" data-d="1">+</button>
           <button type="button" data-k="${it.id}" data-d="all">Max</button>
         </div>`;
 
-  return `<div class="row ${done ? "done" : ""} ${d ? "dis" : ""} ${ed && hid(it) ? "hid" : ""}">
+  return `<div class="row ${done ? "done" : ""} ${d ? "dis" : ""} ${ed && hid(it) ? "hid" : ""} scope-${it.s}" data-mission-id="${it.id}">
     <span class="ic">${it.ic}</span>
     <div>
       <div class="hd">
@@ -123,4 +146,27 @@ export function card(it, ed) {
 
 export function missionsForGoal(goalId) {
   return getAllMissions().filter(m => m.goalId === goalId);
+}
+
+/** Unfinished daily missions for Overview (shared view) */
+export function unfinishedDailies() {
+  return getAllMissions()
+    .filter(i => i.p === "d" && !hid(i))
+    .filter(i => {
+      // For shared/main we just look at current active (or main)
+      if (i.s === "char") {
+        // aggregate remaining across roster later if needed
+        return true;
+      }
+      return val(i) < max(i);
+    })
+    .map(i => ({
+      id: i.id,
+      n: i.n,
+      ic: i.ic,
+      remaining: Math.max(0, max(i) - val(i)),
+      max: max(i),
+      s: i.s
+    }))
+    .filter(x => x.remaining > 0);
 }
