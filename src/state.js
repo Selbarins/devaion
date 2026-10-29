@@ -29,6 +29,7 @@ let st = Object.assign(
     gEdit: null,
     showArch: false,
     showGoalForm: false,
+    baseEditId: null,
     editingChar: null,
     linkMissionGoalId: null,
     cmPrefill: null  // { n, ic, p, s, c, t, goalId } when opening custom form from goal
