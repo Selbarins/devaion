@@ -1,15 +1,15 @@
 /** Overview hub: energy + tickets + unfinished dailies + next events + roster + backup */
 import {
-  getSt, getRoster, S, persist, activeChar
+  getSt, getRoster, setRoster, S, persist, activeChar
 } from "../state.js";
 import {
   applyOdyleTicks, getOdyleCap, isMembership, getOdyleVal, setOdyleVal,
-  batteryLevel, fullInLabel, nextUtcTick
+  batteryLevel, fullInLabel
 } from "../odyle.js";
 import { cnt, unfinishedDailies } from "../missions.js";
-import { getTicket, setTicket, adjTicket, getTicketCap } from "../tickets.js";
-import { CHAR_COLORS, EV, DN, SIEGE_DAYS } from "../data.js";
-import { esc, fmtShort, fmtUtcTime, P2 } from "../helpers.js";
+import { getTicket, adjTicket, getTicketCap } from "../tickets.js";
+import { CHAR_COLORS, EV, DN } from "../data.js";
+import { esc, fmtShort, P2 } from "../helpers.js";
 
 function nextEventTimes() {
   const n = Date.now();
@@ -44,7 +44,8 @@ export function drawHub(app, { onRender }) {
     md: cnt("d", r.id),
     mw: cnt("w", r.id),
     oe: getOdyleVal(r.id),
-    nm: getTicket("nightmare", r.id)
+    nm: getTicket("nightmare", r.id),
+    asc: getTicket("ascension", r.id)
   }));
 
   const shugo = getTicket("shugo");
@@ -61,8 +62,7 @@ export function drawHub(app, { onRender }) {
         </label>
       </div>
 
-      <!-- Shared tickets bar -->
-      <div class="shared-tickets" style="display:flex;gap:18px;margin-bottom:16px;flex-wrap:wrap">
+      <div class="shared-tickets">
         <div class="ticket-pill">
           <span>🎁 Shugo</span>
           <button type="button" data-tk="shugo" data-d="-1">−</button>
@@ -78,19 +78,18 @@ export function drawHub(app, { onRender }) {
         <div class="ticket-pill">
           <span>🌀 Corridors won</span>
           <button type="button" data-corr="-1">−</button>
-          <b id="corrWonVal">${corrWon}</b>
+          <b>${corrWon}</b>
           <button type="button" data-corr="1">+</button>
-          <span class="tip" style="margin-left:6px">max 3 · resets siege day 00:00 UTC</span>
+          <span class="tip">max 3 · resets siege day 00:00 UTC</span>
         </div>
       </div>
 
       <div class="dgrid dgrid-4">
-        ${rows.map(({ r, md, mw, oe, nm }) => {
+        ${rows.map(({ r, md, mw, oe, nm, asc }) => {
           const p = Math.min(100, Math.round((oe / cap) * 100));
           const lv = batteryLevel(oe, cap);
           const atCap = oe >= cap;
           const nearCap = oe >= cap - 30;
-          const nmCap = getTicketCap("nightmare");
           return `
           <div class="dc ${atCap ? "cap-hit-card" : nearCap ? "cap-warn-card" : ""}" style="border-left:3px solid ${r.color}">
             <div class="top">
@@ -114,18 +113,23 @@ export function drawHub(app, { onRender }) {
               </div>
             </div>
 
-            <div class="oe-btns" style="display:flex;gap:6px;margin-bottom:10px">
+            <div class="oe-btns">
               <button type="button" data-oe-adj="-40" data-oe-char="${r.id}" class="btn-sm">−40</button>
               <button type="button" data-oe-adj="0" data-oe-char="${r.id}" class="btn-sm">0</button>
               <button type="button" data-oe-adj="40" data-oe-char="${r.id}" class="btn-sm">+40</button>
             </div>
 
-            <!-- Per-char Nightmare -->
-            <div class="ticket-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px">
+            <div class="ticket-row">
               <span>🌑 Nightmare</span>
               <button type="button" data-tk="nightmare" data-char="${r.id}" data-d="-1" class="btn-sm">−</button>
-              <b>${nm}/${nmCap}</b>
+              <b>${nm}/${getTicketCap("nightmare")}</b>
               <button type="button" data-tk="nightmare" data-char="${r.id}" data-d="1" class="btn-sm">+</button>
+            </div>
+            <div class="ticket-row">
+              <span>🗼 Ascension</span>
+              <button type="button" data-tk="ascension" data-char="${r.id}" data-d="-1" class="btn-sm">−</button>
+              <b>${asc}/${getTicketCap("ascension")}</b>
+              <button type="button" data-tk="ascension" data-char="${r.id}" data-d="1" class="btn-sm">+</button>
             </div>
 
             <div class="mb">
@@ -145,7 +149,6 @@ export function drawHub(app, { onRender }) {
       </div>
     </div>
 
-    <!-- Unfinished dailies + Next events -->
     <div class="grid-2" style="margin-bottom:18px">
       <div class="panel glass">
         <h2>Today · Unfinished Dailies</h2>
@@ -184,11 +187,82 @@ export function drawHub(app, { onRender }) {
       </div>
     </div>
 
-    <!-- Roster management (unchanged location) -->
+    <!-- ROSTER MANAGEMENT -->
     <div class="panel glass">
       <h2>Roster Management</h2>
-      <!-- keep your existing roster add / edit / delete UI here – it was already good -->
-      <!-- (copy the roster cards part from your current hubView) -->
+
+      <div class="roster-add" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;align-items:flex-end">
+        <div>
+          <label class="tip">Name</label>
+          <input type="text" id="newName" placeholder="Character name" maxlength="20" style="width:140px">
+        </div>
+        <div>
+          <label class="tip">Role</label>
+          <select id="newRole">
+            <option value="alt">Alt</option>
+            <option value="main">Main</option>
+          </select>
+        </div>
+        <div>
+          <label class="tip">Class</label>
+          <input type="text" id="newClass" placeholder="Class" maxlength="16" style="width:110px">
+        </div>
+        <div>
+          <label class="tip">GS</label>
+          <input type="number" id="newGS" value="0" min="0" style="width:70px">
+        </div>
+        <div class="color-pick" id="newColorPick">
+          ${CHAR_COLORS.map(col =>
+            `<button type="button" class="color-swatch" data-color="${col}" style="background:${col}"></button>`
+          ).join("")}
+          <input type="hidden" id="newColor" value="${CHAR_COLORS[0]}">
+        </div>
+        <button type="button" id="addChar" class="btn-sm on">+ Add</button>
+      </div>
+
+      <div class="roster-grid">
+        ${roster.map(c => {
+          if (st.editingChar === c.id) {
+            return `
+            <div class="char-card editing" style="border-left:3px solid ${c.color}">
+              <div class="row-fields">
+                <input type="text" id="editName" value="${esc(c.name)}" maxlength="20">
+                <input type="text" id="editClass" value="${esc(c.class || "")}" maxlength="16" style="width:110px" placeholder="Class">
+                <input type="number" id="editGS" value="${c.gs || 0}" min="0" style="width:70px">
+              </div>
+              <div class="row-fields">
+                <select id="editRole">
+                  <option value="main" ${c.role === "main" ? "selected" : ""}>Main</option>
+                  <option value="alt" ${c.role === "alt" ? "selected" : ""}>Alt</option>
+                </select>
+                <div class="color-pick" id="editColorPick">
+                  ${CHAR_COLORS.map(col =>
+                    `<button type="button" class="color-swatch ${col === c.color ? "on" : ""}" data-color="${col}" style="background:${col}"></button>`
+                  ).join("")}
+                </div>
+                <input type="hidden" id="editColor" value="${c.color}">
+              </div>
+              <div class="actions">
+                <button type="button" data-save-char="${c.id}" class="btn-sm on">Save</button>
+                <button type="button" data-cancel-char class="btn-sm">Cancel</button>
+              </div>
+            </div>`;
+          }
+          return `
+          <div class="char-card ${c.id === st.activeChar ? "active" : ""}" style="border-left:3px solid ${c.color}">
+            <div class="name">
+              <span class="char-dot" style="background:${c.color}"></span>
+              ${esc(c.name)} ${c.role === "main" ? '<span class="tg main">Main</span>' : ""}
+            </div>
+            <div class="meta">${esc(c.class || "—")} · GS ${c.gs || "—"}</div>
+            <div class="stats">
+              <button type="button" data-edit-char="${c.id}" class="btn-sm">Edit</button>
+              <button type="button" data-set-active="${c.id}" class="btn-sm">Select</button>
+              ${roster.length > 1 ? `<button type="button" data-del="${c.id}" class="btn-sm btn-danger">Delete</button>` : ""}
+            </div>
+          </div>`;
+        }).join("")}
+      </div>
     </div>
 
     <div class="panel glass">
@@ -206,7 +280,7 @@ export function drawHub(app, { onRender }) {
     </div>
   `;
 
-  // Membership toggle
+  // Membership
   document.getElementById("om").onchange = () => {
     S.set("a2om", document.getElementById("om").checked ? "1" : "0");
     onRender();
@@ -219,18 +293,27 @@ export function drawHub(app, { onRender }) {
     persist();
   };
 
+  // Color pickers
+  document.querySelectorAll("#newColorPick .color-swatch, #editColorPick .color-swatch").forEach(btn => {
+    btn.onclick = () => {
+      const pick = btn.closest(".color-pick");
+      pick.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("on"));
+      btn.classList.add("on");
+      const hidden = pick.querySelector("input[type=hidden]") ||
+        document.getElementById(pick.id === "newColorPick" ? "newColor" : "editColor");
+      if (hidden) hidden.value = btn.dataset.color;
+    };
+  });
+
   // Ticket buttons
   app.querySelectorAll("[data-tk]").forEach(btn => {
     btn.onclick = () => {
-      const kind = btn.dataset.tk;
-      const char = btn.dataset.char || null;
-      const d = +btn.dataset.d;
-      adjTicket(kind, d, char);
+      adjTicket(btn.dataset.tk, +btn.dataset.d, btn.dataset.char || null);
       onRender();
     };
   });
 
-  // Corridor won
+  // Corridor
   app.querySelectorAll("[data-corr]").forEach(btn => {
     btn.onclick = () => {
       const v = Math.max(0, Math.min(3, corrWon + +btn.dataset.corr));
@@ -238,4 +321,24 @@ export function drawHub(app, { onRender }) {
       onRender();
     };
   });
+
+  // Add character
+  document.getElementById("addChar").onclick = () => {
+    const name = document.getElementById("newName").value.trim();
+    if (!name) return;
+    const role = document.getElementById("newRole").value;
+    const list = getRoster();
+    if (role === "main") list.forEach(c => c.role = "alt");
+    list.push({
+      id: "c" + Date.now(),
+      name,
+      role,
+      class: document.getElementById("newClass").value.trim(),
+      gs: +document.getElementById("newGS").value || 0,
+      color: document.getElementById("newColor").value || CHAR_COLORS[0]
+    });
+    setRoster(list);
+    persist();
+    onRender();
+  };
 }
