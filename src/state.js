@@ -11,6 +11,8 @@ roster.forEach((c, i) => {
 
 let st = Object.assign(
   {
+    theme: "default",          // default | contrast | dense
+    corrWon: 0,                // last known corridors won
     tab: "hub",
     sub: "d",
     gsub: "d",
@@ -67,6 +69,8 @@ export function activeChar() {
 export function isMain() {
   return activeChar()?.role === "main";
 }
+// already imported in storage, re-export for convenience
+export { localGet, localSet } from "./storage.js";
 export function persist() {
   saveAll({ roster, st, goals, notes, customs });
 }
