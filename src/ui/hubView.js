@@ -137,7 +137,7 @@ export function drawHub(app, { onRender }) {
 
             <div class="oe-btns">
               <button type="button" data-oe-adj="-40" data-oe-char="${r.id}" class="btn-sm">−40</button>
-              <button type="button" data-oe-adj="0" data-oe-char="${r.id}" class="btn-sm">0</button>
+              <input type="number" min="0" max="2000" data-oe-input="${r.id}" value="${oe}" style="width:64px;text-align:center">
               <button type="button" data-oe-adj="40" data-oe-char="${r.id}" class="btn-sm">+40</button>
             </div>
 
@@ -358,4 +358,12 @@ export function drawHub(app, { onRender }) {
     persist();
     onRender();
   };
+  // Manual Odyle value
+  app.querySelectorAll("[data-oe-input]").forEach(inp => {
+    inp.addEventListener("change", () => {
+      setOdyleVal(inp.dataset.oeInput, inp.value);
+      persist();
+      onRender();
+    });
+  });
 }
