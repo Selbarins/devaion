@@ -12,7 +12,8 @@ export const DEFAULT_ROSTER = [
   { id: "c4", name: "Alt 3", role: "alt", class: "Ranger", color: CHAR_COLORS[3], gs: 0 }
 ];
 
-export const D_BASE = [
+/** Seed for editable base missions. Never mutate this array directly. */
+export const D_BASE_SEED = [
   { id: "duty", p: "d", n: "Duty Quests", ic: "📜", f: "Daily", s: "shared", c: 5, t: "Server-wide pool. Do once on main after login." },
   { id: "emer", p: "d", n: "Emergency Supply Requests", ic: "🚨", f: "Daily", s: "shared", c: 1, t: "Only turn in if the mats are cheap." },
   { id: "att", p: "d", n: "Attendance / Daeva Pass / Codes", ic: "📅", f: "Daily", s: "shared", c: 1, t: "Claim attendance, advance pass tracks, redeem codes." },
@@ -28,7 +29,7 @@ export const D_BASE = [
   { id: "soul", p: "w", n: "Soul Crystals (Genus)", ic: "🔮", f: "Weekly", s: "main", c: 1, t: "Wind Breeze Merchant · regular weekly limit (membership)." },
   { id: "pve", p: "w", n: "PvE Weekly Quest Scrolls", ic: "🗺", f: "Weekly", s: "shared", c: 12, t: "Command Merchant. Buy before reset if you need them later." },
   { id: "pvp", p: "w", n: "PvP Weekly Quest Scrolls", ic: "🛡", f: "Weekly", s: "shared", c: 20, t: "Abyss merchant. Shared limit." },
-  { id: "corr", p: "w", n: "Abyss Corridors", ic: "🌀", f: "After Siege", s: "char", c: 3, t: "Count depends on artifacts your faction won (max 3)." }
+  { id: "corr", p: "w", n: "Abyss Corridors", ic: "🌀", f: "After Siege", s: "char", c: 3, t: "Count depends on artifacts your faction won (max 3). Set won corridors on Overview." }
 ];
 
 export const REG = [
@@ -43,7 +44,7 @@ export const EV = [
   ["Shugo Festival", "🎪", 10, null, Array.from({ length: 24 }, (_, i) => i), 0, "Hourly minigame. Spend keys on good placements."],
   ["Dimensional Invasion", "🕳", 15, null, Array.from({ length: 24 }, (_, i) => i), 30, "Open-world invasion every hour at :30."],
   ["Watcher Kaira", "👁", 30, null, [2, 5, 8, 11, 14, 17, 20, 23], 0, "Abyss boss, random spot, leaves after 30 min."],
-  ["Artifact Siege", "🏰", 30, [1, 4, 6], [19], 0, "Win artifacts → unlock Abyss Corridors."],
+  ["Artifact Siege", "🏰", 30, [1, 4, 6], [19], 0, "Win artifacts → unlock Abyss Corridors. Mon / Thu / Sat."],
   ["Siege Bosses", "💀", 30, [1, 4, 6], [19], 30, "Post-conquest Reshanta bosses."],
   ["Rift Domination", "⚔", 20, [1, 4, 6], [18, 21], 0, "5 min prep + 15 min match."],
   ["Guardian Lord Nahma", "🐲", 30, [5, 0], [19], 0, "Weekend-eve boss (Fri & Sun)."],
@@ -54,3 +55,6 @@ export const EV = [
 
 export const DN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const NC = ["#22d3ee", "#c084fc", "#34d399", "#fbbf24", "#ff3b5c"];
+
+/** Siege days (UTC): Monday=1, Thursday=4, Saturday=6 */
+export const SIEGE_DAYS = [1, 4, 6];
