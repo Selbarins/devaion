@@ -28,7 +28,7 @@ function nextEventTimes() {
   })
   .filter(o => o.s)
   .sort((a, b) => a.s - b.s)
-  .slice(0, 3);
+  .slice(0, 5);
 }
 
 export function drawHub(app, { onRender }) {
@@ -264,20 +264,6 @@ export function drawHub(app, { onRender }) {
         }).join("")}
       </div>
     </div>
-
-    <div class="panel glass">
-      <h2>Backup & Theme</h2>
-      <div class="config-form" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-        <button type="button" id="bkEx" class="btn-sm">Export Backup</button>
-        <button type="button" id="bkIm" class="btn-sm">Import Backup</button>
-        <input type="file" id="bkF" accept=".json" hidden>
-        <select id="themeSelect" style="margin-left:auto">
-          <option value="default" ${st.theme === "default" ? "selected" : ""}>Default Neon</option>
-          <option value="contrast" ${st.theme === "contrast" ? "selected" : ""}>Higher Contrast</option>
-          <option value="dense" ${st.theme === "dense" ? "selected" : ""}>Dense</option>
-        </select>
-      </div>
-    </div>
   `;
 
   // Membership
@@ -286,12 +272,6 @@ export function drawHub(app, { onRender }) {
     onRender();
   };
 
-  // Theme
-  document.getElementById("themeSelect").onchange = (e) => {
-    st.theme = e.target.value;
-    document.documentElement.setAttribute("data-theme", st.theme);
-    persist();
-  };
 
   // Color pickers
   document.querySelectorAll("#newColorPick .color-swatch, #editColorPick .color-swatch").forEach(btn => {
