@@ -1,6 +1,6 @@
 /** Missions + Goals tab shell */
 import { getSt, getRoster, activeChar } from "../state.js";
-import { getAllMissions, ordered, dis, hid, prog, card } from "../missions.js";
+import { getAllMissions, getBaseMissions, ordered, dis, hid, prog, card } from "../missions.js";
 import { drawGoals } from "./goalsView.js";
 import { esc } from "../helpers.js";
 
@@ -54,7 +54,44 @@ export function drawMissions(app) {
   const count = pre.c || 1;
   const tip = pre.t || "";
 
-  app.innerHTML = viewToggle + charBar + `
+    // Base mission edit form
+  const editingBase = st.baseEditId ? getBaseMissions().find(m => m.id === st.baseEditId) : null;
+
+  const baseEditForm = editingBase ? `
+    <div class="custom-form" style="margin-bottom:16px;border:1px solid var(--amber);padding:14px;border-radius:10px">
+      <div class="tip" style="margin-bottom:10px;color:var(--amber)">Editing base mission</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end">
+        <div>
+          <label class="tip">Icon</label>
+          <input type="text" id="bmIc" value="${esc(editingBase.ic)}" maxlength="4" style="width:50px">
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label class="tip">Title</label>
+          <input type="text" id="bmN" value="${esc(editingBase.n)}" maxlength="40" style="width:100%">
+        </div>
+        <div>
+          <label class="tip">Count</label>
+          <input type="number" id="bmC" value="${editingBase.c}" min="1" max="99" style="width:60px">
+        </div>
+        <div>
+          <label class="tip">Scope</label>
+          <select id="bmS">
+            <option value="char" ${editingBase.s === "char" ? "selected" : ""}>Per Character</option>
+            <option value="shared" ${editingBase.s === "shared" ? "selected" : ""}>Shared</option>
+            <option value="main" ${editingBase.s === "main" ? "selected" : ""}>Main Only</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:160px">
+          <label class="tip">Note</label>
+          <input type="text" id="bmT" value="${esc(editingBase.t)}" maxlength="80" style="width:100%">
+        </div>
+        <button type="button" id="bmSave" class="btn-sm on">Save</button>
+        <button type="button" id="bmCancel" class="btn-sm">Cancel</button>
+      </div>
+    </div>
+  ` : "";
+
+  app.innerHTML = viewToggle + charBar + baseEditForm + `
     <div class="panel glass">
       <div class="ctrl-bar">
         <div class="seg">
