@@ -193,9 +193,11 @@ export function drawHub(app, { onRender }) {
           ? '<p class="tip">All clear 🎉</p>'
           : `<div class="mini-list">
               ${unfinished.slice(0, 8).map(u => `
-                <div class="mini-row">
+              <div class="mini-row">
                   <span class="ic">${u.ic}</span>
-                  <span>${esc(u.n)}</span>
+                  <div>
+                    <div class="mini-title">${esc(u.n)}</div>
+                  </div>
                   <b style="margin-left:auto">${u.remaining} left</b>
                 </div>`).join("")}
             </div>`}
@@ -212,7 +214,7 @@ export function drawHub(app, { onRender }) {
               <div class="mini-row ${on ? "open" : ""}">
                 <span class="ic">${e[1]}</span>
                 <div>
-                  <div style="font-weight:600">${esc(e[0])}</div>
+                  <div class="mini-title">${esc(e[0])}</div>
                   <div class="tip">${label}</div>
                 </div>
                 <b style="margin-left:auto;color:${on ? "var(--green)" : "var(--cyan)"}">
@@ -358,4 +360,11 @@ export function drawHub(app, { onRender }) {
     persist();
     onRender();
   };
+}
+.mini-title {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tx);
+  line-height: 1.3;
 }
