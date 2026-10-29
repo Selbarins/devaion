@@ -24,6 +24,7 @@ let st = Object.assign(
     ord: [],
     evHide: [],
     evPin: [],
+    evNotify: [],
     mEdit: false,
     evEdit: false,
     gEdit: null,
@@ -46,7 +47,7 @@ if (st.tab === "resources" || st.tab === "roster" || st.tab === "dash") st.tab =
 if (!st.mview) st.mview = "missions";
 if (!st.gCharFilter) st.gCharFilter = "all";
 if (!roster.find(c => c.id === st.activeChar)) st.activeChar = roster[0]?.id || "c1";
-["hid", "ord", "evHide", "evPin"].forEach(k => {
+["hid", "ord", "evHide", "evPin", "evNotify"].forEach(k => {
   if (!Array.isArray(st[k])) st[k] = [];
 });
 
