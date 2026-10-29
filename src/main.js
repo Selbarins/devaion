@@ -124,6 +124,16 @@ function render() {
 function tick() {
   const n = new Date();
   applyTicketTicks();
+
+  // Apply Odyle ticks live (so energy updates when a UTC tick is crossed without a full re-render)
+  const before = +S.get("a2oe_last_tick") || 0;
+  applyOdyleTicks();
+  const after = +S.get("a2oe_last_tick") || 0;
+  if (after > before && getSt().tab === "hub") {
+    render(); // refresh battery values when a tick actually applied
+    return;
+  }
+
   for (const [p, id, len] of [["d", "d", 864e5], ["w", "w", 6048e5]]) {
     const last = lastReset(p === "w");
     const nx = new Date(+last + len);
