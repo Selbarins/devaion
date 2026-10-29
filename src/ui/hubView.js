@@ -359,10 +359,3 @@ export function drawHub(app, { onRender }) {
     onRender();
   };
 }
-.mini-title {
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--tx);
-  line-height: 1.3;
-}
