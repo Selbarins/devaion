@@ -226,35 +226,7 @@ document.addEventListener("click", e => {
   } else if (b.dataset.cdel) {
     customs = customs.filter(c => c.id !== b.dataset.cdel);
     setCustoms(customs);
-  } else if (b.id === "cmAdd") {
-      // Open base mission editor
-  else if (b.dataset.bedit) {
-    st.baseEditId = b.dataset.bedit;
-    st.mEdit = true;
-  }
-
-  // Save base mission edits
-  else if (b.id === "bmSave") {
-    const id = st.baseEditId;
-    if (!id) return;
-    const list = getBaseMissions();
-    const m = list.find(x => x.id === id);
-    if (!m) return;
-
-    m.n  = document.getElementById("bmN")?.value.trim() || m.n;
-    m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
-    m.t  = document.getElementById("bmT")?.value.trim() || m.t;
-    m.c  = Math.max(1, +document.getElementById("bmC")?.value || m.c);
-    m.s  = document.getElementById("bmS")?.value || m.s;
-
-    setBaseMissions(list);
-    st.baseEditId = null;
-  }
-
-  // Cancel base mission edit
-  else if (b.id === "bmCancel") {
-    st.baseEditId = null;
-  }
+    } else if (b.id === "cmAdd") {
     const n = document.getElementById("cmN")?.value.trim();
     if (!n) { document.getElementById("cmN")?.focus(); return; }
     const p = document.getElementById("cmP")?.value || st.sub;
@@ -273,6 +245,26 @@ document.addEventListener("click", e => {
     setCustoms(customs);
     st.sub = p;
     st.cmPrefill = null;
+  } else if (b.dataset.bedit) {
+    st.baseEditId = b.dataset.bedit;
+    st.mEdit = true;
+  } else if (b.id === "bmSave") {
+    const id = st.baseEditId;
+    if (!id) return;
+    const list = getBaseMissions();
+    const m = list.find(x => x.id === id);
+    if (!m) return;
+
+    m.n  = document.getElementById("bmN")?.value.trim() || m.n;
+    m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
+    m.t  = document.getElementById("bmT")?.value.trim() || m.t;
+    m.c  = Math.max(1, +document.getElementById("bmC")?.value || m.c);
+    m.s  = document.getElementById("bmS")?.value || m.s;
+
+    setBaseMissions(list);
+    st.baseEditId = null;
+  } else if (b.id === "bmCancel") {
+    st.baseEditId = null;
   } else if (b.id === "cmCancelPrefill") {
     st.cmPrefill = null;
     st.mEdit = false;
@@ -369,34 +361,9 @@ document.addEventListener("click", e => {
     a.href = URL.createObjectURL(new Blob([JSON.stringify(o)], { type: "application/json" }));
     a.download = "devaion-backup-" + new Date().toISOString().slice(0, 10) + ".json";
     a.click(); return;
-  } else if (b.id === "bkIm") {
+    } else if (b.id === "bkIm") {
     document.getElementById("bkF").click(); return;
-    // ——— Base mission edit ———
-else if (b.dataset.bed) {
-  st.baseEditId = b.dataset.bedit;
-  st.mEdit = true;               // force edit mode
-}
-else if (b.id === "bmSave") {
-  const id = st.baseEditId;
-  if (!id) return;
-  const list = getBaseMissions();
-  const m = list.find(x => x.id === id);
-  if (!m) return;
-
-  m.n = document.getElementById("bmN")?.value.trim() || m.n;
-  m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
-  m.t = document.getElementById("bmT")?.value.trim() || m.t;
-  m.c = Math.max(1, +document.getElementById("bmC")?.value || m.c);
-  m.s = document.getElementById("bmS")?.value || m.s;
-
-  setBaseMissions(list);
-  st.baseEditId = null;
-}
-else if (b.id === "bmCancel") {
-  st.baseEditId = null;
-}
   } else return;
-
   persist();
   render();
 });
