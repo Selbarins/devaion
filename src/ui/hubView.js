@@ -55,8 +55,8 @@ export function drawHub(app, { onRender }) {
 
   app.innerHTML = `
     <div class="panel glass">
-      <div class="ctrl-bar" style="margin-bottom:14px">
-        <h2 style="margin:0">Characters · Energy & Tickets</h2>
+        <div class="ctrl-bar">
+        <h2>Characters · Energy & Tickets</h2>
         <label class="tg" style="cursor:pointer;margin-left:auto">
           <input type="checkbox" id="om" ${om ? "checked" : ""}> Membership
         </label>
@@ -125,7 +125,7 @@ export function drawHub(app, { onRender }) {
               <label class="gs">GS <input type="number" min="0" data-gs="${r.id}" value="${r.gs || 0}"></label>
             </div>
 
-            <div class="battery" style="margin:12px 0 8px">
+            <div class="battery" style="margin:8px 0">
               <div class="battery-body" style="width:100%;max-width:140px;height:28px">
                 <div class="battery-fill ${lv}" style="width:${p}%"></div>
               </div>
@@ -180,13 +180,13 @@ export function drawHub(app, { onRender }) {
               <b>${mw[0]}/${mw[1]}</b>
             </div>
 
-            <button type="button" data-open="${r.id}" class="btn-sm" style="width:100%;margin-top:8px">Open Missions →</button>
+            <button type="button" data-open="${r.id}" class="btn-open">Open Missions →</button>
           </div>`;
         }).join("")}
       </div>
     </div>
 
-    <div class="grid-2" style="margin-bottom:18px">
+    <div class="grid-2">
       <div class="panel glass">
         <h2>Today · Unfinished Dailies</h2>
         ${unfinished.length === 0
@@ -198,7 +198,7 @@ export function drawHub(app, { onRender }) {
                   <div>
                     <div class="mini-title">${esc(u.n)}</div>
                   </div>
-                  <b style="margin-left:auto">${u.remaining} left</b>
+                  <b>${u.remaining} left</b>
                 </div>`).join("")}
             </div>`}
       </div>
@@ -217,9 +217,7 @@ export function drawHub(app, { onRender }) {
                   <div class="mini-title">${esc(e[0])}</div>
                   <div class="tip">${label}</div>
                 </div>
-                <b style="margin-left:auto;color:${on ? "var(--green)" : "var(--cyan)"}">
-                  ${on ? "OPEN" : "in " + fmtShort(s - Date.now())}
-                </b>
+              <b style="color:${on ? "var(--green)" : "var(--cyan)"}">${on ? "OPEN" : "in " + fmtShort(s - Date.now())}</b>
               </div>`;
           }).join("")}
         </div>
@@ -230,10 +228,10 @@ export function drawHub(app, { onRender }) {
     <div class="panel glass">
       <h2>Roster Management</h2>
 
-      <div class="roster-add" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;align-items:flex-end">
+            <div class="roster-add">
         <div>
           <label class="tip">Name</label>
-          <input type="text" id="newName" placeholder="Character name" maxlength="20" style="width:140px">
+          <input type="text" id="newName" placeholder="Character name" maxlength="20">
         </div>
         <div>
           <label class="tip">Role</label>
@@ -244,11 +242,11 @@ export function drawHub(app, { onRender }) {
         </div>
         <div>
           <label class="tip">Class</label>
-          <input type="text" id="newClass" placeholder="Class" maxlength="16" style="width:110px">
+          <input type="text" id="newClass" placeholder="Class" maxlength="16">
         </div>
         <div>
           <label class="tip">GS</label>
-          <input type="number" id="newGS" value="0" min="0" style="width:70px">
+          <input type="number" id="newGS" value="0" min="0">
         </div>
         <div class="color-pick" id="newColorPick">
           ${CHAR_COLORS.map(col =>
