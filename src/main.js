@@ -10,6 +10,7 @@ import { CHAR_COLORS, NC, SIEGE_DAYS } from "./data.js";   // ← added SIEGE_DA
 import { tog, fmt, lastReset, pk, esc, fmtShort } from "./helpers.js";
 import { applyOdyleTicks, setOdyleVal, getOdyleVal, nextUtcTick } from "./odyle.js";
 import { getAllMissions, getBaseMissions, setBaseMissions, max, val, key, ordered, prog } from "./missions.js";
+import { applyTicketTicks } from "./tickets.js";
 import { gval, gmax, gkey, createOrUpdateGoalFromForm } from "./goals.js";
 import { drawMissions } from "./ui/missionsView.js";
 import { drawEvents } from "./ui/eventsView.js";
@@ -122,6 +123,7 @@ function render() {
 
 function tick() {
   const n = new Date();
+  applyTicketTicks();
   for (const [p, id, len] of [["d", "d", 864e5], ["w", "w", 6048e5]]) {
     const last = lastReset(p === "w");
     const nx = new Date(+last + len);
@@ -285,6 +287,8 @@ document.addEventListener("click", e => {
     tog(st.evHide, b.dataset.eh);
   } else if (b.dataset.ep) {
     tog(st.evPin, b.dataset.ep);
+  } else if (b.dataset.en) {
+    tog(st.evNotify, b.dataset.en);
   } else if (b.dataset.open) {
     st.activeChar = b.dataset.open;
     st.tab = "missions";
@@ -432,6 +436,7 @@ document.addEventListener("keydown", e => {
   }
 });
 applyOdyleTicks();
+applyTicketTicks();
 render();
 setInterval(tick, 1000);
 
