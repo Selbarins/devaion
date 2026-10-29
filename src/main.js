@@ -342,6 +342,30 @@ document.addEventListener("click", e => {
     a.click(); return;
   } else if (b.id === "bkIm") {
     document.getElementById("bkF").click(); return;
+    // ——— Base mission edit ———
+else if (b.dataset.bed) {
+  st.baseEditId = b.dataset.bedit;
+  st.mEdit = true;               // force edit mode
+}
+else if (b.id === "bmSave") {
+  const id = st.baseEditId;
+  if (!id) return;
+  const list = getBaseMissions();
+  const m = list.find(x => x.id === id);
+  if (!m) return;
+
+  m.n = document.getElementById("bmN")?.value.trim() || m.n;
+  m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
+  m.t = document.getElementById("bmT")?.value.trim() || m.t;
+  m.c = Math.max(1, +document.getElementById("bmC")?.value || m.c);
+  m.s = document.getElementById("bmS")?.value || m.s;
+
+  setBaseMissions(list);
+  st.baseEditId = null;
+}
+else if (b.id === "bmCancel") {
+  st.baseEditId = null;
+}
   } else return;
 
   persist();
