@@ -62,34 +62,47 @@ export function drawHub(app, { onRender }) {
         </label>
       </div>
 
-      <div class="shared-tickets">
-        <div class="ticket-pill" style="flex-direction:column;align-items:stretch;min-width:140px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <span>🎁 Shugo</span>
-            <button type="button" data-tk="shugo" data-d="-1">−</button>
-            <b>${shugo}/${getTicketCap("shugo")}</b>
-            <button type="button" data-tk="shugo" data-d="1">+</button>
+            <div class="shared-tickets">
+        <div class="ticket-card">
+          <div class="ticket-head">
+            <span class="ticket-label">🎁 Shugo</span>
+            <div class="ticket-controls">
+              <button type="button" data-tk="shugo" data-d="-1">−</button>
+              <span class="ticket-val">${shugo}/${getTicketCap("shugo")}</span>
+              <button type="button" data-tk="shugo" data-d="1">+</button>
+            </div>
           </div>
           <div class="tbar ${shugo > getTicketCap("shugo") ? "over" : shugo >= getTicketCap("shugo") ? "full" : ""}">
-            <i style="width:${Math.min(100, (shugo / getTicketCap("shugo")) * 100)}%"></i>
+            <i style="width:${Math.min(100, (shugo / Math.max(1, getTicketCap("shugo"))) * 100)}%"></i>
           </div>
         </div>
-        <div class="ticket-pill" style="flex-direction:column;align-items:stretch;min-width:140px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <span>🕳 Dimensional</span>
-            <button type="button" data-tk="dim" data-d="-1">−</button>
-            <b>${dim}/${getTicketCap("dim")}</b>
-            <button type="button" data-tk="dim" data-d="1">+</button>
+
+        <div class="ticket-card">
+          <div class="ticket-head">
+            <span class="ticket-label">🕳 Dimensional</span>
+            <div class="ticket-controls">
+              <button type="button" data-tk="dim" data-d="-1">−</button>
+              <span class="ticket-val">${dim}/${getTicketCap("dim")}</span>
+              <button type="button" data-tk="dim" data-d="1">+</button>
+            </div>
           </div>
           <div class="tbar ${dim > getTicketCap("dim") ? "over" : dim >= getTicketCap("dim") ? "full" : ""}">
-            <i style="width:${Math.min(100, (dim / getTicketCap("dim")) * 100)}%"></i>
+            <i style="width:${Math.min(100, (dim / Math.max(1, getTicketCap("dim"))) * 100)}%"></i>
           </div>
         </div>
-        <div class="ticket-pill">
-          <span>🌀 Corridors</span>
-          <button type="button" data-corr="-1">−</button>
-          <b>${corrWon}</b>
-          <button type="button" data-corr="1">+</button>
+
+        <div class="ticket-card">
+          <div class="ticket-head">
+            <span class="ticket-label">🌀 Corridors</span>
+            <div class="ticket-controls">
+              <button type="button" data-corr="-1">−</button>
+              <span class="ticket-val">${corrWon}/3</span>
+              <button type="button" data-corr="1">+</button>
+            </div>
+          </div>
+          <div class="tbar ${corrWon >= 3 ? "full" : ""}">
+            <i style="width:${Math.min(100, (corrWon / 3) * 100)}%"></i>
+          </div>
         </div>
       </div>
 
@@ -128,26 +141,31 @@ export function drawHub(app, { onRender }) {
               <button type="button" data-oe-adj="40" data-oe-char="${r.id}" class="btn-sm">+40</button>
             </div>
 
-            <div class="ticket-block">
-              <div class="ticket-row">
-                <span>🌑 Nightmare</span>
-                <button type="button" data-tk="nightmare" data-char="${r.id}" data-d="-1" class="btn-sm">−</button>
-                <b>${nm}/${getTicketCap("nightmare")}</b>
-                <button type="button" data-tk="nightmare" data-char="${r.id}" data-d="1" class="btn-sm">+</button>
+                        <div class="ticket-block">
+              <div class="ticket-head">
+                <span class="ticket-label">🌑 Nightmare</span>
+                <div class="ticket-controls">
+                  <button type="button" data-tk="nightmare" data-char="${r.id}" data-d="-1">−</button>
+                  <span class="ticket-val">${nm}/${getTicketCap("nightmare")}</span>
+                  <button type="button" data-tk="nightmare" data-char="${r.id}" data-d="1">+</button>
+                </div>
               </div>
               <div class="tbar ${nm > getTicketCap("nightmare") ? "over" : nm >= getTicketCap("nightmare") ? "full" : ""}">
-                <i style="width:${Math.min(100, (nm / getTicketCap("nightmare")) * 100)}%"></i>
+                <i style="width:${Math.min(100, (nm / Math.max(1, getTicketCap("nightmare"))) * 100)}%"></i>
               </div>
             </div>
+
             <div class="ticket-block">
-              <div class="ticket-row">
-                <span>🗼 Ascension</span>
-                <button type="button" data-tk="ascension" data-char="${r.id}" data-d="-1" class="btn-sm">−</button>
-                <b>${asc}/${getTicketCap("ascension")}</b>
-                <button type="button" data-tk="ascension" data-char="${r.id}" data-d="1" class="btn-sm">+</button>
+              <div class="ticket-head">
+                <span class="ticket-label">🗼 Ascension</span>
+                <div class="ticket-controls">
+                  <button type="button" data-tk="ascension" data-char="${r.id}" data-d="-1">−</button>
+                  <span class="ticket-val">${asc}/${getTicketCap("ascension")}</span>
+                  <button type="button" data-tk="ascension" data-char="${r.id}" data-d="1">+</button>
+                </div>
               </div>
               <div class="tbar ${asc > getTicketCap("ascension") ? "over" : asc >= getTicketCap("ascension") ? "full" : ""}">
-                <i style="width:${Math.min(100, (asc / getTicketCap("ascension")) * 100)}%"></i>
+                <i style="width:${Math.min(100, (asc / Math.max(1, getTicketCap("ascension"))) * 100)}%"></i>
               </div>
             </div>
 
