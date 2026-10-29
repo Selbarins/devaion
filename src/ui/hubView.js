@@ -86,7 +86,7 @@ export function drawHub(app, { onRender }) {
           </div>
         </div>
         <div class="ticket-pill">
-          <span>🌀 Corridors won</span>
+          <span>🌀 Corridors</span>
           <button type="button" data-corr="-1">−</button>
           <b>${corrWon}</b>
           <button type="button" data-corr="1">+</button>
