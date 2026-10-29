@@ -90,7 +90,6 @@ export function drawHub(app, { onRender }) {
           <button type="button" data-corr="-1">−</button>
           <b>${corrWon}</b>
           <button type="button" data-corr="1">+</button>
-          <span class="tip">max 3 · resets siege day 00:00 UTC</span>
         </div>
       </div>
 
