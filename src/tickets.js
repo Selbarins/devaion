@@ -1,11 +1,12 @@
 /** Ticket / key counters – only the ones that can hit a hard cap */
-import { S, getRoster } from "./state.js";
+import { S } from "./state.js";
 import { isMembership } from "./odyle.js";
 
 const KEYS = {
-  nightmare: { prefix: "a2nm_", daily: 2, cap: 14, perChar: true },
-  shugo:     { prefix: "a2shugo", daily: 3, capBase: 12, capMember: 21, perChar: false },
-  dim:       { prefix: "a2dim", daily: 1, cap: 7, perChar: false }
+  nightmare:  { prefix: "a2nm_",  daily: 2, cap: 14, perChar: true },
+  ascension:  { prefix: "a2asc_", daily: 0, weekly: 3, cap: 3, perChar: true },
+  shugo:      { prefix: "a2shugo", daily: 3, capBase: 12, capMember: 21, perChar: false },
+  dim:        { prefix: "a2dim", daily: 1, cap: 7, perChar: false }
 };
 
 export function getTicket(kind, charId = null) {
@@ -36,11 +37,11 @@ export function adjTicket(kind, delta, charId = null) {
   return setTicket(kind, getTicket(kind, charId) + delta, charId);
 }
 
-/** Simple daily gain reminder (not auto-applied – user still spends) */
 export function ticketInfo(kind) {
   const def = KEYS[kind];
   return {
-    daily: def.daily,
+    daily: def.daily || 0,
+    weekly: def.weekly || 0,
     cap: getTicketCap(kind),
     perChar: def.perChar
   };
