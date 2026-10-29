@@ -45,7 +45,7 @@ export function drawEvents(app) {
             ? `Every Hour At :${P2(e[5])}`
             : (e[3] ? e[3].map(x => DN[x]).join("/") + " " : "Daily ") +
               e[4].map(h => P2(h) + ":" + P2(e[5])).join(", ") + " UTC";
-          return `<div class="event-row ${on && !h ? "open" : ""}" ${h ? 'style="opacity:.45"' : ""}>
+          return `<div class="event-row ${on && !h ? "open" : ""}" data-ev-start="${s}" data-ev-dur="${e[2]}" ${h ? 'style="opacity:.45"' : ""}>
             <span class="ic">${e[1]}</span>
             <div>
               <div class="hd"><h3 style="font-size:13.5px;font-weight:600">${p ? "★ " : ""}${e[0]}</h3></div>
@@ -53,7 +53,7 @@ export function drawEvents(app) {
               <div class="tip">${e[6]}</div>
             </div>
             <div style="text-align:right">
-              <div class="status ${on ? "open" : (s - n < 36e5 ? "soon" : "")}">${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}</div>
+              <div class="status ev-countdown ${on ? "open" : (s - n < 36e5 ? "soon" : "")}">${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}</div>
               <div class="ctl" style="justify-content:flex-end;margin-top:4px;gap:4px">
                 <button type="button" data-en="${esc(e[0])}" class="btn-sm ${ntf ? "on" : ""}" title="Toggle notification">
                   ${ntf ? "🔔" : "🔕"}
