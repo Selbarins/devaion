@@ -14,6 +14,7 @@ import { gval, gmax, gkey, createOrUpdateGoalFromForm } from "./goals.js";
 import { drawMissions } from "./ui/missionsView.js";
 import { drawEvents } from "./ui/eventsView.js";
 import { drawHub } from "./ui/hubView.js";
+import { initNotifications, scheduleEventNotifications } from "./notifications.js";
 
 const TABS = [
   ["hub", "💠", "Overview"],
@@ -469,3 +470,9 @@ document.addEventListener("keydown", e => {
 applyOdyleTicks();
 render();
 setInterval(tick, 1000);
+
+// Notifications
+initNotifications().then(() => {
+  scheduleEventNotifications();
+  setInterval(scheduleEventNotifications, 30 * 60 * 1000); // refresh every 30 min
+});
