@@ -44,13 +44,13 @@ export const EV = [
   ["Shugo Festival", "🎪", 10, null, Array.from({ length: 24 }, (_, i) => i), 0, "Hourly minigame. Spend keys on good placements."],
   ["Dimensional Invasion", "🕳", 15, null, Array.from({ length: 24 }, (_, i) => i), 30, "Open-world invasion every hour at :30."],
   ["Watcher Kaira", "👁", 30, null, [2, 5, 8, 11, 14, 17, 20, 23], 0, "Abyss boss, random spot, leaves after 30 min."],
-  ["Artifact Siege", "🏰", 30, [1, 4, 6], [19], 0, "Win artifacts → unlock Abyss Corridors. Mon / Thu / Sat."],
-  ["Siege Bosses", "💀", 30, [1, 4, 6], [19], 30, "Post-conquest Reshanta bosses."],
-  ["Rift Domination", "⚔", 20, [1, 4, 6], [18, 21], 0, "5 min prep + 15 min match."],
-  ["Guardian Lord Nahma", "🐲", 30, [5, 0], [19], 0, "Weekend-eve boss (Fri & Sun)."],
-  ["Abyss Rift Zone", "🌌", 30, [2, 4], [20], 0, "Battlefield queue, Tue & Thu."],
-  ["Arena of Tactics (Day)", "🏟", 180, null, [9], 0, "Open window 09:00–12:00 UTC."],
-  ["Arena of Tactics (Evening)", "🏟", 120, null, [17], 0, "Open window 17:00–19:00 UTC."]
+  ["Artifact Siege", "🏰", 30, [1, 4, 6], [20], 0, "Mon/Thu/Sat 21:00 server (20:00 UTC). Win artifacts → Corridors."],
+  ["Siege Bosses", "💀", 30, [1, 4, 6], [20], 30, "Mon/Thu/Sat 21:30 server (20:30 UTC). Post-siege Reshanta bosses."],
+  ["Rift Domination", "⚔", 20, [1, 4, 6], [19, 22], 0, "Mon/Thu/Sat ~20:00 & 23:00 server. 5 min prep + 15 min match."],
+  ["Guardian Lord Nahma", "🐲", 30, [5, 0], [20], 0, "Fri & Sun 21:00 server (20:00 UTC)."],
+  ["Abyss Rift Zone", "🌌", 30, [2, 4], [21], 0, "Tue & Thu ~22:00 server (21:00 UTC)."],
+  ["Arena of Tactics (Day)", "🏟", 180, null, [10], 0, "Daily 11:00–14:00 server (10:00–13:00 UTC)."],
+  ["Arena of Tactics (Evening)", "🏟", 120, null, [18], 0, "Daily 19:00–21:00 server (18:00–20:00 UTC)."]
 ];
 
 export const DN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
