@@ -6,7 +6,7 @@ import {
   getSt, getRoster, setRoster, getGoals, setGoals, getNotes, setNotes,
   getCustoms, setCustoms, activeChar, persist
 } from "./state.js";
-import { CHAR_COLORS, NC } from "./data.js";
+import { CHAR_COLORS, NC, SIEGE_DAYS } from "./data.js";   // ← added SIEGE_DAYS
 import { tog, fmt, lastReset, pk, esc, fmtShort } from "./helpers.js";
 import { applyOdyleTicks, setOdyleVal, getOdyleVal, nextUtcTick } from "./odyle.js";
 import { getAllMissions, max, val, key, ordered, prog } from "./missions.js";
@@ -20,7 +20,25 @@ const TABS = [
   ["missions", "📜", "Missions"],
   ["events", "⏱", "Events"]
 ];
+// Apply saved theme as early as possible
+document.documentElement.setAttribute("data-theme", getSt().theme || "default");
 
+// Siege / corridor reset (runs near 00:00 UTC on Mon/Thu/Sat)
+function checkSiegeReset() {
+  const now = new Date();
+  // Only check in the first couple of minutes after midnight UTC
+  if (now.getUTCHours() !== 0 || now.getUTCMinutes() > 3) return;
+
+  const day = now.getUTCDay(); // 0=Sun … 6=Sat
+  if (!SIEGE_DAYS.includes(day)) return;
+
+  const today = now.toISOString().slice(0, 10);
+  if (S.get("a2corr_last_reset") === today) return;
+
+  S.set("a2corr_won", "0");
+  S.set("a2corr_last_reset", today);
+  // Optional: also clear corridor progress keys if you want a full reset
+}
 (function purge() {
   try {
     const cd = pk("d"), cw = pk("w");
@@ -336,6 +354,47 @@ document.addEventListener("change", e => {
     });
   }
 });
+// Keyboard: ← → switch character | ↑ ↓ switch tab
+document.addEventListener("keydown", e => {
+  // Ignore when typing in inputs
+  if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+
+  const st = getSt();
+  const roster = getRoster();
+  const tabKeys = ["hub", "missions", "events"];
+
+  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    e.preventDefault();
+    const idx = roster.findIndex(c => c.id === st.activeChar);
+    if (idx === -1) return;
+    const next = e.key === "ArrowRight"
+      ? (idx + 1) % roster.length
+      : (idx - 1 + roster.length) % roster.length;
+    st.activeChar = roster[next].id;
+    persist();
+    render();
+  }
+
+  if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+    e.preventDefault();
+    const idx = tabKeys.indexOf(st.tab);
+    if (idx === -1) return;
+    const next = e.key === "ArrowDown"
+      ? (idx + 1) % tabKeys.length
+      : (idx - 1 + tabKeys.length) % tabKeys.length;
+    st.tab = tabKeys[next];
+    persist();
+    render();
+  }
+});
+applyOdyleTicks();
+render();
+function tick() {
+  // existing clock update code you already have...
+  // (the part that updates #cd, #cw, progress bars, etc.)
+
+  checkSiegeReset();   // ← add this line
+}
 
 applyOdyleTicks();
 render();
