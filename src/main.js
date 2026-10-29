@@ -110,6 +110,7 @@ function tick() {
     const next = document.getElementById("odyle-next");
     if (next) next.textContent = fmtShort(Math.max(0, nextUtcTick() - Date.now()));
   }
+  checkSiegeReset();
 }
 
 document.addEventListener("click", e => {
@@ -387,15 +388,6 @@ document.addEventListener("keydown", e => {
     render();
   }
 });
-applyOdyleTicks();
-render();
-function tick() {
-  // existing clock update code you already have...
-  // (the part that updates #cd, #cw, progress bars, etc.)
-
-  checkSiegeReset();   // ← add this line
-}
-
 applyOdyleTicks();
 render();
 setInterval(tick, 1000);
