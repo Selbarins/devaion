@@ -206,18 +206,18 @@ export function drawHub(app, { onRender }) {
       <div class="panel glass">
         <h2>Next Events</h2>
         <div class="mini-list">
-          ${nextEv.map(({ e, s }) => {
+        ${nextEv.map(({ e, s }) => {
             const on = s <= Date.now();
             const d = new Date(s);
             const label = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes()) + " UTC";
             return `
-              <div class="mini-row ${on ? "open" : ""}">
+              <div class="mini-row ${on ? "open" : ""}" data-ev-start="${s}">
                 <span class="ic">${e[1]}</span>
                 <div>
                   <div class="mini-title">${esc(e[0])}</div>
                   <div class="tip">${label}</div>
                 </div>
-              <b style="color:${on ? "var(--green)" : "var(--cyan)"}">${on ? "OPEN" : "in " + fmtShort(s - Date.now())}</b>
+              <b class="ev-countdown" style="color:${on ? "var(--green)" : "var(--cyan)"}">${on ? "OPEN" : "in " + fmtShort(s - Date.now())}</b>
               </div>`;
           }).join("")}
         </div>
