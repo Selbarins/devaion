@@ -9,7 +9,7 @@ import {
 import { CHAR_COLORS, NC, SIEGE_DAYS } from "./data.js";   // ← added SIEGE_DAYS
 import { tog, fmt, lastReset, pk, esc, fmtShort } from "./helpers.js";
 import { applyOdyleTicks, setOdyleVal, getOdyleVal, nextUtcTick } from "./odyle.js";
-import { getAllMissions, max, val, key, ordered, prog } from "./missions.js";
+import { getAllMissions, getBaseMissions, setBaseMissions, max, val, key, ordered, prog } from "./missions.js";
 import { gval, gmax, gkey, createOrUpdateGoalFromForm } from "./goals.js";
 import { drawMissions } from "./ui/missionsView.js";
 import { drawEvents } from "./ui/eventsView.js";
@@ -226,6 +226,34 @@ document.addEventListener("click", e => {
     customs = customs.filter(c => c.id !== b.dataset.cdel);
     setCustoms(customs);
   } else if (b.id === "cmAdd") {
+      // Open base mission editor
+  else if (b.dataset.bedit) {
+    st.baseEditId = b.dataset.bedit;
+    st.mEdit = true;
+  }
+
+  // Save base mission edits
+  else if (b.id === "bmSave") {
+    const id = st.baseEditId;
+    if (!id) return;
+    const list = getBaseMissions();
+    const m = list.find(x => x.id === id);
+    if (!m) return;
+
+    m.n  = document.getElementById("bmN")?.value.trim() || m.n;
+    m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
+    m.t  = document.getElementById("bmT")?.value.trim() || m.t;
+    m.c  = Math.max(1, +document.getElementById("bmC")?.value || m.c);
+    m.s  = document.getElementById("bmS")?.value || m.s;
+
+    setBaseMissions(list);
+    st.baseEditId = null;
+  }
+
+  // Cancel base mission edit
+  else if (b.id === "bmCancel") {
+    st.baseEditId = null;
+  }
     const n = document.getElementById("cmN")?.value.trim();
     if (!n) { document.getElementById("cmN")?.focus(); return; }
     const p = document.getElementById("cmP")?.value || st.sub;
