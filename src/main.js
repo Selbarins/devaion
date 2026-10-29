@@ -145,7 +145,49 @@ function tick() {
   if (getSt().tab === "hub") {
     const next = document.getElementById("odyle-next");
     if (next) next.textContent = fmtShort(Math.max(0, nextUtcTick() - Date.now()));
+
+    // Live Overview event countdowns
+    document.querySelectorAll("[data-ev-start] .ev-countdown, [data-ev-start].mini-row .ev-countdown, .mini-row[data-ev-start] .ev-countdown").forEach(b => {
+      const row = b.closest("[data-ev-start]");
+      if (!row) return;
+      const s = +row.dataset.evStart;
+      const rem = s - Date.now();
+      if (rem <= 0) {
+        b.textContent = "OPEN";
+        b.style.color = "var(--green)";
+        row.classList.add("open");
+      } else {
+        b.textContent = "in " + fmtShort(rem);
+        b.style.color = "var(--cyan)";
+        row.classList.remove("open");
+      }
+    });
   }
+
+  // Live Events tab countdowns
+  if (getSt().tab === "events") {
+    document.querySelectorAll(".event-row[data-ev-start]").forEach(row => {
+      const s = +row.dataset.evStart;
+      const dur = (+row.dataset.evDur || 0) * 6e4;
+      const b = row.querySelector(".ev-countdown");
+      if (!b) return;
+      const now = Date.now();
+      if (now >= s && now < s + dur) {
+        b.textContent = "Open · " + fmt(s + dur - now);
+        b.className = "status ev-countdown open";
+        row.classList.add("open");
+      } else if (now < s) {
+        const rem = s - now;
+        b.textContent = "In " + fmt(rem);
+        b.className = "status ev-countdown" + (rem < 36e5 ? " soon" : "");
+        row.classList.remove("open");
+      } else {
+        // Window ended — force a re-render so the next occurrence is computed
+        render();
+      }
+    });
+  }
+
   checkSiegeReset();
 }
 
