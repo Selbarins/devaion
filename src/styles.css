@@ -42,7 +42,7 @@ body {
     radial-gradient(ellipse 60% 40% at 90% 10%, rgba(192, 132, 252, 0.05), transparent 45%),
     var(--bg);
   color: var(--tx);
-  font: 14.5px/1.55 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 14.5px/1.55 "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   font-feature-settings: "tnum" 1, "cv11" 1;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
@@ -64,28 +64,6 @@ body {
   top: 0;
   height: 100vh;
   overflow-y: auto;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  padding: 8px 10px 28px;
-  user-select: none;
-}
-.logo-text {
-  font-weight: 800;
-  font-size: 20px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  line-height: 1.2;
-  background: linear-gradient(105deg, #f0f4ff 0%, #2ee6ff 42%, #c084fc 88%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 18px rgba(46, 230, 255, 0.25));
-}
-.logo-text span {
-  letter-spacing: 0.28em;
 }
 
 .side-nav {
@@ -936,6 +914,101 @@ footer {
   --mut: #c0c8d8;
   --line: rgba(80,100,140,0.8);
 }
+/* ===== New Logo (dynamic wings) ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 28px;
+  user-select: none;
+}
+.logo-svg {
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 10px rgba(46, 230, 255, 0.35));
+}
+.logo-svg .wing {
+  transform-origin: 32px 32px;
+  animation: wingPulse 4.5s ease-in-out infinite;
+}
+.logo-svg .wing.left { animation-delay: 0s; }
+.logo-svg .wing.right { animation-delay: 0.15s; }
+.logo-svg .left-inner,
+.logo-svg .right-inner {
+  animation: wingPulse 4.5s ease-in-out infinite reverse;
+}
+@keyframes wingPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.04) rotate(1.5deg); opacity: 0.92; }
+}
+.logo-text {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: linear-gradient(105deg, #f0f4ff 0%, #2ee6ff 45%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(46, 230, 255, 0.25));
+}
+
+/* ===== Better Dense Mode ===== */
+[data-theme="dense"] {
+  --radius: 10px;
+  --radius-sm: 7px;
+}
+[data-theme="dense"] body { font-size: 13.5px; }
 [data-theme="dense"] .panel { padding: 12px 14px; margin-bottom: 10px; }
-[data-theme="dense"] .row { padding: 8px 10px; }
+[data-theme="dense"] .row { padding: 7px 10px; }
 [data-theme="dense"] .dgrid-4 { gap: 10px; }
+[data-theme="dense"] .topbar { padding: 10px 24px; }
+[data-theme="dense"] .content { padding: 18px 24px 48px; }
+[data-theme="dense"] .side-nav button { padding: 8px 10px; font-size: 13px; }
+[data-theme="dense"] .ticket-pill { padding: 4px 10px; font-size: 12px; }
+[data-theme="dense"] .char-card { padding: 10px 12px; }
+[data-theme="dense"] .shared-tickets { gap: 10px; margin-bottom: 12px; }
+
+/* ===== Shared UI pieces ===== */
+.shared-tickets {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.ticket-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.oe-btns {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+.char-card {
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.char-card.active {
+  border-color: rgba(46, 230, 255, 0.4);
+  box-shadow: 0 0 0 1px rgba(46, 230, 255, 0.15);
+}
+.char-card .name {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.char-card .meta { font-size: 12px; color: var(--mut); margin-bottom: 10px; }
+.char-card .stats { display: flex; gap: 6px; flex-wrap: wrap; }
+.row-fields { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
