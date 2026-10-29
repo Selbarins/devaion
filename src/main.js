@@ -62,8 +62,34 @@ function render() {
     <div class="app-shell">
       <aside class="sidebar">
         <div class="logo" title="Devaion">
-          <span class="logo-text">DEV<span>AION</span></span>
-        </div>
+            <svg class="logo-svg" viewBox="0 0 64 64" width="42" height="42" aria-hidden="true">
+              <!-- Abstract high-detail wings -->
+              <defs>
+                <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#2ee6ff"/>
+                  <stop offset="50%" stop-color="#c084fc"/>
+                  <stop offset="100%" stop-color="#ff3b5c"/>
+                </linearGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="1.2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              <!-- Left wing -->
+              <path class="wing left" fill="url(#wingGrad)" filter="url(#glow)" d="M32 32 C22 28 12 18 8 8 C14 14 20 22 28 28 C24 20 18 12 14 6 C20 14 26 24 32 32 Z"/>
+              <path class="wing left-inner" fill="url(#wingGrad)" opacity="0.7" d="M32 32 C24 30 16 22 12 14 C17 19 23 26 30 30 C26 22 20 14 17 10 C22 17 27 25 32 32 Z"/>
+              <!-- Right wing -->
+              <path class="wing right" fill="url(#wingGrad)" filter="url(#glow)" d="M32 32 C42 28 52 18 56 8 C50 14 44 22 36 28 C40 20 46 12 50 6 C44 14 38 24 32 32 Z"/>
+              <path class="wing right-inner" fill="url(#wingGrad)" opacity="0.7" d="M32 32 C40 30 48 22 52 14 C47 19 41 26 34 30 C38 22 44 14 47 10 C42 17 37 25 32 32 Z"/>
+              <!-- Center core -->
+              <circle cx="32" cy="32" r="4.5" fill="#f0f4ff" filter="url(#glow)"/>
+              <circle cx="32" cy="32" r="2.2" fill="#2ee6ff"/>
+            </svg>
+            <span class="logo-text">DEVAION</span>
+          </div>
         <nav class="side-nav">
           ${TABS.map(([k, icon, label]) =>
             `<button type="button" data-t="${k}" class="${st.tab === k ? "on" : ""}"><span class="icon">${icon}</span>${label}</button>`
