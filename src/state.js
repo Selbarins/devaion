@@ -1,6 +1,7 @@
 /**
  * Global app state — single source of truth.
  */
+import { getUser } from "./auth.js";
 import { localGet, saveAll, S } from "./storage.js";
 import { DEFAULT_ROSTER, CHAR_COLORS } from "./data.js";
 
@@ -74,6 +75,7 @@ export function isMain() {
 // already imported in storage, re-export for convenience
 export { localGet, localSet } from "./storage.js";
 export function persist() {
-  saveAll({ roster, st, goals, notes, customs });
+  const user = getUser();
+  saveAll(user?.id ?? null, { roster, st, goals, notes, customs });
 }
 export { S };
