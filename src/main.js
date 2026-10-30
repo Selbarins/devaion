@@ -1,6 +1,8 @@
 /**
  * Devaion · Aion 2 Tracker — entry point
  */
+import { initAuth, getUser, onAuthChange, signInWithDiscord, signOut } from "./auth.js";
+import { loadAll } from "./storage.js";
 import { hasSupabase, getSyncStatus, S } from "./storage.js";
 import {
   getSt, getRoster, setRoster, getGoals, setGoals, getNotes, setNotes,
@@ -17,6 +19,75 @@ import { drawEvents } from "./ui/eventsView.js";
 import { drawHub } from "./ui/hubView.js";
 import { initNotifications, scheduleEventNotifications } from "./notifications.js";
 
+const LOGO_SVG = `
+<svg class="logo-svg" viewBox="0 0 64 64" width="80" height="80" aria-hidden="true">
+  <defs>
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2ee6ff"/>
+      <stop offset="50%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#ff3b5c"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path fill="url(#wingGrad)" filter="url(#glow)" d="M32 32 C20 26 8 14 4 4 C12 12 20 22 30 28 C24 18 14 8 10 2 C18 12 26 24 32 32 Z"/>
+  <path fill="url(#wingGrad)" opacity="0.85" d="M32 32 C22 28 12 18 8 10 C14 16 22 24 30 30 C26 20 18 12 14 6 C20 14 27 24 32 32 Z"/>
+  <path fill="url(#wingGrad)" opacity="0.65" d="M32 32 C24 30 16 22 12 14 C17 19 23 26 30 30 C26 22 20 14 17 10 C22 17 27 25 32 32 Z"/>
+  <path fill="url(#wingGrad)" filter="url(#glow)" d="M32 32 C44 26 56 14 60 4 C52 12 44 22 34 28 C40 18 50 8 54 2 C46 12 38 24 32 32 Z"/>
+  <path fill="url(#wingGrad)" opacity="0.85" d="M32 32 C42 28 52 18 56 10 C50 16 42 24 34 30 C38 20 46 12 50 6 C44 14 37 24 32 32 Z"/>
+  <path fill="url(#wingGrad)" opacity="0.65" d="M32 32 C40 30 48 22 52 14 C47 19 41 26 34 30 C38 22 44 14 47 10 C42 17 37 25 32 32 Z"/>
+  <circle cx="32" cy="32" r="5" fill="#f0f4ff" filter="url(#glow)"/>
+  <circle cx="32" cy="32" r="2.4" fill="#2ee6ff"/>
+</svg>`;
+
+function drawLogin() {
+  const root = document.getElementById("app");
+
+  root.innerHTML = `
+    <div class="login-screen">
+      <div class="login-card">
+        <div class="login-logo">${LOGO_SVG}</div>
+        <h1>Devaion</h1>
+        <p class="subtitle">Aion 2 Tracker</p>
+
+        <div class="login-error" id="loginError"></div>
+
+        <button type="button" class="btn-discord" id="discordLoginBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.548-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+          </svg>
+          Login with Discord
+        </button>
+      </div>
+    </div>`;
+
+  const btn = document.getElementById("discordLoginBtn");
+  const errorEl = document.getElementById("loginError");
+
+  btn.onclick = async () => {
+    errorEl.classList.remove("show");
+    btn.disabled = true;
+    btn.textContent = "Redirecting…";
+
+    try {
+      await signInWithDiscord();
+    } catch (err) {
+      errorEl.textContent = err.message || "Login failed";
+      errorEl.classList.add("show");
+      btn.disabled = false;
+      btn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.548-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+        Login with Discord`;
+    }
+  };
+}
 const TABS = [
   ["hub", "💠", "Overview"],
   ["missions", "📜", "Missions"],
@@ -96,8 +167,15 @@ function render() {
         </nav>
         <div class="side-footer">
           <div class="sync-pill ${hasSupabase ? (sync === "error" ? "warn" : "ok") : ""}">
-            ${hasSupabase ? (sync === "synced" ? "● Cloud Synced" : sync === "syncing" ? "● Syncing…" : "● Cloud Ready") : "○ Local Only"}
+            ${hasSupabase
+              ? (sync === "synced" ? "● Cloud Synced" : sync === "syncing" ? "● Syncing…" : "● Cloud Ready")
+              : "○ Local Only"}
           </div>
+          <button type="button" class="btn-sm" id="logoutBtn" style="width:100%; margin-top:8px;">
+            Sign out
+          </button>
+          <div style="margin-top:6px;">v5.5 · Desktop</div>
+        </div>
           <div>v5.5 · Desktop</div>
         </div>
       </aside>
@@ -200,6 +278,10 @@ document.addEventListener("click", e => {
   let notes = getNotes();
   let customs = getCustoms();
 
+  if (b.id === "logoutBtn") {
+  signOut();
+  return;
+  }
   if (b.dataset.t) {
     st.tab = b.dataset.t;
     st.editingChar = null;
@@ -487,13 +569,65 @@ document.addEventListener("keydown", e => {
     render();
   }
 });
-applyOdyleTicks();
-applyTicketTicks();
-render();
-setInterval(tick, 1000);
+// ========== BOOT ==========
+async function boot() {
+  document.documentElement.setAttribute("data-theme", getSt().theme || "default");
 
-// Notifications
-initNotifications().then(() => {
-  scheduleEventNotifications();
-  setInterval(scheduleEventNotifications, 30 * 60 * 1000); // refresh every 30 min
-});
+  await initAuth();
+
+  onAuthChange(async (user) => {
+    if (!user) {
+      drawLogin();
+      return;
+    }
+
+    // ===== Logged in =====
+    const data = await loadAll(user.id);
+
+    // Automatic migration: if cloud is empty but local data exists → upload local data
+    const hasLocalData =
+      localGet("devaion_roster") ||
+      localGet("devaion_st") ||
+      (localGet("devaion_goals", []).length > 0) ||
+      (localGet("devaion_notes", []).length > 0) ||
+      (localGet("devaion_customs", []).length > 0);
+
+    const cloudIsEmpty = !data.roster && !data.st && (!data.goals || data.goals.length === 0);
+
+    if (hasLocalData && cloudIsEmpty) {
+      console.log("Migrating local data to your account…");
+      saveAll(user.id, {
+        roster: getRoster(),
+        st: getSt(),
+        goals: getGoals(),
+        notes: getNotes(),
+        customs: getCustoms()
+      });
+    }
+
+    // Apply data to state
+    if (data.roster) setRoster(data.roster);
+    if (data.st) Object.assign(getSt(), data.st);
+    if (data.goals) setGoals(data.goals);
+    if (data.notes) setNotes(data.notes);
+    if (data.customs) setCustoms(data.customs);
+
+    // Make sure active character still exists
+    const roster = getRoster();
+    if (!roster.find(c => c.id === getSt().activeChar)) {
+      getSt().activeChar = roster[0]?.id || "c1";
+    }
+
+    // Now show the real app
+    applyOdyleTicks();
+    applyTicketTicks();
+    render();
+    initNotifications().then(() => {
+      scheduleEventNotifications();
+      setInterval(scheduleEventNotifications, 30 * 60 * 1000);
+    });
+    setInterval(tick, 1000);
+  });
+}
+
+boot();
