@@ -1431,3 +1431,88 @@ footer {
 @media (max-width: 960px) {
   .grid-2 { grid-template-columns: 1fr; }
 }
+/* ========== Login screen (Discord) ========== */
+.login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(46, 230, 255, 0.07), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(192, 132, 252, 0.05), transparent 45%),
+    var(--bg);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--card-solid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 40px 32px 36px;
+  box-shadow: var(--shadow-card), var(--glow-cyan);
+  text-align: center;
+}
+
+.login-logo {
+  margin-bottom: 20px;
+}
+
+.login-logo svg {
+  width: 80px;
+  height: 80px;
+}
+
+.login-card h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.login-card .subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.btn-discord {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  background: #5865F2;
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-discord:hover {
+  background: #4752c4;
+}
+
+.btn-discord:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-error {
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: var(--danger);
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  margin-bottom: 18px;
+  display: none;
+}
+
+.login-error.show {
+  display: block;
+}
