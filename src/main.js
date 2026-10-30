@@ -3,7 +3,7 @@
  */
 import { initAuth, getUser, onAuthChange, signInWithDiscord, signOut } from "./auth.js";
 import { loadAll } from "./storage.js";
-import { hasSupabase, getSyncStatus, S } from "./storage.js";
+import { hasSupabase, getSyncStatus, S, localGet, loadAll, saveAll } from "./storage.js";
 import {
   getSt, getRoster, setRoster, getGoals, setGoals, getNotes, setNotes,
   getCustoms, setCustoms, activeChar, persist
