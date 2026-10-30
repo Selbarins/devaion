@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 
-const ROW_ID = 'personal';
-
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -37,21 +35,21 @@ export function localSet(key, value) {
   S.set(key, JSON.stringify(value));
 }
 
-// ---------- Cloud sync ----------
+// ---------- Cloud sync (per-user) ----------
 let saveTimer = null;
-let lastSyncStatus = 'idle'; // idle | syncing | synced | error
+let lastSyncStatus = 'idle';
 
 export function getSyncStatus() {
   return lastSyncStatus;
 }
 
-export async function loadFromCloud() {
-  if (!supabase) return null;
+export async function loadFromCloud(userId) {
+  if (!supabase || !userId) return null;
   try {
     const { data, error } = await supabase
       .from('tracker')
       .select('data')
-      .eq('id', ROW_ID)
+      .eq('user_id', userId)
       .maybeSingle();
 
     if (error) throw error;
@@ -64,15 +62,15 @@ export async function loadFromCloud() {
   }
 }
 
-export async function saveToCloud(payload) {
-  if (!supabase) return;
+export async function saveToCloud(userId, payload) {
+  if (!supabase || !userId) return;
 
   lastSyncStatus = 'syncing';
   try {
     const { error } = await supabase
       .from('tracker')
       .upsert({
-        id: ROW_ID,
+        user_id: userId,
         data: payload,
         updated_at: new Date().toISOString()
       });
@@ -85,16 +83,13 @@ export async function saveToCloud(payload) {
   }
 }
 
-/** Debounced cloud save */
-export function scheduleCloudSave(payload, delay = 800) {
-  if (!supabase) return;
+export function scheduleCloudSave(userId, payload, delay = 800) {
+  if (!supabase || !userId) return;
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => saveToCloud(payload), delay);
+  saveTimer = setTimeout(() => saveToCloud(userId, payload), delay);
 }
 
-// ---------- Combined load / save for the whole app state ----------
-export async function loadAll() {
-  // 1. Always start from local
+export async function loadAll(userId) {
   const local = {
     roster: localGet('devaion_roster'),
     st: localGet('devaion_st'),
@@ -103,9 +98,8 @@ export async function loadAll() {
     customs: localGet('devaion_customs', []),
   };
 
-  // 2. Try cloud and merge (cloud wins on conflict for now)
-  if (supabase) {
-    const cloud = await loadFromCloud();
+  if (supabase && userId) {
+    const cloud = await loadFromCloud(userId);
     if (cloud) {
       return {
         roster: cloud.roster ?? local.roster,
@@ -113,7 +107,6 @@ export async function loadAll() {
         goals: cloud.goals ?? local.goals,
         notes: cloud.notes ?? local.notes,
         customs: cloud.customs ?? local.customs,
-        odyle: cloud.odyle ?? null,
         _source: 'cloud'
       };
     }
@@ -122,23 +115,22 @@ export async function loadAll() {
   return { ...local, _source: 'local' };
 }
 
-export function saveAll(state) {
-  // Always write local
+export function saveAll(userId, state) {
   if (state.roster) localSet('devaion_roster', state.roster);
   if (state.st) localSet('devaion_st', state.st);
   if (state.goals) localSet('devaion_goals', state.goals);
   if (state.notes) localSet('devaion_notes', state.notes);
   if (state.customs) localSet('devaion_customs', state.customs);
 
-  // Schedule cloud
-  scheduleCloudSave({
-    roster: state.roster,
-    st: state.st,
-    goals: state.goals,
-    notes: state.notes,
-    customs: state.customs,
-  });
+  if (userId) {
+    scheduleCloudSave(userId, {
+      roster: state.roster,
+      st: state.st,
+      goals: state.goals,
+      notes: state.notes,
+      customs: state.customs,
+    });
+  }
 }
 
-// Keep the original low-level helpers for mission keys, odyle, etc.
 export { S };
