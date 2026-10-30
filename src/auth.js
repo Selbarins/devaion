@@ -1,7 +1,7 @@
 import { supabase, hasSupabase } from "./storage.js";
 
 // ↓↓↓ PUT YOUR DISCORD USER ID HERE ↓↓↓
-const ALLOWED_DISCORD_ID = "PASTE_YOUR_DISCORD_USER_ID_HERE";
+const ALLOWED_DISCORD_ID = "92372903923814400";
 // ↑↑↑ Example: "123456789012345678"
 
 let currentUser = null;
