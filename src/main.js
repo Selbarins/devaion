@@ -173,8 +173,6 @@ function render() {
           </button>
           <div style="margin-top:6px;">v5.5 · Desktop</div>
         </div>
-          <div>v5.5 · Desktop</div>
-        </div>
       </aside>
       <div class="main-area">
         <header class="topbar">
