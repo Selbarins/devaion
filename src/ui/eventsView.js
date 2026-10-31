@@ -2,6 +2,7 @@
 import { EV, DN } from "../data.js";
 import { getSt } from "../state.js";
 import { P2, fmt, esc } from "../helpers.js";
+import { getNotificationPermission } from "../notifications.js";
 
 function nxt(e) {
   const n = Date.now();
@@ -23,7 +24,6 @@ export function drawEvents(app) {
   const n = Date.now();
   const ed = st.evEdit;
   const notifyList = st.evNotify || [];
-  import { getNotificationPermission } from "../notifications.js";
 
   const items = EV.map(e => ({ e, s: nxt(e) }))
     .filter(o => ed || !st.evHide.includes(o.e[0]))
