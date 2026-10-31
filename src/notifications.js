@@ -112,3 +112,26 @@ export function scheduleEventNotifications() {
 export function getNotificationPermission() {
   return permission;
 }
+
+// ========== TEST FUNCTION ==========
+// Call this from the browser console: testNotification()
+export function testNotification() {
+  console.log("Current permission:", permission);
+
+  if (permission !== "granted") {
+    console.warn("Permission is not granted. Requesting...");
+    Notification.requestPermission().then(p => {
+      permission = p;
+      console.log("New permission:", p);
+      if (p === "granted") {
+        showNotification("🌀 Test Notification", "This is a test from Devaion", "test-notif");
+      }
+    });
+    return;
+  }
+
+  showNotification("🌀 Test Notification", "This is a test from Devaion", "test-notif");
+}
+
+// Make it available in the browser console
+window.testNotification = testNotification;
