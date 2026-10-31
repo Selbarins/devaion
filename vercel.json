@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!sounds/|sw\\.js|.*\\..*).*)",
+      "destination": "/index.html"
+    }
   ]
 }
