@@ -418,6 +418,7 @@ document.addEventListener("click", e => {
     tog(st.evPin, b.dataset.ep);
   } else if (b.dataset.en) {
     tog(st.evNotify, b.dataset.en);
+    scheduleEventNotifications(); // re-schedule immediately
   } else if (b.dataset.open) {
     st.activeChar = b.dataset.open;
     st.tab = "missions";
@@ -618,9 +619,18 @@ async function boot() {
     applyTicketTicks();
     render();
     initNotifications().then(() => {
-      scheduleEventNotifications();
-      setInterval(scheduleEventNotifications, 30 * 60 * 1000);
-    });
+        scheduleEventNotifications();
+        // Re-schedule every 4 minutes + on visibility/focus
+        setInterval(scheduleEventNotifications, 4 * 60 * 1000);
+      });
+      
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          scheduleEventNotifications();
+        }
+      });
+      
+      window.addEventListener("focus", scheduleEventNotifications);
     setInterval(tick, 1000);
   });
 }
