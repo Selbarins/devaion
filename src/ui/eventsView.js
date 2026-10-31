@@ -23,6 +23,7 @@ export function drawEvents(app) {
   const n = Date.now();
   const ed = st.evEdit;
   const notifyList = st.evNotify || [];
+  import { getNotificationPermission } from "../notifications.js";
 
   const items = EV.map(e => ({ e, s: nxt(e) }))
     .filter(o => ed || !st.evHide.includes(o.e[0]))
