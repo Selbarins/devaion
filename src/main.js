@@ -11,7 +11,7 @@ import { CHAR_COLORS, NC, SIEGE_DAYS } from "./data.js";   // ← added SIEGE_DA
 import { tog, fmt, lastReset, pk, esc, fmtShort } from "./helpers.js";
 import { applyOdyleTicks, setOdyleVal, getOdyleVal, nextUtcTick } from "./odyle.js";
 import { getAllMissions, getBaseMissions, setBaseMissions, max, val, key, ordered, prog } from "./missions.js";
-import { applyTicketTicks } from "./tickets.js";
+import { applyTicketTicks, adjTicket } from "./tickets.js";
 import { gval, gmax, gkey, createOrUpdateGoalFromForm } from "./goals.js";
 import { drawMissions } from "./ui/missionsView.js";
 import { drawEvents } from "./ui/eventsView.js";
@@ -291,9 +291,16 @@ document.addEventListener("click", e => {
     const it = getAllMissions().find(i => i.id === b.dataset.k);
     if (!it) return;
     const m = max(it);
-    let v = val(it);
-    v = b.dataset.d === "all" ? m : Math.min(m, Math.max(0, v + +b.dataset.d));
+    const old = val(it);
+    let v = b.dataset.d === "all" ? m : Math.min(m, Math.max(0, old + +b.dataset.d));
     S.set(key(it), v);
+
+    // Auto-consume tickets when the mission is completed
+    if (v >= m && old < m && it.consumes) {
+      const amount = Math.max(1, +it.consumesAmount || 1);
+      const charId = it.s === "char" ? st.activeChar : null;
+      adjTicket(it.consumes, -amount, charId);
+    }
   } else if (b.classList.contains("color-swatch") && b.dataset.color) {
     const pick = b.closest(".color-pick");
     if (pick) {
@@ -354,25 +361,24 @@ document.addEventListener("click", e => {
   } else if (b.dataset.cdel) {
     customs = customs.filter(c => c.id !== b.dataset.cdel);
     setCustoms(customs);
-    } else if (b.id === "cmAdd") {
-    const n = document.getElementById("cmN")?.value.trim();
-    if (!n) { document.getElementById("cmN")?.focus(); return; }
-    const p = document.getElementById("cmP")?.value || st.sub;
-    const goalId = document.getElementById("cmGoalId")?.value || null;
-    customs.push({
-      id: "cm" + Date.now(),
-      n,
-      ic: document.getElementById("cmIc")?.value.trim() || "⭐",
-      p,
-      s: document.getElementById("cmS")?.value || "char",
-      c: Math.max(1, +(document.getElementById("cmC")?.value) || 1),
-      t: document.getElementById("cmT")?.value.trim() || (goalId ? "Linked goal" : "Custom Mission"),
-      goalId: goalId || null,
-      ch: document.getElementById("cmCh")?.value || null
-    });
-    setCustoms(customs);
-    st.sub = p;
-    st.cmPrefill = null;
+    } else if (b.id === "bmSave") {
+    const id = st.baseEditId;
+    if (!id) return;
+    const list = getBaseMissions();
+    const m = list.find(x => x.id === id);
+    if (!m) return;
+
+    m.n  = document.getElementById("bmN")?.value.trim() || m.n;
+    m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
+    m.t  = document.getElementById("bmT")?.value.trim() || m.t;
+    m.c  = Math.max(1, +document.getElementById("bmC")?.value || m.c);
+    m.s  = document.getElementById("bmS")?.value || m.s;
+    m.consumes = document.getElementById("bmConsumes")?.value || null;
+    m.consumesAmount = Math.max(1, +(document.getElementById("bmAmount")?.value) || 1);
+
+    setBaseMissions(list);
+    st.baseEditId = null;
+  }
   } else if (b.dataset.bedit) {
     st.baseEditId = b.dataset.bedit;
     st.mEdit = true;
@@ -617,6 +623,7 @@ async function boot() {
     // Now show the real app
     applyOdyleTicks();
     applyTicketTicks();
+    persist();   // push any hydrated data back to cloud if needed
     render();
     initNotifications().then(() => {
         scheduleEventNotifications();
