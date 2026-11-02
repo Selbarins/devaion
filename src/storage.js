@@ -54,7 +54,7 @@ function collectKV() {
         k.startsWith('d2|') ||
         k.startsWith('g|') ||
         k.startsWith('a2') ||
-        k === 'devaion_base_missions'
+        k === 'devaion_missions'
       ) {
         kv[k] = localStorage.getItem(k);
       }
@@ -150,16 +150,7 @@ export async function loadAll(userId) {
   return { ...local, _source: 'local' };
 }
 
-  return { ...local, _source: 'local' };
-}
-
 export function saveAll(userId, state) {
-  // Always keep a local cache
-  if (state.roster) localSet('devaion_roster', state.roster);
-  if (state.st) localSet('devaion_st', state.st);
-  if (state.goals) localSet('devaion_goals', state.goals);
-  if (state.notes) localSet('devaion_notes', state.notes);
-  export function saveAll(userId, state) {
   if (state.roster) localSet('devaion_roster', state.roster);
   if (state.st) localSet('devaion_st', state.st);
   if (state.goals) localSet('devaion_goals', state.goals);
@@ -173,20 +164,6 @@ export function saveAll(userId, state) {
       goals: state.goals,
       notes: state.notes,
       missions: state.missions ?? localGet('devaion_missions'),
-      kv: collectKV()
-    };
-    scheduleCloudSave(userId, payload);
-  }
-}
-
-  if (userId) {
-    const payload = {
-      roster: state.roster,
-      st: state.st,
-      goals: state.goals,
-      notes: state.notes,
-      customs: state.customs,
-      baseMissions: state.baseMissions ?? localGet('devaion_base_missions'),
       kv: collectKV()
     };
     scheduleCloudSave(userId, payload);
