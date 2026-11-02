@@ -1,5 +1,5 @@
 /** Odyle energy regeneration (global UTC ticks) */
-import { S, getRoster } from "./state.js";
+import { S, getRoster, persist } from "./state.js";
 
 const ODYLE_HOURS = [0, 3, 6, 9, 12, 15, 18, 21];
 export const ODYLE_PER_TICK = 15;
@@ -16,6 +16,7 @@ export function getOdyleVal(charId) {
 export function setOdyleVal(charId, value) {
   const v = Math.min(2000, Math.max(0, +value || 0));
   S.set("a2oe_" + charId, String(v));
+  persist();
   return v;
 }
 function getLastAppliedTick() {
@@ -51,6 +52,7 @@ export function applyOdyleTicks() {
   let last = getLastAppliedTick();
   if (!last) {
     setLastAppliedTick(latest);
+    persist();
     return;
   }
   if (latest <= last) return;
@@ -64,14 +66,20 @@ export function applyOdyleTicks() {
   }
   if (ticks <= 0) {
     setLastAppliedTick(latest);
+    persist();
     return;
   }
   const cap = getOdyleCap();
   getRoster().forEach(c => {
     const v = getOdyleVal(c.id);
-    if (v < cap) setOdyleVal(c.id, Math.min(cap, v + ticks * ODYLE_PER_TICK));
+    if (v < cap) {
+      // write without nested persist storm — set raw then one persist
+      const nv = Math.min(cap, v + ticks * ODYLE_PER_TICK);
+      S.set("a2oe_" + c.id, String(nv));
+    }
   });
   setLastAppliedTick(latest);
+  persist();
 }
 
 export function getOdyle(charId) {
