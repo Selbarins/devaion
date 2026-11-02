@@ -1,52 +1,18 @@
-/** Mission helpers + card rendering */
-import { D_BASE_SEED } from "./data.js";
-import {
-  S, getSt, getCustoms, isMain,
-  getBaseMissionsState, setBaseMissionsState, localGet, localSet
-} from "./state.js";
+/** Mission helpers + card rendering — unified missions */
+import { S, getSt, getMissions, setMissions, isMain } from "./state.js";
 import { pk, esc } from "./helpers.js";
 
-const BASE_KEY = "devaion_base_missions";
+export function getAllMissions() {
+  return getMissions();
+}
 
-/** Load editable base missions (seeded once) */
 export function getBaseMissions() {
-  let stored = getBaseMissionsState();
-  if (!Array.isArray(stored) || stored.length === 0) {
-    stored = D_BASE_SEED.map(m => ({ ...m, consumes: null, consumesAmount: 1 }));
-    setBaseMissionsState(stored);
-    localSet(BASE_KEY, stored);
-  }
-  // ensure new fields exist on old data
-  stored.forEach(m => {
-    if (m.consumes === undefined) m.consumes = null;
-    if (m.consumesAmount === undefined) m.consumesAmount = 1;
-  });
-  return stored;
+  // kept for compatibility during transition
+  return getMissions();
 }
 
 export function setBaseMissions(list) {
-  setBaseMissionsState(list);
-  localSet(BASE_KEY, list);
-}
-
-export function getAllMissions() {
-  const base = getBaseMissions();
-  const customs = getCustoms().map(c => ({
-    id: c.id,
-    p: c.p,
-    n: c.n,
-    ic: c.ic || "⭐",
-    f: c.p === "w" ? "Weekly" : "Daily",
-    s: c.s || "char",
-    c: c.c || 1,
-    t: c.t || "Custom Mission",
-    custom: true,
-    goalId: c.goalId || null,
-    ch: c.ch || null,
-    consumes: c.consumes || null,
-    consumesAmount: c.consumesAmount || 1
-  }));
-  return base.concat(customs);
+  setMissions(list);
 }
 
 /** Dynamic max for corridors */
@@ -118,7 +84,6 @@ export function card(it, ed = false) {
   const done = v >= m && !d && !ed;
   const sc = { char: "Per Character", shared: "Shared", main: "Main Only" }[it.s];
   const scClass = { char: "char", shared: "shared", main: "main" }[it.s];
-  const isCustom = !!it.custom;
   const goalTag = it.goalId
     ? `<span class="tg" style="border-color:var(--amber);color:var(--amber)">🎯 Goal</span>`
     : "";
@@ -130,8 +95,8 @@ export function card(it, ed = false) {
           <button type="button" data-mv="${it.id}" data-d="-1">▲</button>
           <button type="button" data-mv="${it.id}" data-d="1">▼</button>
           <button type="button" data-hd="${it.id}">${hid(it) ? "Show" : "Hide"}</button>
-          ${isCustom ? `<button type="button" data-cdel="${it.id}" class="btn-danger">Del</button>` : ""}
-          <button type="button" data-bedit="${it.id}" class="btn-sm">Edit</button>
+          <button type="button" data-medit-id="${it.id}" class="btn-sm">Edit</button>
+          <button type="button" data-mdel="${it.id}" class="btn-danger">Del</button>
         </div>`
       : `<div class="ctl">
           <button type="button" data-k="${it.id}" data-d="-1">−</button>
@@ -146,8 +111,7 @@ export function card(it, ed = false) {
       <div class="hd">
         <h3>${esc(it.n)}</h3>
         <span class="tg ${scClass}">${sc}</span>
-        <span class="tg">${it.f}</span>
-        ${isCustom ? '<span class="tg custom">Custom</span>' : ""}
+        <span class="tg">${it.p === "w" ? "Weekly" : "Daily"}</span>
         ${goalTag}
       </div>
       <div class="tip">${esc(it.t)}</div>
