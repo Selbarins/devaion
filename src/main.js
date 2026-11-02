@@ -5,12 +5,12 @@ import { initAuth, getUser, onAuthChange, signInWithDiscord, signOut } from "./a
 import { hasSupabase, getSyncStatus, S, localGet, loadAll, saveAll } from "./storage.js";
 import {
   getSt, getRoster, setRoster, getGoals, setGoals, getNotes, setNotes,
-  getCustoms, setCustoms, activeChar, persist
+  getMissions, setMissions, activeChar, persist
 } from "./state.js";
 import { CHAR_COLORS, NC, SIEGE_DAYS } from "./data.js";   // ← added SIEGE_DAYS
 import { tog, fmt, lastReset, pk, esc, fmtShort } from "./helpers.js";
 import { applyOdyleTicks, setOdyleVal, getOdyleVal, nextUtcTick } from "./odyle.js";
-import { getAllMissions, getBaseMissions, setBaseMissions, max, val, key, ordered, prog } from "./missions.js";
+import { getAllMissions, max, val, key, ordered, prog } from "./missions.js";
 import { applyTicketTicks, adjTicket } from "./tickets.js";
 import { gval, gmax, gkey, createOrUpdateGoalFromForm } from "./goals.js";
 import { drawMissions } from "./ui/missionsView.js";
@@ -612,8 +612,7 @@ async function boot() {
     if (data.st) Object.assign(getSt(), data.st);
     if (data.goals) setGoals(data.goals);
     if (data.notes) setNotes(data.notes);
-    if (data.customs) setCustoms(data.customs);
-
+    if (data.missions) setMissions(data.missions);
     // Make sure active character still exists
     const roster = getRoster();
     if (!roster.find(c => c.id === getSt().activeChar)) {
