@@ -24,6 +24,7 @@ export function setTicket(kind, value, charId = null) {
   const key = def.perChar ? def.prefix + charId : def.prefix;
   const v = Math.max(0, +value || 0);
   S.set(key, String(v));
+  persist();
   return v;
 }
 
