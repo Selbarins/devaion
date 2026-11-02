@@ -271,7 +271,6 @@ document.addEventListener("click", e => {
   let roster = getRoster();
   let goals = getGoals();
   let notes = getNotes();
-  let customs = getCustoms();
 
   if (b.id === "logoutBtn") {
   signOut();
@@ -608,7 +607,7 @@ async function boot() {
       localGet("devaion_st") ||
       (localGet("devaion_goals", []).length > 0) ||
       (localGet("devaion_notes", []).length > 0) ||
-      (localGet("devaion_customs", []).length > 0);
+      (localGet("devaion_missions", []).length > 0);
 
     const cloudIsEmpty = !data.roster && !data.st && (!data.goals || data.goals.length === 0);
 
@@ -619,7 +618,7 @@ async function boot() {
         st: getSt(),
         goals: getGoals(),
         notes: getNotes(),
-        customs: getCustoms()
+        missions: getMissions()
       });
     }
 
