@@ -1,5 +1,5 @@
 /** Ticket counters – overcap allowed + daily/weekly auto ticks */
-import { S, getRoster } from "./state.js";
+import { S, getRoster, persist } from "./state.js";
 import { isMembership } from "./odyle.js";
 import { pk } from "./helpers.js";
 
@@ -56,9 +56,9 @@ export function applyTicketTicks() {
   const lastW = S.get("a2tk_last_w") || "";
 
   const roster = getRoster();
+  let changed = false;
 
   if (lastD !== dayKey) {
-    // daily gains
     Object.entries(KEYS).forEach(([kind, def]) => {
       if (!def.daily) return;
       if (def.perChar) {
@@ -68,10 +68,10 @@ export function applyTicketTicks() {
       }
     });
     S.set("a2tk_last_d", dayKey);
+    changed = true;
   }
 
   if (lastW !== weekKey) {
-    // weekly gains
     Object.entries(KEYS).forEach(([kind, def]) => {
       if (!def.weekly) return;
       if (def.perChar) {
@@ -81,5 +81,8 @@ export function applyTicketTicks() {
       }
     });
     S.set("a2tk_last_w", weekKey);
+    changed = true;
   }
+
+  if (changed) persist();
 }
