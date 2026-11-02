@@ -35,12 +35,41 @@ export function localSet(key, value) {
   S.set(key, JSON.stringify(value));
 }
 
-// ---------- Cloud sync (per-user) ----------
+// ---------- Cloud sync (per-user, full state) ----------
 let saveTimer = null;
 let lastSyncStatus = 'idle';
 
 export function getSyncStatus() {
   return lastSyncStatus;
+}
+
+/** Collect every progress / ticket / odyle key that should live in the cloud */
+function collectKV() {
+  const kv = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (
+        k.startsWith('d2|') ||
+        k.startsWith('g|') ||
+        k.startsWith('a2') ||
+        k === 'devaion_base_missions'
+      ) {
+        kv[k] = localStorage.getItem(k);
+      }
+    }
+  } catch {}
+  return kv;
+}
+
+/** Write a kv object back into localStorage */
+function hydrateKV(kv) {
+  if (!kv || typeof kv !== 'object') return;
+  Object.entries(kv).forEach(([k, v]) => {
+    if (v == null) return;
+    try { localStorage.setItem(k, v); } catch {}
+  });
 }
 
 export async function loadFromCloud(userId) {
@@ -73,7 +102,7 @@ export async function saveToCloud(userId, payload) {
         user_id: userId,
         data: payload,
         updated_at: new Date().toISOString()
-      });
+      }, { onConflict: 'user_id' });
 
     if (error) throw error;
     lastSyncStatus = 'synced';
@@ -83,12 +112,16 @@ export async function saveToCloud(userId, payload) {
   }
 }
 
-export function scheduleCloudSave(userId, payload, delay = 800) {
+export function scheduleCloudSave(userId, payload, delay = 700) {
   if (!supabase || !userId) return;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => saveToCloud(userId, payload), delay);
 }
 
+/**
+ * Cloud is the source of truth when the user is logged in.
+ * localStorage is only a cache + offline buffer.
+ */
 export async function loadAll(userId) {
   const local = {
     roster: localGet('devaion_roster'),
@@ -96,17 +129,22 @@ export async function loadAll(userId) {
     goals: localGet('devaion_goals', []),
     notes: localGet('devaion_notes', []),
     customs: localGet('devaion_customs', []),
+    baseMissions: localGet('devaion_base_missions'),
+    kv: collectKV()
   };
 
   if (supabase && userId) {
     const cloud = await loadFromCloud(userId);
     if (cloud) {
+      // Prefer cloud completely
+      if (cloud.kv) hydrateKV(cloud.kv);
       return {
         roster: cloud.roster ?? local.roster,
         st: cloud.st ?? local.st,
         goals: cloud.goals ?? local.goals,
         notes: cloud.notes ?? local.notes,
         customs: cloud.customs ?? local.customs,
+        baseMissions: cloud.baseMissions ?? local.baseMissions,
         _source: 'cloud'
       };
     }
@@ -116,20 +154,25 @@ export async function loadAll(userId) {
 }
 
 export function saveAll(userId, state) {
+  // Always keep a local cache
   if (state.roster) localSet('devaion_roster', state.roster);
   if (state.st) localSet('devaion_st', state.st);
   if (state.goals) localSet('devaion_goals', state.goals);
   if (state.notes) localSet('devaion_notes', state.notes);
   if (state.customs) localSet('devaion_customs', state.customs);
+  if (state.baseMissions) localSet('devaion_base_missions', state.baseMissions);
 
   if (userId) {
-    scheduleCloudSave(userId, {
+    const payload = {
       roster: state.roster,
       st: state.st,
       goals: state.goals,
       notes: state.notes,
       customs: state.customs,
-    });
+      baseMissions: state.baseMissions ?? localGet('devaion_base_missions'),
+      kv: collectKV()
+    };
+    scheduleCloudSave(userId, payload);
   }
 }
 
