@@ -2,8 +2,8 @@
  * Global app state — single source of truth.
  */
 import { getUser } from "./auth.js";
-import { localGet, saveAll, S } from "./storage.js";
-import { DEFAULT_ROSTER, CHAR_COLORS } from "./data.js";
+import { localGet, localSet, saveAll, S } from "./storage.js";
+import { DEFAULT_ROSTER, CHAR_COLORS, D_BASE_SEED } from "./data.js";
 
 let roster = localGet("devaion_roster") || DEFAULT_ROSTER.slice();
 roster.forEach((c, i) => {
@@ -12,8 +12,8 @@ roster.forEach((c, i) => {
 
 let st = Object.assign(
   {
-    theme: "default",          // default | contrast | dense
-    corrWon: 0,                // last known corridors won
+    theme: "default",
+    corrWon: 0,
     tab: "hub",
     sub: "d",
     gsub: "d",
@@ -34,7 +34,7 @@ let st = Object.assign(
     baseEditId: null,
     editingChar: null,
     linkMissionGoalId: null,
-    cmPrefill: null  // { n, ic, p, s, c, t, goalId } when opening custom form from goal
+    cmPrefill: null
   },
   localGet("devaion_st") || {}
 );
@@ -55,6 +55,12 @@ if (!roster.find(c => c.id === st.activeChar)) st.activeChar = roster[0]?.id || 
 let goals = localGet("devaion_goals", []);
 let notes = localGet("devaion_notes", []);
 let customs = localGet("devaion_customs", []);
+let baseMissions = localGet("devaion_base_missions");
+
+if (!Array.isArray(baseMissions) || baseMissions.length === 0) {
+  baseMissions = D_BASE_SEED.map(m => ({ ...m, consumes: null, consumesAmount: 1 }));
+  localSet("devaion_base_missions", baseMissions);
+}
 
 export function getRoster() { return roster; }
 export function setRoster(r) { roster = r; }
@@ -65,6 +71,8 @@ export function getNotes() { return notes; }
 export function setNotes(n) { notes = n; }
 export function getCustoms() { return customs; }
 export function setCustoms(c) { customs = c; }
+export function getBaseMissionsState() { return baseMissions; }
+export function setBaseMissionsState(list) { baseMissions = list; }
 
 export function activeChar() {
   return roster.find(c => c.id === st.activeChar) || roster[0];
@@ -72,10 +80,19 @@ export function activeChar() {
 export function isMain() {
   return activeChar()?.role === "main";
 }
-// already imported in storage, re-export for convenience
-export { localGet, localSet } from "./storage.js";
+
+export { localGet, localSet };
+
 export function persist() {
   const user = getUser();
-  saveAll(user?.id ?? null, { roster, st, goals, notes, customs });
+  saveAll(user?.id ?? null, {
+    roster,
+    st,
+    goals,
+    notes,
+    customs,
+    baseMissions
+  });
 }
+
 export { S };
