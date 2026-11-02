@@ -128,27 +128,27 @@ export async function loadAll(userId) {
     st: localGet('devaion_st'),
     goals: localGet('devaion_goals', []),
     notes: localGet('devaion_notes', []),
-    customs: localGet('devaion_customs', []),
-    baseMissions: localGet('devaion_base_missions'),
+    missions: localGet('devaion_missions'),
     kv: collectKV()
   };
 
   if (supabase && userId) {
     const cloud = await loadFromCloud(userId);
     if (cloud) {
-      // Prefer cloud completely
       if (cloud.kv) hydrateKV(cloud.kv);
       return {
         roster: cloud.roster ?? local.roster,
         st: cloud.st ?? local.st,
         goals: cloud.goals ?? local.goals,
         notes: cloud.notes ?? local.notes,
-        customs: cloud.customs ?? local.customs,
-        baseMissions: cloud.baseMissions ?? local.baseMissions,
+        missions: cloud.missions ?? local.missions,
         _source: 'cloud'
       };
     }
   }
+
+  return { ...local, _source: 'local' };
+}
 
   return { ...local, _source: 'local' };
 }
@@ -159,8 +159,25 @@ export function saveAll(userId, state) {
   if (state.st) localSet('devaion_st', state.st);
   if (state.goals) localSet('devaion_goals', state.goals);
   if (state.notes) localSet('devaion_notes', state.notes);
-  if (state.customs) localSet('devaion_customs', state.customs);
-  if (state.baseMissions) localSet('devaion_base_missions', state.baseMissions);
+  export function saveAll(userId, state) {
+  if (state.roster) localSet('devaion_roster', state.roster);
+  if (state.st) localSet('devaion_st', state.st);
+  if (state.goals) localSet('devaion_goals', state.goals);
+  if (state.notes) localSet('devaion_notes', state.notes);
+  if (state.missions) localSet('devaion_missions', state.missions);
+
+  if (userId) {
+    const payload = {
+      roster: state.roster,
+      st: state.st,
+      goals: state.goals,
+      notes: state.notes,
+      missions: state.missions ?? localGet('devaion_missions'),
+      kv: collectKV()
+    };
+    scheduleCloudSave(userId, payload);
+  }
+}
 
   if (userId) {
     const payload = {
