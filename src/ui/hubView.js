@@ -326,6 +326,7 @@ export function drawHub(app, { onRender }) {
   app.querySelectorAll("[data-tk]").forEach(btn => {
     btn.onclick = () => {
       adjTicket(btn.dataset.tk, +btn.dataset.d, btn.dataset.char || null);
+      persist();
       onRender();
     };
   });
@@ -335,6 +336,7 @@ export function drawHub(app, { onRender }) {
     btn.onclick = () => {
       const v = Math.max(0, Math.min(3, corrWon + +btn.dataset.corr));
       S.set("a2corr_won", String(v));
+      persist();
       onRender();
     };
   });
