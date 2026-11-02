@@ -157,7 +157,7 @@ export function drawMissions(app) {
           <i style="display:block;height:100%;width:${pct}%;background:var(--cyan);border-radius:4px"></i>
         </div>
         <span class="tip">${pct}%</span>
-        <button type="button" data-me class="btn-sm ${st.mEdit ? "on" : ""}">${st.mEdit ? "Done" : "Edit"}</button>
+        <button type="button" data-me="1" class="btn-sm ${st.mEdit ? "on" : ""}">${st.mEdit ? "Done" : "Edit"}</button>
         ${st.mEdit ? `<button type="button" id="cmNew" class="btn-sm">+ New</button>` : ""}
       </div>
       ${formHtml}
