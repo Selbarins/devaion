@@ -107,7 +107,7 @@ function checkSiegeReset() {
 
   S.set("a2corr_won", "0");
   S.set("a2corr_last_reset", today);
-  // Optional: also clear corridor progress keys if you want a full reset
+  persist();
 }
 (function purge() {
   try {
