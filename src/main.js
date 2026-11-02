@@ -349,7 +349,22 @@ document.addEventListener("click", e => {
     if (st.editingChar === b.dataset.del) st.editingChar = null;
   } else if (b.dataset.me) {
     st.mEdit = !st.mEdit;
-    if (!st.mEdit) st.cmPrefill = null;
+    if (!st.mEdit) {
+      st.editMissionId = null;
+      st.cmPrefill = null;
+    }
+  } else if (b.id === "cmNew") {
+    st.editMissionId = null;
+    st.cmPrefill = { p: st.sub };
+    st.mEdit = true;
+  } else if (b.dataset.meditId) {
+    st.editMissionId = b.dataset.meditId;
+    st.cmPrefill = null;
+    st.mEdit = true;
+  } else if (b.dataset.mdel) {
+    const list = getMissions().filter(m => m.id !== b.dataset.mdel);
+    setMissions(list);
+    if (st.editMissionId === b.dataset.mdel) st.editMissionId = null;
   } else if (b.dataset.mv) {
     const ids = ordered(getAllMissions().filter(i => i.p === st.sub)).map(i => i.id);
     const i = ids.indexOf(b.dataset.mv), j = i + +b.dataset.d;
@@ -358,50 +373,51 @@ document.addEventListener("click", e => {
     st.ord = ids.concat(st.ord.filter(x => !ids.includes(x)));
   } else if (b.dataset.hd) {
     tog(st.hid, b.dataset.hd);
-  } else if (b.dataset.cdel) {
-    customs = customs.filter(c => c.id !== b.dataset.cdel);
-    setCustoms(customs);
-    } else if (b.id === "bmSave") {
-    const id = st.baseEditId;
-    if (!id) return;
-    const list = getBaseMissions();
-    const m = list.find(x => x.id === id);
-    if (!m) return;
+  } else if (b.dataset.k) {
+    const it = getAllMissions().find(i => i.id === b.dataset.k);
+    if (!it) return;
+    const m = max(it);
+    const old = val(it);
+    let v = b.dataset.d === "all" ? m : Math.min(m, Math.max(0, old + +b.dataset.d));
+    S.set(key(it), v);
 
-    m.n  = document.getElementById("bmN")?.value.trim() || m.n;
-    m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
-    m.t  = document.getElementById("bmT")?.value.trim() || m.t;
-    m.c  = Math.max(1, +document.getElementById("bmC")?.value || m.c);
-    m.s  = document.getElementById("bmS")?.value || m.s;
-    m.consumes = document.getElementById("bmConsumes")?.value || null;
-    m.consumesAmount = Math.max(1, +(document.getElementById("bmAmount")?.value) || 1);
+    // Ticket consumption when completing the mission
+    if (v >= m && old < m && it.consumes) {
+      const amount = Math.max(1, +it.consumesAmount || 1);
+      const charId = it.s === "char" ? st.activeChar : null;
+      adjTicket(it.consumes, -amount, charId);
+    }
+  } else if (b.id === "cmSave") {
+    const n = document.getElementById("cmN")?.value.trim();
+    if (!n) { document.getElementById("cmN")?.focus(); return; }
 
-    setBaseMissions(list);
-    st.baseEditId = null;
-  }
-  } else if (b.dataset.bedit) {
-    st.baseEditId = b.dataset.bedit;
-    st.mEdit = true;
-  } else if (b.id === "bmSave") {
-    const id = st.baseEditId;
-    if (!id) return;
-    const list = getBaseMissions();
-    const m = list.find(x => x.id === id);
-    if (!m) return;
+    const payload = {
+      n,
+      ic: document.getElementById("cmIc")?.value.trim() || "⭐",
+      p: document.getElementById("cmP")?.value || st.sub,
+      s: document.getElementById("cmS")?.value || "char",
+      c: Math.max(1, +(document.getElementById("cmC")?.value) || 1),
+      t: document.getElementById("cmT")?.value.trim() || "",
+      ch: document.getElementById("cmCh")?.value || null,
+      goalId: document.getElementById("cmGoalId")?.value || null,
+      consumes: document.getElementById("cmConsumes")?.value || null,
+      consumesAmount: Math.max(1, +(document.getElementById("cmAmount")?.value) || 1)
+    };
 
-    m.n  = document.getElementById("bmN")?.value.trim() || m.n;
-    m.ic = document.getElementById("bmIc")?.value.trim() || m.ic;
-    m.t  = document.getElementById("bmT")?.value.trim() || m.t;
-    m.c  = Math.max(1, +document.getElementById("bmC")?.value || m.c);
-    m.s  = document.getElementById("bmS")?.value || m.s;
-
-    setBaseMissions(list);
-    st.baseEditId = null;
-  } else if (b.id === "bmCancel") {
-    st.baseEditId = null;
-  } else if (b.id === "cmCancelPrefill") {
+    const list = getMissions().slice();
+    if (st.editMissionId) {
+      const idx = list.findIndex(m => m.id === st.editMissionId);
+      if (idx >= 0) list[idx] = { ...list[idx], ...payload };
+    } else {
+      list.push({ id: "m" + Date.now(), ...payload });
+    }
+    setMissions(list);
+    st.sub = payload.p;
+    st.editMissionId = null;
     st.cmPrefill = null;
-    st.mEdit = false;
+  } else if (b.id === "cmCancel") {
+    st.editMissionId = null;
+    st.cmPrefill = null;
   } else if (b.id === "cmEmojiBtn") {
     const panel = document.getElementById("cmEmojiPanel");
     if (panel) panel.hidden = !panel.hidden;
