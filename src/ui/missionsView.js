@@ -1,10 +1,10 @@
-/** Missions + Goals tab shell */
-import { getSt, getRoster, activeChar } from "../state.js";
-import { getAllMissions, getBaseMissions, ordered, dis, hid, prog, card } from "../missions.js";
+/** Missions + Goals tab — unified missions */
+import { getSt, getRoster } from "../state.js";
+import { getAllMissions, ordered, dis, hid, prog, card } from "../missions.js";
 import { drawGoals } from "./goalsView.js";
 import { esc } from "../helpers.js";
 
-const MISSION_EMOJIS = ["⭐", "🎯", "📜", "⚔", "🗡", "💰", "🔥", "🏛", "🌑", "💠", "🎁", "🌀"];
+const MISSION_EMOJIS = ["⭐", "🎯", "📜", "⚔", "🗡", "💰", "🔥", "🏛", "🌑", "💠", "🎁", "🌀", "🗼", "⏱", "⚗", "🛒", "🔮", "🗺", "🛡", "🌀"];
 
 const TICKET_OPTIONS = [
   { value: "", label: "— None —" },
@@ -18,7 +18,7 @@ function ticketSelect(id, current) {
   return `
     <select id="${id}">
       ${TICKET_OPTIONS.map(o =>
-        `<option value="${o.value}" ${current === o.value ? "selected" : ""}>${o.label}</option>`
+        `<option value="${o.value}" ${(current || "") === o.value ? "selected" : ""}>${o.label}</option>`
       ).join("")}
     </select>`;
 }
@@ -58,66 +58,28 @@ export function drawMissions(app) {
   const L = st.mEdit ? all : all.filter(i => !dis(i) && !hid(i));
   const pct = prog(st.sub);
 
+  // ----- Unified form (create or edit) -----
+  const editing = st.editMissionId
+    ? getAllMissions().find(m => m.id === st.editMissionId)
+    : null;
+
   const pre = st.cmPrefill || {};
-  const showForm = st.mEdit || st.cmPrefill;
-  const ic = pre.ic || "⭐";
-  const title = pre.n || "";
-  const scope = pre.s || "char";
-  const period = pre.p || st.sub;
-  const count = pre.c || 1;
-  const tip = pre.t || "";
-  const preConsumes = pre.consumes || "";
-  const preAmount = pre.consumesAmount || 1;
+  const isEditing = !!editing;
+  const showForm = st.mEdit || st.cmPrefill || isEditing;
 
-  // ---- Base mission edit form (unified fields) ----
-  const editingBase = st.baseEditId ? getBaseMissions().find(m => m.id === st.baseEditId) : null;
+  const ic = editing?.ic || pre.ic || "⭐";
+  const title = editing?.n || pre.n || "";
+  const scope = editing?.s || pre.s || "char";
+  const period = editing?.p || pre.p || st.sub;
+  const count = editing?.c || pre.c || 1;
+  const tip = editing?.t || pre.t || "";
+  const ch = editing?.ch || pre.ch || "";
+  const consumes = editing?.consumes || pre.consumes || "";
+  const amount = editing?.consumesAmount || pre.consumesAmount || 1;
 
-  const baseEditForm = editingBase ? `
+  const formHtml = showForm ? `
     <div class="custom-form" style="margin-bottom:16px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)">
-      <div class="tip" style="margin-bottom:10px">Editing base mission: <b>${esc(editingBase.n)}</b></div>
-      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <label class="tip">Icon</label>
-          <input type="text" id="bmIc" value="${esc(editingBase.ic || "")}" maxlength="4" style="width:52px">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:160px">
-          <label class="tip">Title</label>
-          <input type="text" id="bmN" value="${esc(editingBase.n)}" maxlength="40" style="width:100%">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <label class="tip">Scope</label>
-          <select id="bmS">
-            <option value="char" ${editingBase.s === "char" ? "selected" : ""}>Per Character</option>
-            <option value="shared" ${editingBase.s === "shared" ? "selected" : ""}>Shared</option>
-            <option value="main" ${editingBase.s === "main" ? "selected" : ""}>Main Only</option>
-          </select>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <label class="tip">Count</label>
-          <input type="number" id="bmC" value="${editingBase.c || 1}" min="1" max="99" style="width:64px">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <label class="tip">Ticket</label>
-          ${ticketSelect("bmConsumes", editingBase.consumes || "")}
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <label class="tip">Amount</label>
-          <input type="number" id="bmAmount" value="${editingBase.consumesAmount || 1}" min="1" max="20" style="width:56px">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px">
-          <label class="tip">Note</label>
-          <input type="text" id="bmT" value="${esc(editingBase.t || "")}" maxlength="80" style="width:100%">
-        </div>
-        <div style="display:flex;gap:8px;align-items:flex-end">
-          <button type="button" id="bmSave" class="btn-sm on">Save</button>
-          <button type="button" id="bmCancel" class="btn-sm">Cancel</button>
-        </div>
-      </div>
-    </div>` : "";
-
-  // ---- Custom mission form ----
-  const customForm = showForm && !editingBase ? `
-    <div class="custom-form" style="margin-bottom:16px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)">
+      <div class="tip" style="margin-bottom:10px">${isEditing ? `Editing: <b>${esc(editing.n)}</b>` : "New Mission"}</div>
       <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
         <div style="display:flex;flex-direction:column;gap:6px">
           <label class="tip">Icon</label>
@@ -125,7 +87,7 @@ export function drawMissions(app) {
             <button type="button" id="cmEmojiBtn" class="btn-sm">${ic}</button>
             <input type="hidden" id="cmIc" value="${esc(ic)}">
           </div>
-          <div id="cmEmojiPanel" hidden style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
+          <div id="cmEmojiPanel" hidden style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;max-width:220px">
             ${MISSION_EMOJIS.map(e =>
               `<button type="button" class="btn-sm emoji-pick ${e === ic ? "on" : ""}" data-cm-emoji="${e}">${e}</button>`
             ).join("")}
@@ -133,7 +95,7 @@ export function drawMissions(app) {
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:160px">
           <label class="tip">Title</label>
-          <input type="text" id="cmN" value="${esc(title)}" placeholder="Custom Mission Name" maxlength="40" style="width:100%">
+          <input type="text" id="cmN" value="${esc(title)}" placeholder="Mission name" maxlength="40" style="width:100%">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px">
           <label class="tip">Frequency</label>
@@ -153,9 +115,9 @@ export function drawMissions(app) {
         <div style="display:flex;flex-direction:column;gap:6px">
           <label class="tip">Only character</label>
           <select id="cmCh">
-            <option value="">— Any (use scope) —</option>
+            <option value="">— Any —</option>
             ${roster.map(r =>
-              `<option value="${r.id}" ${(pre.ch || "") === r.id ? "selected" : ""}>${esc(r.name)}</option>`
+              `<option value="${r.id}" ${ch === r.id ? "selected" : ""}>${esc(r.name)}</option>`
             ).join("")}
           </select>
         </div>
@@ -165,20 +127,20 @@ export function drawMissions(app) {
         </div>
         <div style="display:flex;flex-direction:column;gap:6px">
           <label class="tip">Ticket</label>
-          ${ticketSelect("cmConsumes", preConsumes)}
+          ${ticketSelect("cmConsumes", consumes)}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px">
           <label class="tip">Amount</label>
-          <input type="number" id="cmAmount" value="${preAmount}" min="1" max="20" style="width:56px">
+          <input type="number" id="cmAmount" value="${amount}" min="1" max="20" style="width:56px">
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:140px">
           <label class="tip">Note</label>
           <input type="text" id="cmT" value="${esc(tip)}" placeholder="Optional tip" maxlength="80" style="width:100%">
         </div>
-        <input type="hidden" id="cmGoalId" value="${esc(pre.goalId || "")}">
+        <input type="hidden" id="cmGoalId" value="${esc(editing?.goalId || pre.goalId || "")}">
         <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:2px">
-          <button type="button" id="cmAdd" class="btn-sm on">+ Add Mission</button>
-          ${st.cmPrefill ? `<button type="button" id="cmCancelPrefill" class="btn-sm">Cancel</button>` : ""}
+          <button type="button" id="cmSave" class="btn-sm on">${isEditing ? "Save" : "+ Add"}</button>
+          <button type="button" id="cmCancel" class="btn-sm">Cancel</button>
         </div>
       </div>
     </div>` : "";
@@ -195,10 +157,10 @@ export function drawMissions(app) {
           <i style="display:block;height:100%;width:${pct}%;background:var(--cyan);border-radius:4px"></i>
         </div>
         <span class="tip">${pct}%</span>
-        <button type="button" data-medit class="btn-sm ${st.mEdit ? "on" : ""}">${st.mEdit ? "Done" : "Edit"}</button>
+        <button type="button" data-me class="btn-sm ${st.mEdit ? "on" : ""}">${st.mEdit ? "Done" : "Edit"}</button>
+        ${st.mEdit ? `<button type="button" id="cmNew" class="btn-sm">+ New</button>` : ""}
       </div>
-      ${baseEditForm}
-      ${customForm}
+      ${formHtml}
       <div>${L.map(i => card(i, st.mEdit)).join("") || '<p class="tip" style="padding:14px 0">No Missions For This Character.</p>'}</div>
     </div>`;
 }
