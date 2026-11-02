@@ -306,6 +306,7 @@ export function drawHub(app, { onRender }) {
   // Membership
   document.getElementById("om").onchange = () => {
     S.set("a2om", document.getElementById("om").checked ? "1" : "0");
+    persist();
     onRender();
   };
 
