@@ -91,9 +91,9 @@ export function drawMissions(app) {
           <label class="tip" style="font-size:11px">Icon</label>
           <button type="button" id="cmEmojiBtn" class="btn-sm" style="width:36px;height:32px;padding:0;font-size:16px;line-height:1">${ic}</button>
           <input type="hidden" id="cmIc" value="${esc(ic)}">
-          <div id="cmEmojiPanel" hidden
-            style="position:absolute;top:100%;left:0;z-index:20;margin-top:4px;
-                   display:grid;grid-template-columns:repeat(8,28px);gap:2px;
+            <div id="cmEmojiPanel"
+            style="display:none;position:absolute;top:100%;left:0;z-index:20;margin-top:4px;
+                   grid-template-columns:repeat(8,28px);gap:2px;
                    padding:6px;background:var(--bg2);border:1px solid var(--line);
                    border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,.45)">
             ${EMOJIS.map(e =>
