@@ -419,7 +419,10 @@ document.addEventListener("click", e => {
     st.cmPrefill = null;
   } else if (b.id === "cmEmojiBtn") {
     const panel = document.getElementById("cmEmojiPanel");
-    if (panel) panel.hidden = !panel.hidden;
+    if (panel) {
+      const open = panel.style.display === "grid";
+      panel.style.display = open ? "none" : "grid";
+    }
     return;
   } else if (b.dataset.cmEmoji) {
     const em = b.dataset.cmEmoji;
@@ -429,7 +432,7 @@ document.addEventListener("click", e => {
     if (btn) btn.textContent = em;
     document.querySelectorAll(".emoji-pick").forEach(el => el.classList.toggle("on", el.dataset.cmEmoji === em));
     const panel = document.getElementById("cmEmojiPanel");
-    if (panel) panel.hidden = true;
+    if (panel) panel.style.display = "none";
     return;
   } else if (b.dataset.ee) {
     st.evEdit = !st.evEdit;
