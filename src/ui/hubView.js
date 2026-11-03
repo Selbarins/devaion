@@ -26,22 +26,23 @@ function nextEventTimes() {
     }
     return { e, s: best };
   })
-  .filter(o => o.s)
-  .sort((a, b) => a.s - b.s)
-  .slice(0, 5);
+    .filter(o => o.s)
+    .sort((a, b) => a.s - b.s)
+    .slice(0, 5);
 }
 
 /** SVG progress ring — pct 0–100 */
-function ringSvg(pct, size = 44, stroke = 3.5, ok = false) {
-  const r = (size / 2) - stroke;
+function ringSvg(pct, size = 42, stroke = 3.2, ok = false) {
+  const r = size / 2 - stroke;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - Math.min(100, Math.max(0, pct)) / 100);
   const cls = ok ? "ring-ok" : "ring-fill";
   return `
     <svg class="prog-ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <circle class="ring-bg" cx="${size/2}" cy="${size/2}" r="${r}" stroke-width="${stroke}" fill="none"/>
-      <circle class="${cls}" cx="${size/2}" cy="${size/2}" r="${r}" stroke-width="${stroke}" fill="none"
-        stroke-dasharray="${c}" stroke-dashoffset="${offset}" transform="rotate(-90 ${size/2} ${size/2})"/>
+      <circle class="ring-bg" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" fill="none"/>
+      <circle class="${cls}" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" fill="none"
+        stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${offset.toFixed(2)}"
+        transform="rotate(-90 ${size / 2} ${size / 2})"/>
       <text x="50%" y="50%" dominant-baseline="central" text-anchor="middle" class="ring-text">${Math.round(pct)}%</text>
     </svg>`;
 }
@@ -53,7 +54,7 @@ export function drawHub(app, { onRender }) {
   const cap = getOdyleCap();
   const om = isMembership();
   const corrWon = +S.get("a2corr_won") || 0;
-  const expanded = new Set(st.hubExpanded || []);
+  const expanded = new Set(Array.isArray(st.hubExpanded) ? st.hubExpanded : []);
 
   const rows = roster.map(r => {
     const md = cnt("d", r.id);
@@ -67,15 +68,17 @@ export function drawHub(app, { onRender }) {
     const weeklyPct = mw[1] ? (mw[0] / mw[1]) * 100 : 0;
     const runs = Math.floor(oe / 80);
     const atCap = oe >= cap;
-    const nearCap = oe >= cap - 30;
-    const nmNear = nm >= nmCap - 2 && nmCap > 0;
-    const ascNear = asc >= ascCap - 1 && ascCap > 0;
+    const nearCap = !atCap && oe >= cap - 30;
+    const nmNear = nmCap > 0 && nm >= nmCap - 2;
+    const ascNear = ascCap > 0 && asc >= ascCap - 1;
     const allClear = md[1] > 0 && md[0] >= md[1];
     return { r, md, mw, oe, nm, asc, nmCap, ascCap, dailyPct, weeklyPct, runs, atCap, nearCap, nmNear, ascNear, allClear };
   });
 
   const shugo = getTicket("shugo");
   const dim = getTicket("dim");
+  const shugoCap = getTicketCap("shugo");
+  const dimCap = getTicketCap("dim");
   const unfinished = unfinishedDailies();
   const nextEv = nextEventTimes();
 
@@ -86,38 +89,34 @@ export function drawHub(app, { onRender }) {
         <label class="tg" style="cursor:pointer;margin-left:auto">
           <input type="checkbox" id="om" ${om ? "checked" : ""}> Membership
         </label>
-        <div class="theme-toggle seg" title="Theme">
-          <button type="button" data-theme-set="dark" class="${(st.theme || "dark") !== "light" ? "on" : ""}">Dark</button>
-          <button type="button" data-theme-set="light" class="${st.theme === "light" ? "on" : ""}">Light</button>
-        </div>
       </div>
 
       <div class="shared-tickets">
-        <div class="ticket-card ${shugo >= getTicketCap("shugo") - 2 ? "ticket-near" : ""}">
+        <div class="ticket-card ${shugo >= shugoCap - 2 ? "ticket-near" : ""}">
           <div class="ticket-head">
             <span class="ticket-label">🎁 Shugo</span>
             <div class="ticket-controls">
               <button type="button" data-tk="shugo" data-d="-1">−</button>
-              <span class="ticket-val">${shugo}/${getTicketCap("shugo")}</span>
+              <span class="ticket-val">${shugo}/${shugoCap}</span>
               <button type="button" data-tk="shugo" data-d="1">+</button>
             </div>
           </div>
-          <div class="tbar ${shugo > getTicketCap("shugo") ? "over" : shugo >= getTicketCap("shugo") ? "full" : ""}">
-            <i style="width:${Math.min(100, (shugo / Math.max(1, getTicketCap("shugo"))) * 100)}%"></i>
+          <div class="tbar ${shugo > shugoCap ? "over" : shugo >= shugoCap ? "full" : ""}">
+            <i style="width:${Math.min(100, (shugo / Math.max(1, shugoCap)) * 100)}%"></i>
           </div>
         </div>
 
-        <div class="ticket-card ${dim >= getTicketCap("dim") - 1 ? "ticket-near" : ""}">
+        <div class="ticket-card ${dim >= dimCap - 1 ? "ticket-near" : ""}">
           <div class="ticket-head">
             <span class="ticket-label">🕳 Dimensional</span>
             <div class="ticket-controls">
               <button type="button" data-tk="dim" data-d="-1">−</button>
-              <span class="ticket-val">${dim}/${getTicketCap("dim")}</span>
+              <span class="ticket-val">${dim}/${dimCap}</span>
               <button type="button" data-tk="dim" data-d="1">+</button>
             </div>
           </div>
-          <div class="tbar ${dim > getTicketCap("dim") ? "over" : dim >= getTicketCap("dim") ? "full" : ""}">
-            <i style="width:${Math.min(100, (dim / Math.max(1, getTicketCap("dim"))) * 100)}%"></i>
+          <div class="tbar ${dim > dimCap ? "over" : dim >= dimCap ? "full" : ""}">
+            <i style="width:${Math.min(100, (dim / Math.max(1, dimCap)) * 100)}%"></i>
           </div>
         </div>
 
@@ -138,45 +137,55 @@ export function drawHub(app, { onRender }) {
 
       <div class="dgrid dgrid-4">
         ${rows.map(({ r, md, mw, oe, nm, asc, nmCap, ascCap, dailyPct, weeklyPct, runs, atCap, nearCap, nmNear, ascNear, allClear }) => {
-          const p = Math.min(100, Math.round((oe / cap) * 100));
+          const p = Math.min(100, Math.round((oe / Math.max(1, cap)) * 100));
           const lv = batteryLevel(oe, cap);
           const isExp = expanded.has(r.id);
-          const urgency = atCap ? "cap-hit-card" : nearCap ? "cap-warn-card pulse-red" : allClear ? "all-clear-card" : "";
-          const ticketUrgency = (nmNear || ascNear) ? "ticket-urgency" : "";
+          const cardCls = [
+            "dc", "char-hub-card",
+            atCap ? "cap-hit-card" : "",
+            nearCap ? "cap-warn-card pulse-red" : "",
+            allClear ? "all-clear-card" : "",
+            (nmNear || ascNear) ? "ticket-urgency" : "",
+            isExp ? "expanded" : "collapsed"
+          ].filter(Boolean).join(" ");
+
           return `
-          <div class="dc char-hub-card ${urgency} ${ticketUrgency} ${isExp ? "expanded" : "collapsed"}"
-               style="border-left:3px solid ${r.color}" data-char-card="${r.id}">
+          <div class="${cardCls}" style="border-left:3px solid ${r.color}" data-char-card="${r.id}">
 
-            <!-- ===== STATUS STRIP (always visible) ===== -->
-            <div class="status-strip" data-toggle-expand="${r.id}">
-              <div class="strip-left">
-                <div class="strip-name">
-                  <span class="char-dot" style="background:${r.color}"></span>
-                  <span class="name-text">${esc(r.name)}</span>
-                  ${r.role === "main" ? '<span class="tg main">Main</span>' : ""}
-                  ${allClear ? '<span class="clear-badge" title="All dailies done">✓</span>' : ""}
-                </div>
-                <div class="tip strip-meta">${esc(r.class || "—")}</div>
-              </div>
-
-              <div class="strip-odyle">
-                <div class="battery-mini">
-                  <div class="battery-body mini">
-                    <div class="battery-fill ${lv}" style="width:${p}%"></div>
+            <div class="hub-card-head">
+              <div class="hub-card-id">
+                <span class="char-dot" style="background:${r.color}"></span>
+                <div>
+                  <div class="hub-card-name">
+                    ${esc(r.name)}
+                    ${r.role === "main" ? '<span class="tg main">Main</span>' : ""}
+                    ${allClear ? '<span class="clear-badge" title="All dailies done">✓</span>' : ""}
                   </div>
-                  <div class="oe-meta">
-                    <b>${oe}</b><span class="oe-cap">/${cap}</span>
-                    <span class="runs-pill" title="Double runs (energy ÷ 80)">${runs} Runs</span>
-                  </div>
+                  <div class="tip">${esc(r.class || "—")}</div>
                 </div>
-                <div class="tip oe-full">${fullInLabel(oe, cap)}</div>
               </div>
+              <label class="gs" onclick="event.stopPropagation()">
+                GS <input type="number" min="0" data-gs="${r.id}" value="${r.gs || 0}">
+              </label>
+            </div>
 
-              <div class="strip-tickets">
-                <span class="mini-tk ${nmNear ? "near" : ""}" title="Nightmare">🌑 ${nm}/${nmCap}</span>
-                <span class="mini-tk ${ascNear ? "near" : ""}" title="Ascension">🗼 ${asc}/${ascCap}</span>
+            <div class="hub-odyle-row">
+              <div class="battery-body mini">
+                <div class="battery-fill ${lv}" style="width:${p}%"></div>
               </div>
+              <div class="hub-odyle-meta">
+                <div><b>${oe}</b><span class="oe-cap">/${cap}</span>
+                  <span class="runs-pill" title="Double runs (energy ÷ 80)">${runs} Runs</span>
+                </div>
+                <div class="tip">${fullInLabel(oe, cap)}</div>
+              </div>
+            </div>
 
+            <div class="hub-summary-row">
+              <div class="hub-mini-tickets">
+                <span class="mini-tk ${nmNear ? "near" : ""}">🌑 ${nm}/${nmCap}</span>
+                <span class="mini-tk ${ascNear ? "near" : ""}">🗼 ${asc}/${ascCap}</span>
+              </div>
               <div class="strip-rings">
                 <div class="ring-wrap" title="Daily ${md[0]}/${md[1]}">
                   ${ringSvg(dailyPct, 40, 3.2, allClear)}
@@ -187,17 +196,12 @@ export function drawHub(app, { onRender }) {
                   <span class="ring-label">W</span>
                 </div>
               </div>
-
-              <label class="gs strip-gs" onclick="event.stopPropagation()">
-                GS <input type="number" min="0" data-gs="${r.id}" value="${r.gs || 0}">
-              </label>
-
-              <button type="button" class="expand-chevron" data-toggle-expand="${r.id}" aria-label="Expand">
-                ${isExp ? "▴" : "▾"}
-              </button>
             </div>
 
-            <!-- ===== EXPANDED DETAILS (no info dropped) ===== -->
+            <button type="button" class="hub-expand-btn" data-toggle-expand="${r.id}">
+              ${isExp ? "Hide details ▴" : "Show details ▾"}
+            </button>
+
             <div class="card-details" ${isExp ? "" : "hidden"}>
               <div class="oe-btns">
                 <button type="button" data-oe-adj="-40" data-oe-char="${r.id}" class="btn-sm">−40</button>
@@ -292,7 +296,6 @@ export function drawHub(app, { onRender }) {
       </div>
     </div>
 
-    <!-- ROSTER MANAGEMENT -->
     <div class="panel glass">
       <h2>Roster Management</h2>
 
@@ -371,30 +374,16 @@ export function drawHub(app, { onRender }) {
     </div>
   `;
 
-  // Membership
   document.getElementById("om").onchange = () => {
     S.set("a2om", document.getElementById("om").checked ? "1" : "0");
     persist();
     onRender();
   };
 
-  // Theme toggle
-  app.querySelectorAll("[data-theme-set]").forEach(btn => {
-    btn.onclick = () => {
-      const t = btn.dataset.themeSet;
-      getSt().theme = t;
-      document.documentElement.setAttribute("data-theme", t);
-      persist();
-      onRender();
-    };
-  });
-
-  // Expand / collapse character cards
   app.querySelectorAll("[data-toggle-expand]").forEach(el => {
-    el.onclick = (e) => {
-      e.stopPropagation();
+    el.onclick = () => {
       const id = el.dataset.toggleExpand;
-      const list = getSt().hubExpanded || [];
+      const list = Array.isArray(getSt().hubExpanded) ? getSt().hubExpanded.slice() : [];
       const i = list.indexOf(id);
       if (i >= 0) list.splice(i, 1);
       else list.push(id);
@@ -404,7 +393,6 @@ export function drawHub(app, { onRender }) {
     };
   });
 
-  // Color pickers
   document.querySelectorAll("#newColorPick .color-swatch, #editColorPick .color-swatch").forEach(btn => {
     btn.onclick = () => {
       const pick = btn.closest(".color-pick");
@@ -416,7 +404,6 @@ export function drawHub(app, { onRender }) {
     };
   });
 
-  // Ticket buttons
   app.querySelectorAll("[data-tk]").forEach(btn => {
     btn.onclick = () => {
       adjTicket(btn.dataset.tk, +btn.dataset.d, btn.dataset.char || null);
@@ -425,7 +412,6 @@ export function drawHub(app, { onRender }) {
     };
   });
 
-  // Corridor
   app.querySelectorAll("[data-corr]").forEach(btn => {
     btn.onclick = () => {
       const v = Math.max(0, Math.min(3, corrWon + +btn.dataset.corr));
@@ -435,13 +421,12 @@ export function drawHub(app, { onRender }) {
     };
   });
 
-  // Add character
   document.getElementById("addChar").onclick = () => {
     const name = document.getElementById("newName").value.trim();
     if (!name) return;
     const role = document.getElementById("newRole").value;
     const list = getRoster();
-    if (role === "main") list.forEach(c => c.role = "alt");
+    if (role === "main") list.forEach(c => { c.role = "alt"; });
     list.push({
       id: "c" + Date.now(),
       name,
@@ -455,7 +440,6 @@ export function drawHub(app, { onRender }) {
     onRender();
   };
 
-  // Manual Odyle value
   app.querySelectorAll("[data-oe-input]").forEach(inp => {
     inp.addEventListener("change", () => {
       setOdyleVal(inp.dataset.oeInput, inp.value);
@@ -464,7 +448,6 @@ export function drawHub(app, { onRender }) {
     });
   });
 
-  // GS inputs (hub cards)
   app.querySelectorAll("[data-gs]").forEach(inp => {
     inp.addEventListener("change", () => {
       const list = getRoster();
