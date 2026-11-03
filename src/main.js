@@ -91,7 +91,7 @@ const TABS = [
   ["events", "⏱", "Events"]
 ];
 // Apply saved theme as early as possible
-document.documentElement.setAttribute("data-theme", getSt().theme || "default");
+document.documentElement.setAttribute("data-theme", getSt().theme === "light" ? "light" : "dark");
 
 // Siege / corridor reset (runs near 00:00 UTC on Mon/Thu/Sat)
 function checkSiegeReset() {
@@ -591,7 +591,7 @@ document.addEventListener("keydown", e => {
 });
 // ========== BOOT ==========
 async function boot() {
-  document.documentElement.setAttribute("data-theme", getSt().theme || "default");
+  document.documentElement.setAttribute("data-theme", getSt().theme === "light" ? "light" : "dark");
 
   await initAuth();
 
