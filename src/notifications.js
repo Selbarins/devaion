@@ -78,8 +78,8 @@ export function scheduleEventNotifications() {
 
   const st = getSt();
   const notifyList = st.evNotify || [];
-  const minutesBefore = [15, 10, 5];
-
+  const minutesBefore = [10, 5];
+  
   EV.forEach(event => {
     if (!notifyList.includes(event[0])) return;
 
@@ -90,8 +90,8 @@ export function scheduleEventNotifications() {
       const fireAt = start - min * 60 * 1000;
       const delay = fireAt - Date.now();
 
-      // Only schedule near-term (next 25 minutes max)
-      if (delay <= 0 || delay > 25 * 60 * 1000) return;
+      // Only schedule near-term (next ~15 minutes max for 10/5 alerts)
+      if (delay <= 0 || delay > 15 * 60 * 1000) return;
 
       const tag = `devaion-${event[0]}-${min}`;
 
