@@ -13,6 +13,7 @@ roster.forEach((c, i) => {
 let st = Object.assign(
   {
     theme: "dark",   // "dark" | "light"
+    hubExpanded: [],
     corrWon: 0,
     tab: "hub",
     sub: "d",
@@ -56,6 +57,9 @@ delete st.baseEditId;
 
 let goals = localGet("devaion_goals", []);
 let notes = localGet("devaion_notes", []);
+
+if (st.theme !== "light" && st.theme !== "dark") st.theme = "dark";
+if (!Array.isArray(st.hubExpanded)) st.hubExpanded = [];
 
 // ---------- Unified missions ----------
 function normalizeMission(m) {
