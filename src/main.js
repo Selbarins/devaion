@@ -168,6 +168,10 @@ function render() {
               ? (sync === "synced" ? "● Cloud Synced" : sync === "syncing" ? "● Syncing…" : "● Cloud Ready")
               : "○ Local Only"}
           </div>
+          <div class="theme-toggle seg" style="width:100%; margin-top:10px;">
+            <button type="button" data-theme-set="dark" class="${(st.theme || "dark") !== "light" ? "on" : ""}" style="flex:1">Dark</button>
+            <button type="button" data-theme-set="light" class="${st.theme === "light" ? "on" : ""}" style="flex:1">Light</button>
+          </div>
           <button type="button" class="btn-sm" id="logoutBtn" style="width:100%; margin-top:8px;">
             Sign out
           </button>
@@ -283,6 +287,10 @@ document.addEventListener("click", e => {
     st.gEdit = null;
   } else if (b.dataset.s) {
     st.sub = b.dataset.s;
+  } else if (b.dataset.themeSet) {
+    st.theme = b.dataset.themeSet === "light" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", st.theme);
+    persist();
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
     if (st.tab !== "missions") { st.tab = "missions"; st.mview = "missions"; }
