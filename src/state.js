@@ -12,7 +12,7 @@ roster.forEach((c, i) => {
 
 let st = Object.assign(
   {
-    theme: "default",
+    theme: "dark",   // "dark" | "light"
     corrWon: 0,
     tab: "hub",
     sub: "d",
