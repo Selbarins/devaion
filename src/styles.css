@@ -1763,59 +1763,69 @@ footer {
   padding: 6px 8px;
   font-size: 12px;
 }
-
-/* ========== Light theme (ivory) — full compatibility ========== */
+/* ========== Light theme — professional cool glass ========== */
 [data-theme="light"] {
-  --bg: #f7f5f0;
-  --bg2: #fffefb;
-  --bg3: #f0ebe3;
-  --card: rgba(255, 253, 248, 0.9);
-  --card-solid: #fffcf7;
-  --card-hover: rgba(245, 240, 230, 0.95);
-  --line: rgba(40, 36, 30, 0.14);
-  --line2: rgba(40, 36, 30, 0.2);
-  --tx: #1a1814;
-  --mut: #5c564c;
-  --muted: #8a8378;
+  /* Surfaces */
+  --bg: #f0f2f5;
+  --bg2: #e8ebf0;
+  --bg3: #dfe3ea;
+  --card: rgba(255, 255, 255, 0.72);
+  --card-solid: #ffffff;
+  --card-hover: rgba(255, 255, 255, 0.90);
 
-  --neon: #c45c3a;
-  --neon-soft: rgba(196, 92, 58, 0.12);
-  --cyan: #2a6f7a;
-  --cyan-soft: rgba(42, 111, 122, 0.12);
-  --cyan-glow: rgba(42, 111, 122, 0.18);
-  --purple: #6b4f8a;
-  --purple-soft: rgba(107, 79, 138, 0.12);
-  --green: #1f6b4a;
-  --green-soft: rgba(31, 107, 74, 0.14);
-  --amber: #9a6b08;
-  --amber-soft: rgba(154, 107, 8, 0.14);
+  /* Borders & text */
+  --line: rgba(15, 23, 42, 0.09);
+  --line2: rgba(15, 23, 42, 0.15);
+  --tx: #0f172a;
+  --mut: #475569;
+  --muted: #64748b;
 
-  --ok: #1f6b4a;
-  --warn: #9a6b08;
-  --danger: #b33a3a;
+  /* Accents (readable on light) */
+  --neon: #c2410c;
+  --neon-soft: rgba(194, 65, 12, 0.10);
+  --cyan: #0e7490;
+  --cyan-soft: rgba(14, 116, 144, 0.10);
+  --cyan-glow: rgba(14, 116, 144, 0.18);
+  --purple: #6d28d9;
+  --purple-soft: rgba(109, 40, 217, 0.10);
+  --green: #047857;
+  --green-soft: rgba(4, 120, 87, 0.12);
+  --amber: #b45309;
+  --amber-soft: rgba(180, 83, 9, 0.12);
 
-  --shadow-card: 0 4px 24px rgba(40, 30, 20, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
-  --glow-cyan: 0 0 16px rgba(42, 111, 122, 0.08);
+  --ok: #047857;
+  --warn: #b45309;
+  --danger: #b91c1c;
+
+  /* Depth */
+  --shadow-card: 0 4px 24px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --glow-cyan: 0 0 20px rgba(14, 116, 144, 0.12);
 }
 
+/* Body */
 [data-theme="light"] body {
   background:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(42, 111, 122, 0.05), transparent 50%),
-    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(107, 79, 138, 0.04), transparent 45%),
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(14, 116, 144, 0.06), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(109, 40, 217, 0.04), transparent 50%),
     var(--bg);
   color: var(--tx);
 }
 
+/* Sidebar & topbar */
 [data-theme="light"] .sidebar {
-  background: linear-gradient(180deg, #fffcf7 0%, #f3eee6 100%);
+  background: linear-gradient(180deg, #f8fafc 0%, #eef1f6 100%);
   border-right: 1px solid var(--line);
-  box-shadow: 4px 0 24px rgba(40, 30, 20, 0.04);
-}
-[data-theme="light"] .topbar {
-  background: rgba(255, 252, 247, 0.94);
-  border-bottom-color: var(--line);
+  box-shadow: 4px 0 24px rgba(15, 23, 42, 0.03);
 }
 
+[data-theme="light"] .topbar {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Glass panels & cards */
 [data-theme="light"] .panel,
 [data-theme="light"] .panel.glass,
 [data-theme="light"] .char-hub-card,
@@ -1824,42 +1834,48 @@ footer {
 [data-theme="light"] .mini-row,
 [data-theme="light"] .roster-add,
 [data-theme="light"] .dc {
-  background: #fffcf7 !important;
-  border-color: rgba(40, 36, 30, 0.12) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  border-color: rgba(15, 23, 42, 0.09) !important;
   color: var(--tx);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.65);
 }
 
 [data-theme="light"] .roster-add {
-  background: #f5f0e8 !important;
-}
-[data-theme="light"] .char-card {
-  background: #fffefb !important;
+  background: rgba(248, 250, 252, 0.85) !important;
 }
 
-[data-theme="light"] .ring-bg { stroke: rgba(40, 36, 30, 0.12); }
+[data-theme="light"] .char-card {
+  background: rgba(255, 255, 255, 0.80) !important;
+}
+
+/* Rings */
+[data-theme="light"] .ring-bg { stroke: rgba(15, 23, 42, 0.10); }
 [data-theme="light"] .ring-fill { stroke: var(--cyan); filter: none; }
 [data-theme="light"] .ring-ok { stroke: var(--green); filter: none; }
 [data-theme="light"] .ring-text { fill: var(--tx); }
 
+/* Battery & progress bars */
 [data-theme="light"] .battery-body {
   background: var(--bg3);
   border-color: var(--line2);
 }
 [data-theme="light"] .tbar,
 [data-theme="light"] .bt {
-  background: rgba(40, 36, 30, 0.1);
+  background: rgba(15, 23, 42, 0.08);
 }
 
+/* Pills */
 [data-theme="light"] .runs-pill {
-  background: rgba(42, 111, 122, 0.12);
+  background: rgba(14, 116, 144, 0.10);
   color: var(--cyan);
-  border-color: rgba(42, 111, 122, 0.28);
+  border-color: rgba(14, 116, 144, 0.22);
 }
 
-/* Completed missions / done rows — readable green on ivory */
+/* Done / success states */
 [data-theme="light"] .row.done {
-  background: linear-gradient(90deg, rgba(31, 107, 74, 0.12), transparent 55%);
+  background: linear-gradient(90deg, rgba(4, 120, 87, 0.10), transparent 55%);
   border-left-color: var(--green);
 }
 [data-theme="light"] .row.done h3,
@@ -1868,67 +1884,81 @@ footer {
 }
 [data-theme="light"] .bt i.ok,
 [data-theme="light"] .mb .bt > i.ok {
-  background: linear-gradient(90deg, #1f6b4a, #2a8f62) !important;
+  background: linear-gradient(90deg, #047857, #059669) !important;
   box-shadow: none;
 }
 [data-theme="light"] .goal-card.done {
   border-left-color: var(--green);
-  background: linear-gradient(90deg, rgba(31, 107, 74, 0.1), var(--bg2) 40%);
+  background: linear-gradient(90deg, rgba(4, 120, 87, 0.09), var(--bg2) 40%);
 }
 
-/* Events open / soon */
+/* Events */
 [data-theme="light"] .mini-row.open,
 [data-theme="light"] .event-row.open {
-  border-color: rgba(31, 107, 74, 0.4) !important;
-  background: rgba(31, 107, 74, 0.08) !important;
-}
-[data-theme="light"] .event-row .status.open,
-[data-theme="light"] .ev-countdown {
-  /* color set inline; ensure contrast via token */
+  border-color: rgba(4, 120, 87, 0.35) !important;
+  background: rgba(4, 120, 87, 0.07) !important;
 }
 [data-theme="light"] .event-row .status.soon {
   color: var(--amber) !important;
 }
 
+/* All-clear card */
 [data-theme="light"] .char-hub-card.all-clear-card {
-  box-shadow: 0 0 0 1px rgba(31, 107, 74, 0.45), 0 0 20px rgba(31, 107, 74, 0.12);
-  border-color: rgba(31, 107, 74, 0.35);
-  animation: none; /* softer on light */
+  box-shadow: 0 0 0 1px rgba(4, 120, 87, 0.40), 0 0 20px rgba(4, 120, 87, 0.10);
+  border-color: rgba(4, 120, 87, 0.30);
+  animation: none;
 }
 [data-theme="light"] .clear-badge {
-  background: rgba(31, 107, 74, 0.18);
+  background: rgba(4, 120, 87, 0.14);
   color: var(--green);
 }
 
+/* Navigation & buttons */
 [data-theme="light"] .side-nav button.on {
   color: var(--cyan);
   background: var(--cyan-soft);
   box-shadow: inset 3px 0 0 var(--cyan);
 }
 [data-theme="light"] .btn-open {
-  background: rgba(42, 111, 122, 0.1);
+  background: rgba(14, 116, 144, 0.09);
   color: var(--cyan);
-  border-color: rgba(42, 111, 122, 0.28);
+  border-color: rgba(14, 116, 144, 0.22);
 }
 [data-theme="light"] .hub-expand-btn {
-  border-color: rgba(40, 36, 30, 0.2);
+  border-color: rgba(15, 23, 42, 0.14);
   color: var(--mut);
 }
+
+/* Logo & decorative */
 [data-theme="light"] .logo-svg {
-  filter: drop-shadow(0 0 8px rgba(42, 111, 122, 0.2));
+  filter: drop-shadow(0 0 8px rgba(14, 116, 144, 0.18));
 }
 [data-theme="light"] .panel.glass.wing-motif::before {
   background:
-    radial-gradient(ellipse 40% 30% at 8% 20%, rgba(42, 111, 122, 0.05), transparent 55%),
-    radial-gradient(ellipse 35% 25% at 92% 75%, rgba(107, 79, 138, 0.04), transparent 50%);
+    radial-gradient(ellipse 40% 30% at 8% 20%, rgba(14, 116, 144, 0.05), transparent 55%),
+    radial-gradient(ellipse 35% 25% at 92% 75%, rgba(109, 40, 217, 0.04), transparent 50%);
 }
-[data-theme="light"] .panel.glass.wing-motif::after { opacity: 0.04; }
+[data-theme="light"] .panel.glass.wing-motif::after {
+  opacity: 0.035;
+}
 
+/* Form controls */
 [data-theme="light"] input,
 [data-theme="light"] select,
 [data-theme="light"] textarea,
 [data-theme="light"] button {
-  background: var(--bg2);
+  background: #ffffff;
   border-color: var(--line);
   color: var(--tx);
+}
+
+[data-theme="light"] button:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+[data-theme="light"] button.on {
+  background: var(--cyan-soft);
+  color: var(--cyan);
+  border-color: var(--cyan);
 }
