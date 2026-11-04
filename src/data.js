@@ -1,8 +1,14 @@
 /** Static game data for Aion 2 */
 
 export const CHAR_COLORS = [
-  "#22d3ee", "#c084fc", "#34d399", "#fbbf24",
-  "#ff3b5c", "#60a5fa", "#f472b6", "#a3e635"
+  "#0e7490", // teal
+  "#6d28d9", // violet
+  "#047857", // emerald
+  "#b45309", // amber
+  "#be123c", // rose
+  "#1d4ed8", // blue
+  "#9d174d", // pink
+  "#3f6212"  // olive
 ];
 
 export const DEFAULT_ROSTER = [
