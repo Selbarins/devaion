@@ -217,7 +217,11 @@ function tick() {
     const el = document.getElementById("c" + id);
     if (el) el.textContent = fmt(nx - n);
     const bar = document.getElementById("p" + id);
-    if (bar) bar.style.width = prog(p) + "%";
+    if (bar) {
+      const elapsed = n - last;
+      const pct = Math.min(100, Math.max(0, (elapsed / len) * 100));
+      bar.style.width = pct + "%";
+    }
   }
   if (getSt().tab === "hub") {
     const next = document.getElementById("odyle-next");
