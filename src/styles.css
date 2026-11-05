@@ -409,7 +409,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
 }
 .pct b { color: var(--cyan); }
 
-/* Events — same height language as .row */
+/* Events — fixed height, aligned with .row */
 .ev-list {
   display: flex;
   flex-direction: column;
@@ -425,6 +425,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
   margin: 0 -6px;
   border-radius: 8px;
   border-left: 3px solid transparent;
+  min-height: 40px;
   transition: background 0.12s, border-color 0.12s;
 }
 
@@ -484,6 +485,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
   min-width: 0 !important;
   opacity: 0.55;
   flex-shrink: 0;
+  line-height: 1.2;
 }
 .info-btn:hover {
   opacity: 1;
@@ -491,9 +493,9 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
 
 .ev-right {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -503,33 +505,17 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
   font-size: 12.5px;
   text-align: right;
   white-space: nowrap;
+  min-width: 88px;
 }
 
 .event-row .status.open { color: var(--green); }
 .event-row .status.soon { color: var(--amber); }
 
-.ev-meta-inline {
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .ev-actions {
-  display: none; /* hide by default for density; show on hover/edit */
+  display: flex;
   align-items: center;
   gap: 3px;
-  margin-top: 1px;
-}
-
-.event-row:hover .ev-actions,
-.event-row:focus-within .ev-actions {
-  display: flex;
-}
-
-/* Always show actions in filter/edit mode */
-.panel:has([data-ee="1"].on) .ev-actions,
-body:has([data-ee="1"]:not(.btn-sm)) .ev-actions {
-  display: flex;
+  flex-shrink: 0;
 }
 
 .ev-actions .btn-sm {
