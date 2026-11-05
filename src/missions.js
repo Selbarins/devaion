@@ -82,6 +82,7 @@ export function card(it, ed = false) {
   const m = max(it);
   const d = dis(it) && !ed;
   const done = v >= m && !d && !ed;
+  const started = v > 0 && v < m && !d && !ed;
   const sc = { char: "Per Character", shared: "Shared", main: "Main Only" }[it.s];
   const scClass = { char: "char", shared: "shared", main: "main" }[it.s];
   const goalTag = it.goalId
@@ -105,8 +106,8 @@ export function card(it, ed = false) {
           <button type="button" data-k="${it.id}" data-d="all">Max</button>
         </div>`;
 
-  return `<div class="row ${done ? "done" : ""} ${d ? "dis" : ""} ${ed && hid(it) ? "hid" : ""} scope-${it.s}" data-mission-id="${it.id}">
-    <span class="ic">${it.ic}</span>
+  return `<div class="row ${done ? "done" : ""} ${started ? "warn" : ""} ${d ? "dis" : ""} ${ed && hid(it) ? "hid" : ""} scope-${it.s}" data-mission-id="${it.id}">
+  <span class="ic">${it.ic}</span>
     <div>
       <div class="hd">
         <h3>${esc(it.n)}</h3>
