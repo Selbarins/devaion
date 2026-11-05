@@ -1,4 +1,4 @@
-/** Event timers view — single-line density, tip on info button */
+/** Event timers view — fixed height, tip+schedule on info, bell always visible */
 import { EV, DN } from "../data.js";
 import { getSt } from "../state.js";
 import { P2, fmt, esc } from "../helpers.js";
@@ -45,11 +45,12 @@ export function drawEvents(app) {
           const soon = !on && (s - n < 36e5);
 
           const schedule = e[4].length === 24
-            ? `Hourly :${P2(e[5])}`
+            ? `Hourly at :${P2(e[5])} UTC`
             : (e[3] ? e[3].map(x => DN[x]).join("/") + " " : "Daily ") +
-              e[4].map(h => P2(h) + ":" + P2(e[5])).join(", ");
+              e[4].map(h => P2(h) + ":" + P2(e[5])).join(", ") + " UTC";
 
-          const nextStr = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes());
+          const nextStr = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes()) + " UTC";
+          const tip = `${schedule}\nNext: ${nextStr}\n\n${e[6]}`;
 
           return `
             <div class="event-row ${on && !h ? "open" : ""} ${soon ? "soon" : ""} ${p ? "pinned" : ""}"
@@ -60,14 +61,13 @@ export function drawEvents(app) {
                 <div class="ev-title">
                   ${p ? '<span class="pin-mark">★</span>' : ""}
                   <h3>${esc(e[0])}</h3>
-                  <button type="button" class="btn-sm info-btn" title="${esc(e[6])}" aria-label="Info">ℹ</button>
+                  <button type="button" class="btn-sm info-btn" title="${esc(tip)}" aria-label="Schedule and info">ℹ</button>
                 </div>
               </div>
               <div class="ev-right">
                 <div class="status ev-countdown ${on ? "open" : (soon ? "soon" : "")}">
                   ${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}
                 </div>
-                <div class="ev-meta-inline">${schedule} · ${nextStr} UTC</div>
                 <div class="ev-actions">
                   <button type="button" data-en="${esc(e[0])}" class="btn-sm icon-btn ${ntf ? "on" : ""}" title="Notification">
                     ${ntf ? "🔔" : "🔕"}
