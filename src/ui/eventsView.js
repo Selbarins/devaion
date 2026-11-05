@@ -1,8 +1,7 @@
-/** Event timers view */
+/** Event timers view — compact, mission-density */
 import { EV, DN } from "../data.js";
 import { getSt } from "../state.js";
 import { P2, fmt, esc } from "../helpers.js";
-import { getNotificationPermission } from "../notifications.js";
 
 function nxt(e) {
   const n = Date.now();
@@ -35,37 +34,51 @@ export function drawEvents(app) {
         <h2 style="margin:0">Event Timers</h2>
         <button type="button" data-ee="1" class="btn-sm" style="margin-left:auto">${ed ? "Done" : "Filter"}</button>
       </div>
-      <div id="evlist">
+      <div id="evlist" class="ev-list">
         ${items.map(({ e, s }) => {
-          const on = s <= n, end = s + e[2] * 6e4, d = new Date(s);
+          const on = s <= n;
+          const end = s + e[2] * 6e4;
+          const d = new Date(s);
           const h = st.evHide.includes(e[0]);
           const p = st.evPin.includes(e[0]);
           const ntf = notifyList.includes(e[0]);
-          const local = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes()) + " UTC";
-          const when = e[4].length === 24
-            ? `Every Hour At :${P2(e[5])}`
+          const soon = !on && (s - n < 36e5);
+
+          const schedule = e[4].length === 24
+            ? `Hourly :${P2(e[5])}`
             : (e[3] ? e[3].map(x => DN[x]).join("/") + " " : "Daily ") +
-              e[4].map(h => P2(h) + ":" + P2(e[5])).join(", ") + " UTC";
-          return `<div class="event-row ${on && !h ? "open" : ""}" data-ev-start="${s}" data-ev-dur="${e[2]}" ${h ? 'style="opacity:.45"' : ""}>
-            <span class="ic">${e[1]}</span>
-            <div>
-              <div class="hd"><h3 style="font-size:13.5px;font-weight:600">${p ? "★ " : ""}${e[0]}</h3></div>
-              <div class="when">${when} · Next: ${local}</div>
-              <div class="tip">${e[6]}</div>
-            </div>
-            <div style="text-align:right">
-              <div class="status ev-countdown ${on ? "open" : (s - n < 36e5 ? "soon" : "")}">${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}</div>
-              <div class="ctl" style="justify-content:flex-end;margin-top:4px;gap:4px">
-                <button type="button" data-en="${esc(e[0])}" class="btn-sm ${ntf ? "on" : ""}" title="Toggle notification">
-                  ${ntf ? "🔔" : "🔕"}
-                </button>
-                ${ed ? `
-                  <button type="button" data-ep="${esc(e[0])}">${p ? "Unpin" : "★ Pin"}</button>
-                  <button type="button" data-eh="${esc(e[0])}">${h ? "Show" : "Hide"}</button>
-                ` : ""}
+              e[4].map(h => P2(h) + ":" + P2(e[5])).join(", ");
+
+          const nextStr = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes());
+
+          return `
+            <div class="event-row ${on && !h ? "open" : ""} ${soon ? "soon" : ""} ${p ? "pinned" : ""}"
+                 data-ev-start="${s}" data-ev-dur="${e[2]}"
+                 ${h ? 'style="opacity:.42"' : ""}
+                 title="${esc(e[6])}">
+              <span class="ic">${e[1]}</span>
+              <div class="ev-main">
+                <div class="ev-title">
+                  ${p ? '<span class="pin-mark">★</span>' : ""}
+                  <h3>${esc(e[0])}</h3>
+                </div>
+                <div class="ev-meta">${schedule} · Next ${nextStr} UTC</div>
               </div>
-            </div>
-          </div>`;
+              <div class="ev-right">
+                <div class="status ev-countdown ${on ? "open" : (soon ? "soon" : "")}">
+                  ${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}
+                </div>
+                <div class="ev-actions">
+                  <button type="button" data-en="${esc(e[0])}" class="btn-sm icon-btn ${ntf ? "on" : ""}" title="Notification">
+                    ${ntf ? "🔔" : "🔕"}
+                  </button>
+                  ${ed ? `
+                    <button type="button" data-ep="${esc(e[0])}" class="btn-sm">${p ? "Unpin" : "Pin"}</button>
+                    <button type="button" data-eh="${esc(e[0])}" class="btn-sm">${h ? "Show" : "Hide"}</button>
+                  ` : ""}
+                </div>
+              </div>
+            </div>`;
         }).join("")}
       </div>
     </div>`;
