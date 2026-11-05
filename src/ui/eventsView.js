@@ -1,4 +1,4 @@
-/** Event timers view — compact, mission-density */
+/** Event timers view — single-line density, tip on info button */
 import { EV, DN } from "../data.js";
 import { getSt } from "../state.js";
 import { P2, fmt, esc } from "../helpers.js";
@@ -54,20 +54,20 @@ export function drawEvents(app) {
           return `
             <div class="event-row ${on && !h ? "open" : ""} ${soon ? "soon" : ""} ${p ? "pinned" : ""}"
                  data-ev-start="${s}" data-ev-dur="${e[2]}"
-                 ${h ? 'style="opacity:.42"' : ""}
-                 title="${esc(e[6])}">
+                 ${h ? 'style="opacity:.42"' : ""}>
               <span class="ic">${e[1]}</span>
               <div class="ev-main">
                 <div class="ev-title">
                   ${p ? '<span class="pin-mark">★</span>' : ""}
                   <h3>${esc(e[0])}</h3>
+                  <button type="button" class="btn-sm info-btn" title="${esc(e[6])}" aria-label="Info">ℹ</button>
                 </div>
-                <div class="ev-meta">${schedule} · Next ${nextStr} UTC</div>
               </div>
               <div class="ev-right">
                 <div class="status ev-countdown ${on ? "open" : (soon ? "soon" : "")}">
                   ${on ? "Open · " + fmt(end - n) : "In " + fmt(s - n)}
                 </div>
+                <div class="ev-meta-inline">${schedule} · ${nextStr} UTC</div>
                 <div class="ev-actions">
                   <button type="button" data-en="${esc(e[0])}" class="btn-sm icon-btn ${ntf ? "on" : ""}" title="Notification">
                     ${ntf ? "🔔" : "🔕"}
