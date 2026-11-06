@@ -244,6 +244,20 @@ function aggregateMaterials() {
     if (!recipe) continue;
     addIngredients(recipe.ingredients, entry.qty);
   }
+
+  // Clean up expanded flags for materials that are no longer present
+  let changed = false;
+  for (const id of Object.keys(expanded)) {
+    if (!totals[id]) {
+      delete expanded[id];
+      changed = true;
+    }
+  }
+  if (changed) {
+    st.craftExpanded = expanded;
+    persist();
+  }
+
   return totals;
 }
 
@@ -509,7 +523,8 @@ function renderLog() {
               <input type="number" min="0" step="any" placeholder="—"
                      value="${priceVal}" data-price="${id}" style="width:80px; text-align:center;" ${isExpanded ? "disabled" : ""}>
               ${canExpand || isExpanded
-                ? `<button type="button" class="btn-sm" data-expand="${id}" style="width:78px; min-width:78px;">
+                ? `<button type="button" class="btn-sm" data-expand="${id}"
+                     style="width:78px; min-width:78px; opacity:1 !important; pointer-events:auto !important;">
                      ${isExpanded ? "Collapse" : "Expand"}
                    </button>`
                 : `<span style="width:78px; display:inline-block;"></span>`
