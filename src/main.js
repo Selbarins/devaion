@@ -699,7 +699,7 @@ async function boot() {
     setInterval(tick, 1000);
   });
 
-// Debounced search
+// ---------- Craft helpers ----------
 document.addEventListener("input", e => {
   if (e.target.id === "craftSearch") {
     const st = getSt();
@@ -714,7 +714,6 @@ document.addEventListener("input", e => {
   }
 });
 
-// Quantity / Have / Price / Profession level – update on change (when leaving field)
 document.addEventListener("change", e => {
   const st = getSt();
 
