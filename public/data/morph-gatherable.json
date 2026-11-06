@@ -1,0 +1,426 @@
+[
+  {
+    "id": "morph_ore_radiant",
+    "name": "Radiant Orichalcum Ore (Bound)",
+    "tab": "Ore",
+    "profession": "Blacksmithing",
+    "level": 30,
+    "ingredients": [{ "name": "Radiant Odyle", "qty": 1 }],
+    "output": { "name": "Radiant Orichalcum Ore (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_ore_pure",
+    "name": "Pure Orichalcum Ore (Bound)",
+    "tab": "Ore",
+    "profession": "Blacksmithing",
+    "level": 30,
+    "ingredients": [{ "name": "Pure Odyle", "qty": 1 }],
+    "output": { "name": "Pure Orichalcum Ore (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_ore_fine",
+    "name": "Fine Orichalcum Ore (Bound)",
+    "tab": "Ore",
+    "profession": "Blacksmithing",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fine Orichalcum Ore (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_ore_base",
+    "name": "Orichalcum Ore (Bound)",
+    "tab": "Ore",
+    "profession": "Blacksmithing",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Orichalcum Ore (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+
+  {
+    "id": "morph_gem_radiant_ruby",
+    "name": "Radiant Ruby Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Radiant Odyle", "qty": 1 }],
+    "output": { "name": "Radiant Ruby Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_radiant_diamond",
+    "name": "Radiant Diamond Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Radiant Odyle", "qty": 1 }],
+    "output": { "name": "Radiant Diamond Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_radiant_sapphire",
+    "name": "Radiant Sapphire Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Radiant Odyle", "qty": 1 }],
+    "output": { "name": "Radiant Sapphire Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_pure_ruby",
+    "name": "Pure Ruby Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Pure Odyle", "qty": 1 }],
+    "output": { "name": "Pure Ruby Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_pure_diamond",
+    "name": "Pure Diamond Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Pure Odyle", "qty": 1 }],
+    "output": { "name": "Pure Diamond Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_pure_sapphire",
+    "name": "Pure Sapphire Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Pure Odyle", "qty": 1 }],
+    "output": { "name": "Pure Sapphire Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_fine_ruby",
+    "name": "Fine Ruby Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fine Ruby Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_fine_diamond",
+    "name": "Fine Diamond Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fine Diamond Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_fine_sapphire",
+    "name": "Fine Sapphire Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fine Sapphire Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_ruby",
+    "name": "Ruby Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Ruby Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_diamond",
+    "name": "Diamond Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Diamond Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_gem_sapphire",
+    "name": "Sapphire Gemstone (Bound)",
+    "tab": "Gem",
+    "profession": "Handicrafting",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Sapphire Gemstone (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+
+  {
+    "id": "morph_log_radiant_ygg",
+    "name": "Radiant Yggdrasil Log (Bound) (Elyos)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Radiant Odyle", "qty": 1 }],
+    "output": { "name": "Radiant Yggdrasil Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_radiant_asv",
+    "name": "Radiant Asvata Log (Bound) (Asmodian)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Radiant Odyle", "qty": 1 }],
+    "output": { "name": "Radiant Asvata Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_pure_ygg",
+    "name": "Pure Yggdrasil Log (Bound) (Elyos)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Pure Odyle", "qty": 1 }],
+    "output": { "name": "Pure Yggdrasil Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_pure_asv",
+    "name": "Pure Asvata Log (Bound) (Asmodian)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Pure Odyle", "qty": 1 }],
+    "output": { "name": "Pure Asvata Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_fine_ygg",
+    "name": "Fine Yggdrasil Log (Bound) (Elyos)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fine Yggdrasil Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_fine_asv",
+    "name": "Fine Asvata Log (Bound) (Asmodian)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fine Asvata Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_ygg",
+    "name": "Yggdrasil Log (Bound) (Elyos)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Yggdrasil Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_log_asv",
+    "name": "Asvata Log (Bound) (Asmodian)",
+    "tab": "Log",
+    "profession": "Handicrafting",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Asvata Log (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+
+  {
+    "id": "morph_herb_fresh_targena",
+    "name": "Fresh Targena (Bound) (Elyos)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fresh Targena (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_fresh_calendula",
+    "name": "Fresh Calendula (Bound) (Asmodian)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fresh Calendula (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_fresh_aria",
+    "name": "Fresh Aria (Bound) (Elyos)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fresh Aria (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_fresh_azpha",
+    "name": "Fresh Azpha (Bound) (Asmodian)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 30,
+    "ingredients": [{ "name": "Fine Odyle", "qty": 1 }],
+    "output": { "name": "Fresh Azpha (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_targena",
+    "name": "Targena (Bound) (Elyos)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Targena (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_calendula",
+    "name": "Calendula (Bound) (Asmodian)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Calendula (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_aria",
+    "name": "Aria (Bound) (Elyos)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Aria (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_herb_azpha",
+    "name": "Azpha (Bound) (Asmodian)",
+    "tab": "Herb",
+    "profession": "Alchemy",
+    "level": 1,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Azpha (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+
+  {
+    "id": "morph_cook_cypri",
+    "name": "Cypri (Bound) (Elyos)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 20,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Cypri (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_pujery",
+    "name": "Pujery (Bound) (Asmodian)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 20,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Pujery (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_inina",
+    "name": "Inina (Bound) (Elyos)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 20,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Inina (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_conide",
+    "name": "Conide (Bound) (Asmodian)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 20,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Conide (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_mela",
+    "name": "Mela (Bound) (Elyos)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Mela (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_raydam",
+    "name": "Raydam (Bound) (Asmodian)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Raydam (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_kukuru",
+    "name": "Kukuru (Bound) (Elyos)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Kukuru (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_ohkra",
+    "name": "Ohkra (Bound) (Asmodian)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Ohkra (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_coriolus",
+    "name": "Coriolus (Bound) (Elyos)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Coriolus (Bound)", "qty": 1 },
+    "successChance": 1.0
+  },
+  {
+    "id": "morph_cook_morfa",
+    "name": "Morfa (Bound) (Asmodian)",
+    "tab": "Cooking Ingredient",
+    "profession": "Alchemy",
+    "level": 10,
+    "ingredients": [{ "name": "Odyle", "qty": 1 }],
+    "output": { "name": "Morfa (Bound)", "qty": 1 },
+    "successChance": 1.0
+  }
+]
