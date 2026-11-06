@@ -300,14 +300,24 @@ document.addEventListener("click", e => {
     persist();
   } else if (b.dataset.craftSub) {
     st.craftSub = b.dataset.craftSub;
-    persist();  
-
+    persist();
   } else if (b.dataset.craftProf) {
     st.craftProfFilter = b.dataset.craftProf;
     persist();
   } else if (b.dataset.addCraft) {
-    // temporary feedback – we will implement the real log later
-    alert("Added to Crafting Log (feature coming next):\n" + b.dataset.addCraft);
+    // We need the helper – temporary direct version
+    if (!st.craftLog) st.craftLog = [];
+    const id = b.dataset.addCraft;
+    const existing = st.craftLog.find(x => x.recipeId === id);
+    if (existing) existing.qty += 1;
+    else st.craftLog.push({ recipeId: id, qty: 1 });
+    persist();
+    // switch to log so user sees it
+    st.craftSub = "log";
+  } else if (b.dataset.logRemove) {
+    if (!st.craftLog) st.craftLog = [];
+    st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
+    persist();
   
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
@@ -683,13 +693,44 @@ async function boot() {
       window.addEventListener("focus", scheduleEventNotifications);
     setInterval(tick, 1000);
   });
+
   document.addEventListener("input", e => {
+  const st = getSt();
+
   if (e.target.id === "craftSearch") {
-    const st = getSt();
     st.craftSearch = e.target.value;
-    // no persist needed for every keystroke
     if (st.tab === "craft") {
-      // simple re-render
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
+    return;
+  }
+
+  if (e.target.dataset.logQty) {
+    const id = e.target.dataset.logQty;
+    const qty = Math.max(1, parseInt(e.target.value, 10) || 1);
+    if (!st.craftLog) st.craftLog = [];
+    const entry = st.craftLog.find(x => x.recipeId === id);
+    if (entry) {
+      entry.qty = qty;
+      persist();
+      // re-render log
+      if (st.tab === "craft") {
+        const view = document.getElementById("view");
+        if (view) drawCraft(view, { onRender: render });
+      }
+    }
+    return;
+  }
+
+  if (e.target.dataset.have) {
+    const id = e.target.dataset.have;
+    const amt = Math.max(0, parseInt(e.target.value, 10) || 0);
+    if (!st.craftHave) st.craftHave = {};
+    st.craftHave[id] = amt;
+    persist();
+    // re-render to update "Missing"
+    if (st.tab === "craft") {
       const view = document.getElementById("view");
       if (view) drawCraft(view, { onRender: render });
     }
