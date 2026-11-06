@@ -134,13 +134,8 @@ function normalizeRaw(raw) {
     const GEAR_KEYWORDS = /longsword|greatsword|dagger|mace|bow|staff|breastplate|greaves|helm|pauldron|glove|boot|cloak|necklace|earring|ring|bracelet|spellbook|orb|guard|amulet|belt/i;
     const MATERIAL_KEYWORDS = /ingot|ore|horn|leather|wood|powder|paper|solvent|scale|decoration|abrasive|seasoning|refining|fabric|crystal|stone/i;
 
-    const isTransfer = ingredients.some(ing => {
-      const ingName = names[ing.itemId] || "";
-      return GEAR_KEYWORDS.test(ingName) && !MATERIAL_KEYWORDS.test(ingName);
-    });
-
-    const tags = [category.toLowerCase()].filter(Boolean);
-    if (isTransfer) tags.push("transfer");
+        const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
+    const subType = inferSubType({ name, category, profession });
 
     return {
       id,
@@ -154,8 +149,7 @@ function normalizeRaw(raw) {
       ingredients,
       output: { itemId: outputId, qty: arr[9] || 1 },
       comboChance,
-      isTransfer,
-      tags
+      tags: [category.toLowerCase()].filter(Boolean)
     };
   });
 
@@ -419,7 +413,6 @@ function recipeRow(r) {
           <span class="tg">${esc(r.profession)}</span>
           ${rankLabel ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
           ${r.subType && r.subType !== "Other" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
-          ${r.isTransfer ? `<span class="tg" style="background:#f59e0b;color:#000;font-weight:600">Transfer</span>` : ""}
           ${r.comboChance ? `<span class="tg">Combo ${(r.comboChance * 100).toFixed(0)}%</span>` : ""}
           ${!doable ? `<span class="tg" style="color:var(--amber)">Need higher level</span>` : ""}
         </div>
