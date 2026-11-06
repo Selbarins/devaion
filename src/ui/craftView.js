@@ -125,37 +125,38 @@ function normalizeRaw(raw) {
       }
     }
 
-        const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
+            const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
     const subType = inferSubType({ name, category, profession });
 
-    // Detect Transfer recipes:
-    // A recipe is Transfer if one of its ingredients is itself a craftable item
-    // (most Transfer recipes take a previous-tier gear piece)
+    // Better Transfer detection:
+    // A recipe is Transfer if it uses another gear piece (weapon/armor/accessory)
+    // as an ingredient (not just materials like Ingot, Ore, Horn, etc.)
+    const GEAR_KEYWORDS = /longsword|greatsword|dagger|mace|bow|staff|breastplate|greaves|helm|pauldron|glove|boot|cloak|necklace|earring|ring|bracelet|spellbook|orb|guard|amulet|belt/i;
+    const MATERIAL_KEYWORDS = /ingot|ore|horn|leather|wood|powder|paper|solvent|scale|decoration|abrasive|seasoning|refining|fabric|crystal|stone/i;
+
     const isTransfer = ingredients.some(ing => {
-      return list.some(other => {
-        const otherOutputId = String(other[7] || other[8] || "");
-        return otherOutputId === String(ing.itemId);
-          });
-        });
-    
-        const tags = [category.toLowerCase()].filter(Boolean);
-        if (isTransfer) tags.push("transfer");
-    
-        return {
-          id,
-          name,
-          profession,
-          rank,
-          level: rankLevel,
-          rawLevel: level,
-          category,
-          subType,
-          ingredients,
-          output: { itemId: outputId, qty: arr[9] || 1 },
-          comboChance,
-          isTransfer,          // boolean for easy checks
-          tags
-        };
+      const ingName = names[ing.itemId] || "";
+      return GEAR_KEYWORDS.test(ingName) && !MATERIAL_KEYWORDS.test(ingName);
+    });
+
+    const tags = [category.toLowerCase()].filter(Boolean);
+    if (isTransfer) tags.push("transfer");
+
+    return {
+      id,
+      name,
+      profession,
+      rank,
+      level: rankLevel,
+      rawLevel: level,
+      category,
+      subType,
+      ingredients,
+      output: { itemId: outputId, qty: arr[9] || 1 },
+      comboChance,
+      isTransfer,
+      tags
+    };
   });
 
   recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
@@ -418,7 +419,7 @@ function recipeRow(r) {
           <span class="tg">${esc(r.profession)}</span>
           ${rankLabel ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
           ${r.subType && r.subType !== "Other" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
-          ${r.isTransfer ? `<span class="tg" style="background:var(--amber);color:#000">Transfer</span>` : ""}
+          ${r.isTransfer ? `<span class="tg" style="background:#f59e0b;color:#000;font-weight:600">Transfer</span>` : ""}
           ${r.comboChance ? `<span class="tg">Combo ${(r.comboChance * 100).toFixed(0)}%</span>` : ""}
           ${!doable ? `<span class="tg" style="color:var(--amber)">Need higher level</span>` : ""}
         </div>
