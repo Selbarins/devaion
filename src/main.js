@@ -301,6 +301,14 @@ document.addEventListener("click", e => {
   } else if (b.dataset.craftSub) {
     st.craftSub = b.dataset.craftSub;
     persist();  
+
+  } else if (b.dataset.craftProf) {
+    st.craftProfFilter = b.dataset.craftProf;
+    persist();
+  } else if (b.dataset.addCraft) {
+    // temporary feedback – we will implement the real log later
+    alert("Added to Crafting Log (feature coming next):\n" + b.dataset.addCraft);
+  
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
     if (st.tab !== "missions") { st.tab = "missions"; st.mview = "missions"; }
@@ -675,6 +683,18 @@ async function boot() {
       window.addEventListener("focus", scheduleEventNotifications);
     setInterval(tick, 1000);
   });
+  document.addEventListener("input", e => {
+  if (e.target.id === "craftSearch") {
+    const st = getSt();
+    st.craftSearch = e.target.value;
+    // no persist needed for every keystroke
+    if (st.tab === "craft") {
+      // simple re-render
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
+  }
+});
 }
 
 boot();
