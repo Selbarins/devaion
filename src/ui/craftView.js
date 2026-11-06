@@ -508,11 +508,11 @@ function renderLog() {
               <span class="${missingClass}" style="width:60px; text-align:center; font-weight:600;">${isExpanded ? "—" : missing}</span>
               <input type="number" min="0" step="any" placeholder="—"
                      value="${priceVal}" data-price="${id}" style="width:80px; text-align:center;" ${isExpanded ? "disabled" : ""}>
-              ${canExpand
-                ? `<button type="button" class="btn-sm" data-expand="${id}" style="width:70px">
+              ${canExpand || isExpanded
+                ? `<button type="button" class="btn-sm" data-expand="${id}" style="width:78px; min-width:78px;">
                      ${isExpanded ? "Collapse" : "Expand"}
                    </button>`
-                : `<span style="width:70px;"></span>`
+                : `<span style="width:78px; display:inline-block;"></span>`
               }
             </div>
           </div>
