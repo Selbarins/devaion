@@ -298,6 +298,7 @@ document.addEventListener("click", e => {
     st.theme = b.dataset.themeSet === "light" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", st.theme);
     persist();
+    
   } else if (b.dataset.craftSub) {
     st.craftSub = b.dataset.craftSub;
     persist();
@@ -305,15 +306,23 @@ document.addEventListener("click", e => {
     st.craftProfFilter = b.dataset.craftProf;
     persist();
   } else if (b.dataset.addCraft) {
-    // We need the helper – temporary direct version
     if (!st.craftLog) st.craftLog = [];
     const id = b.dataset.addCraft;
     const existing = st.craftLog.find(x => x.recipeId === id);
     if (existing) existing.qty += 1;
     else st.craftLog.push({ recipeId: id, qty: 1 });
-    persist();
-    // switch to log so user sees it
     st.craftSub = "log";
+    persist();
+  } else if (b.dataset.logRemove) {
+    if (!st.craftLog) st.craftLog = [];
+    st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
+    persist();
+  } else if (b.dataset.expand) {
+    if (!st.craftExpanded) st.craftExpanded = {};
+    const id = b.dataset.expand;
+    st.craftExpanded[id] = !st.craftExpanded[id];
+    persist();
+  
   } else if (b.dataset.logRemove) {
     if (!st.craftLog) st.craftLog = [];
     st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
@@ -694,7 +703,7 @@ async function boot() {
     setInterval(tick, 1000);
   });
 
-  document.addEventListener("input", e => {
+document.addEventListener("input", e => {
   const st = getSt();
 
   if (e.target.id === "craftSearch") {
@@ -714,7 +723,6 @@ async function boot() {
     if (entry) {
       entry.qty = qty;
       persist();
-      // re-render log
       if (st.tab === "craft") {
         const view = document.getElementById("view");
         if (view) drawCraft(view, { onRender: render });
@@ -729,7 +737,46 @@ async function boot() {
     if (!st.craftHave) st.craftHave = {};
     st.craftHave[id] = amt;
     persist();
-    // re-render to update "Missing"
+    if (st.tab === "craft") {
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
+    return;
+  }
+
+  if (e.target.dataset.price) {
+    const id = e.target.dataset.price;
+    const val = e.target.value;
+    if (!st.craftPrices) st.craftPrices = {};
+    st.craftPrices[id] = val === "" ? "" : Number(val);
+    persist();
+    if (st.tab === "craft") {
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
+    return;
+  }
+
+  if (e.target.dataset.profLevel) {
+    const profession = e.target.dataset.profLevel;
+    const level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
+    if (!st.craftProfs) st.craftProfs = {};
+    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
+    st.craftProfs[profession] = { rank: cur.rank, level };
+    persist();
+    return;
+  }
+});
+
+document.addEventListener("change", e => {
+  const st = getSt();
+  if (e.target.dataset.profRank) {
+    const profession = e.target.dataset.profRank;
+    const rank = e.target.value === "Professional" ? "Professional" : "Novice";
+    if (!st.craftProfs) st.craftProfs = {};
+    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
+    st.craftProfs[profession] = { rank, level: cur.level };
+    persist();
     if (st.tab === "craft") {
       const view = document.getElementById("view");
       if (view) drawCraft(view, { onRender: render });
