@@ -17,6 +17,7 @@ import { drawMissions } from "./ui/missionsView.js";
 import { drawEvents } from "./ui/eventsView.js";
 import { drawHub } from "./ui/hubView.js";
 import { initNotifications, scheduleEventNotifications } from "./notifications.js";
+import { drawCraft } from "./ui/craftView.js";
 
 
 function drawLogin() {
@@ -88,6 +89,7 @@ function drawLogin() {
 const TABS = [
   ["hub", "💠", "Overview"],
   ["missions", "📜", "Missions"],
+  ["craft", "🔨", "Craft"],
   ["events", "⏱", "Events"]
 ];
 // Apply saved theme as early as possible
@@ -195,6 +197,7 @@ function render() {
   if (st.tab === "missions") drawMissions(view);
   else if (st.tab === "events") drawEvents(view);
   else if (st.tab === "hub") drawHub(view, { onRender: render });
+  else if (st.tab === "craft") drawCraft(view, { onRender: render });
   tick();
 }
 
