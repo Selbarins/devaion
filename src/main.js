@@ -321,13 +321,11 @@ document.addEventListener("click", e => {
     if (!st.craftLog) st.craftLog = [];
     st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
     persist();
-  } else if (b.dataset.expand) {
+    } else if (b.dataset.expand) {
     if (!st.craftExpanded) st.craftExpanded = {};
     const id = b.dataset.expand;
     st.craftExpanded[id] = !st.craftExpanded[id];
     persist();
-  }
-  
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
     if (st.tab !== "missions") { st.tab = "missions"; st.mview = "missions"; }
@@ -634,74 +632,6 @@ document.addEventListener("keydown", e => {
     render();
   }
 });
-// ========== BOOT ==========
-async function boot() {
-  document.documentElement.setAttribute("data-theme", getSt().theme === "light" ? "light" : "dark");
-
-  await initAuth();
-
-  onAuthChange(async (user) => {
-    if (!user) {
-      drawLogin();
-      return;
-    }
-
-    // ===== Logged in =====
-    const data = await loadAll(user.id);
-
-    // Automatic migration: if cloud is empty but local data exists → upload local data
-    const hasLocalData =
-      localGet("devaion_roster") ||
-      localGet("devaion_st") ||
-      (localGet("devaion_goals", []).length > 0) ||
-      (localGet("devaion_notes", []).length > 0) ||
-      (localGet("devaion_missions", []).length > 0);
-
-    const cloudIsEmpty = !data.roster && !data.st && (!data.goals || data.goals.length === 0);
-
-    if (hasLocalData && cloudIsEmpty) {
-      console.log("Migrating local data to your account…");
-      saveAll(user.id, {
-        roster: getRoster(),
-        st: getSt(),
-        goals: getGoals(),
-        notes: getNotes(),
-        missions: getMissions()
-      });
-    }
-
-    // Apply data to state
-    if (data.roster) setRoster(data.roster);
-    if (data.st) Object.assign(getSt(), data.st);
-    if (data.goals) setGoals(data.goals);
-    if (data.notes) setNotes(data.notes);
-    if (data.missions) setMissions(data.missions);
-    // Make sure active character still exists
-    const roster = getRoster();
-    if (!roster.find(c => c.id === getSt().activeChar)) {
-      getSt().activeChar = roster[0]?.id || "c1";
-    }
-
-    // Now show the real app
-    applyOdyleTicks();
-    applyTicketTicks();
-    persist();   // push any hydrated data back to cloud if needed
-    render();
-    initNotifications().then(() => {
-        scheduleEventNotifications();
-        // Re-schedule every 4 minutes + on visibility/focus
-        setInterval(scheduleEventNotifications, 4 * 60 * 1000);
-      });
-      
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-          scheduleEventNotifications();
-        }
-      });
-      
-      window.addEventListener("focus", scheduleEventNotifications);
-    setInterval(tick, 1000);
-  });
 
 // ---------- Craft helpers ----------
 document.addEventListener("input", e => {
@@ -786,6 +716,75 @@ document.addEventListener("change", e => {
     }
   }
 });
+
+// ========== BOOT ==========
+async function boot() {
+  document.documentElement.setAttribute("data-theme", getSt().theme === "light" ? "light" : "dark");
+
+  await initAuth();
+
+  onAuthChange(async (user) => {
+    if (!user) {
+      drawLogin();
+      return;
+    }
+
+    // ===== Logged in =====
+    const data = await loadAll(user.id);
+
+    // Automatic migration: if cloud is empty but local data exists → upload local data
+    const hasLocalData =
+      localGet("devaion_roster") ||
+      localGet("devaion_st") ||
+      (localGet("devaion_goals", []).length > 0) ||
+      (localGet("devaion_notes", []).length > 0) ||
+      (localGet("devaion_missions", []).length > 0);
+
+    const cloudIsEmpty = !data.roster && !data.st && (!data.goals || data.goals.length === 0);
+
+    if (hasLocalData && cloudIsEmpty) {
+      console.log("Migrating local data to your account…");
+      saveAll(user.id, {
+        roster: getRoster(),
+        st: getSt(),
+        goals: getGoals(),
+        notes: getNotes(),
+        missions: getMissions()
+      });
+    }
+
+    // Apply data to state
+    if (data.roster) setRoster(data.roster);
+    if (data.st) Object.assign(getSt(), data.st);
+    if (data.goals) setGoals(data.goals);
+    if (data.notes) setNotes(data.notes);
+    if (data.missions) setMissions(data.missions);
+    // Make sure active character still exists
+    const roster = getRoster();
+    if (!roster.find(c => c.id === getSt().activeChar)) {
+      getSt().activeChar = roster[0]?.id || "c1";
+    }
+
+    // Now show the real app
+    applyOdyleTicks();
+    applyTicketTicks();
+    persist();   // push any hydrated data back to cloud if needed
+    render();
+    initNotifications().then(() => {
+        scheduleEventNotifications();
+        // Re-schedule every 4 minutes + on visibility/focus
+        setInterval(scheduleEventNotifications, 4 * 60 * 1000);
+      });
+      
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          scheduleEventNotifications();
+        }
+      });
+      
+      window.addEventListener("focus", scheduleEventNotifications);
+    setInterval(tick, 1000);
+  });
 }
 
 boot();
