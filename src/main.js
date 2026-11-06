@@ -298,10 +298,9 @@ document.addEventListener("click", e => {
     st.theme = b.dataset.themeSet === "light" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", st.theme);
     persist();
-    else if (b.dataset.craftSub) {
+  } else if (b.dataset.craftSub) {
     st.craftSub = b.dataset.craftSub;
-    persist();
-  }
+    persist();  
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
     if (st.tab !== "missions") { st.tab = "missions"; st.mview = "missions"; }
