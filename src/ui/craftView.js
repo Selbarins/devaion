@@ -4,7 +4,6 @@ import { esc } from "../helpers.js";
 let recipesCache = null;
 let itemsCache = null;
 let loading = false;
-let searchTimer = null;
 
 function itemName(id) {
   return itemsCache?.[id]?.name || String(id);
@@ -14,7 +13,6 @@ function getRecipe(id) {
   return (recipesCache || []).find(r => r.id === id);
 }
 
-// ---------- Normalize raw format ----------
 function normalizeRaw(raw) {
   const names = raw.names || {};
   const list = raw.r || [];
@@ -64,16 +62,12 @@ function normalizeRaw(raw) {
     };
   });
 
-  // Sort by acquisition order (rawLevel ascending)
   recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
-
   return { recipes, items };
 }
 
-// ---------- Load data ----------
 async function loadData() {
   if (recipesCache && itemsCache) return;
-
   loading = true;
   try {
     try {
@@ -104,7 +98,6 @@ async function loadData() {
   }
 }
 
-// ---------- Profession levels ----------
 function getProfs() {
   const st = getSt();
   if (!st.craftProfs) st.craftProfs = {};
@@ -112,8 +105,7 @@ function getProfs() {
 }
 
 function getProfLevel(profession) {
-  const profs = getProfs();
-  return profs[profession] || { rank: "Novice", level: 1 };
+  return getProfs()[profession] || { rank: "Novice", level: 1 };
 }
 
 function isDoable(recipe) {
@@ -127,7 +119,6 @@ function isDoable(recipe) {
   return user.level >= (recipe.level || 1);
 }
 
-// ---------- Crafting Log helpers ----------
 function getLog() {
   const st = getSt();
   if (!st.craftLog) st.craftLog = [];
@@ -141,10 +132,9 @@ function findRecipeByOutput(itemId) {
   return (recipesCache || []).find(r => r.output && String(r.output.itemId) === String(itemId));
 }
 
-// Cascade aggregation (Approach B)
 function aggregateMaterials() {
   const st = getLog();
-  const totals = {}; // itemId → { need, expanded, parent? }
+  const totals = {};
   const expanded = st.craftExpanded || {};
 
   function addIngredients(ingredients, multiplier) {
@@ -154,7 +144,6 @@ function aggregateMaterials() {
       const sub = findRecipeByOutput(id);
 
       if (sub && expanded[id]) {
-        // still count the parent so it stays visible, but mark as expanded
         if (!totals[id]) totals[id] = { need: 0, expanded: true };
         totals[id].need += qty;
         totals[id].expanded = true;
@@ -182,7 +171,6 @@ function totalCost(totals) {
   let missingPrice = 0;
 
   for (const [id, info] of Object.entries(totals)) {
-    // only count leaf (non-expanded) materials for cost
     if (info.expanded) continue;
     const need = info.need;
     const haveAmt = have[id] || 0;
@@ -197,21 +185,21 @@ function totalCost(totals) {
   return { sum, missingPrice };
 }
 
-// ---------- Main draw ----------
 export async function drawCraft(app, { onRender }) {
   const st = getSt();
   if (!st.craftSub) st.craftSub = "browser";
+  if (!st.craftCatFilter) st.craftCatFilter = "All";
 
   await loadData();
 
   const recipes = recipesCache || [];
   const search = (st.craftSearch || "").toLowerCase().trim();
   const profFilter = st.craftProfFilter || "All";
+  const catFilter = st.craftCatFilter || "All";
 
   let list = recipes;
-  if (profFilter !== "All") {
-    list = list.filter(r => r.profession === profFilter);
-  }
+  if (profFilter !== "All") list = list.filter(r => r.profession === profFilter);
+  if (catFilter !== "All") list = list.filter(r => r.category === catFilter);
   if (search) {
     list = list.filter(r =>
       (r.name || "").toLowerCase().includes(search) ||
@@ -240,35 +228,34 @@ export async function drawCraft(app, { onRender }) {
   `;
 }
 
-// ---------- Recipes browser ----------
 function renderBrowser(list, st, profFilter) {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
   const allProfs = ["All", ...existingProfs];
 
-  if (loading) {
-    return `<div class="panel" style="margin-top:16px"><p class="tip">Loading recipes…</p></div>`;
+  // Categories for the currently selected profession
+  let catButtons = "";
+  if (profFilter !== "All") {
+    const cats = [...new Set(
+      (recipesCache || [])
+        .filter(r => r.profession === profFilter)
+        .map(r => r.category || "Other")
+    )].filter(Boolean).sort();
+
+    const allCats = ["All", ...cats];
+    catButtons = `
+      <div class="ctrl-bar" style="margin-top:8px">
+        <div class="seg" style="flex-wrap:wrap">
+          ${allCats.map(c => `
+            <button type="button" data-craft-cat="${esc(c)}"
+                    class="${(st.craftCatFilter || "All") === c ? "on" : ""}">${esc(c)}</button>
+          `).join("")}
+        </div>
+      </div>
+    `;
   }
 
-  // Group by category when a specific profession is selected
-  let bodyHtml = "";
-  if (profFilter !== "All" && list.length > 0) {
-    const groups = {};
-    for (const r of list) {
-      const cat = r.category || "Other";
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(r);
-    }
-    const cats = Object.keys(groups).sort();
-    bodyHtml = cats.map(cat => `
-      <div style="margin-top:18px">
-        <h3 style="margin:0 0 8px 0; color:var(--mut); font-size:13px; letter-spacing:0.4px;">${esc(cat)}</h3>
-        ${groups[cat].map(r => recipeRow(r)).join("")}
-      </div>
-    `).join("");
-  } else {
-    bodyHtml = list.length === 0
-      ? `<div class="panel"><p class="tip" style="margin:0">No recipes found.</p></div>`
-      : list.map(r => recipeRow(r)).join("");
+  if (loading) {
+    return `<div class="panel" style="margin-top:16px"><p class="tip">Loading recipes…</p></div>`;
   }
 
   return `
@@ -284,8 +271,13 @@ function renderBrowser(list, st, profFilter) {
         </div>
       </div>
 
+      ${catButtons}
+
       <div style="margin-top:12px">
-        ${bodyHtml}
+        ${list.length === 0
+          ? `<div class="panel"><p class="tip" style="margin:0">No recipes found.</p></div>`
+          : list.map(r => recipeRow(r)).join("")
+        }
       </div>
     </div>
   `;
@@ -319,7 +311,6 @@ function recipeRow(r) {
   `;
 }
 
-// ---------- Professions panel ----------
 function renderProfs() {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
   const profs = getProfs();
@@ -338,9 +329,7 @@ function renderProfs() {
           return `
             <div class="row">
               <div class="ic">⚒️</div>
-              <div>
-                <div class="hd"><h3>${esc(p)}</h3></div>
-              </div>
+              <div><div class="hd"><h3>${esc(p)}</h3></div></div>
               <div class="ctl" style="gap:8px;">
                 <select data-prof-rank="${esc(p)}">
                   <option value="Novice" ${cur.rank === "Novice" ? "selected" : ""}>Novice</option>
@@ -357,7 +346,6 @@ function renderProfs() {
   `;
 }
 
-// ---------- Crafting Log ----------
 function renderLog() {
   const st = getLog();
   const log = st.craftLog || [];
@@ -444,14 +432,12 @@ function renderLog() {
     `;
 
   const costHtml = matIds.length === 0 ? "" : `
-    <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line); display:flex; gap:18px; align-items:center;">
-      <div>
-        <span class="tip">Estimated cost of missing materials:</span>
-        <b style="margin-left:8px; color:var(--cyan); font-size:16px;">
-          ${cost.sum.toLocaleString()} Kinah
-        </b>
-        ${cost.missingPrice > 0 ? `<span class="tip" style="margin-left:8px;">(${cost.missingPrice} items without price)</span>` : ""}
-      </div>
+    <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--line);">
+      <span class="tip">Estimated cost of missing materials:</span>
+      <b style="margin-left:8px; color:var(--cyan); font-size:16px;">
+        ${cost.sum.toLocaleString()} Kinah
+      </b>
+      ${cost.missingPrice > 0 ? `<span class="tip" style="margin-left:8px;">(${cost.missingPrice} items without price)</span>` : ""}
     </div>
   `;
 
