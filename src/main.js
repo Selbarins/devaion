@@ -311,8 +311,8 @@ document.addEventListener("click", e => {
     const existing = st.craftLog.find(x => x.recipeId === id);
     if (existing) existing.qty += 1;
     else st.craftLog.push({ recipeId: id, qty: 1 });
-    st.craftSub = "log";
     persist();
+    // stay on Recipes tab (no auto-switch)
   } else if (b.dataset.logRemove) {
     if (!st.craftLog) st.craftLog = [];
     st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
@@ -322,11 +322,7 @@ document.addEventListener("click", e => {
     const id = b.dataset.expand;
     st.craftExpanded[id] = !st.craftExpanded[id];
     persist();
-  
-  } else if (b.dataset.logRemove) {
-    if (!st.craftLog) st.craftLog = [];
-    st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
-    persist();
+  }
   
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
@@ -703,17 +699,24 @@ async function boot() {
     setInterval(tick, 1000);
   });
 
+// Debounced search
 document.addEventListener("input", e => {
-  const st = getSt();
-
   if (e.target.id === "craftSearch") {
+    const st = getSt();
     st.craftSearch = e.target.value;
-    if (st.tab === "craft") {
-      const view = document.getElementById("view");
-      if (view) drawCraft(view, { onRender: render });
-    }
-    return;
+    clearTimeout(window._craftSearchTimer);
+    window._craftSearchTimer = setTimeout(() => {
+      if (st.tab === "craft") {
+        const view = document.getElementById("view");
+        if (view) drawCraft(view, { onRender: render });
+      }
+    }, 280);
   }
+});
+
+// Quantity / Have / Price / Profession level – update on change (when leaving field)
+document.addEventListener("change", e => {
+  const st = getSt();
 
   if (e.target.dataset.logQty) {
     const id = e.target.dataset.logQty;
@@ -766,10 +769,7 @@ document.addEventListener("input", e => {
     persist();
     return;
   }
-});
 
-document.addEventListener("change", e => {
-  const st = getSt();
   if (e.target.dataset.profRank) {
     const profession = e.target.dataset.profRank;
     const rank = e.target.value === "Professional" ? "Professional" : "Novice";
