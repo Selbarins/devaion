@@ -304,6 +304,10 @@ document.addEventListener("click", e => {
     persist();
   } else if (b.dataset.craftProf) {
     st.craftProfFilter = b.dataset.craftProf;
+    st.craftCatFilter = "All";
+    persist();
+  } else if (b.dataset.craftCat) {
+    st.craftCatFilter = b.dataset.craftCat;
     persist();
   } else if (b.dataset.addCraft) {
     if (!st.craftLog) st.craftLog = [];
