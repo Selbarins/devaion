@@ -504,7 +504,7 @@ function renderLog() {
         const canExpand = !!findRecipeByOutput(id);
         const isExpanded = !!info.expanded;
         const priceVal = prices[id] ?? "";
-        const rowClass = isExpanded ? "row dis" : "row";
+        const rowClass = isExpanded ? "row expanded" : "row";
 
         return `
           <div class="${rowClass}">
