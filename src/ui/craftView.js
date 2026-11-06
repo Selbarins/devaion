@@ -4,6 +4,7 @@ import { esc } from "../helpers.js";
 let recipesCache = null;
 let itemsCache = null;
 let loading = false;
+let searchTimer = null;
 
 function itemName(id) {
   return itemsCache?.[id]?.name || String(id);
@@ -25,7 +26,7 @@ function normalizeRaw(raw) {
   const recipes = list.map(arr => {
     const id = String(arr[0]);
     const profession = arr[1] || "Unknown";
-    const category = arr[2] || "";
+    const category = arr[2] || "Other";
     const level = arr[4] || 0;
     const comboChance = arr[6] || 0;
     const outputId = String(arr[7] || arr[8] || "");
@@ -63,6 +64,9 @@ function normalizeRaw(raw) {
     };
   });
 
+  // Sort by acquisition order (rawLevel ascending)
+  recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
+
   return { recipes, items };
 }
 
@@ -72,7 +76,6 @@ async function loadData() {
 
   loading = true;
   try {
-    // Prefer the full raw file
     try {
       const rawRes = await fetch("/data/recipes.raw.json");
       if (rawRes.ok) {
@@ -86,7 +89,6 @@ async function loadData() {
       console.warn("Could not load recipes.raw.json", e);
     }
 
-    // Fallback to the small clean files
     const [rRes, iRes] = await Promise.all([
       fetch("/data/recipes.json"),
       fetch("/data/items.json")
@@ -105,9 +107,7 @@ async function loadData() {
 // ---------- Profession levels ----------
 function getProfs() {
   const st = getSt();
-  if (!st.craftProfs) {
-    st.craftProfs = {}; // { profession: { rank: "Novice"|"Professional", level: number } }
-  }
+  if (!st.craftProfs) st.craftProfs = {};
   return st.craftProfs;
 }
 
@@ -116,24 +116,13 @@ function getProfLevel(profession) {
   return profs[profession] || { rank: "Novice", level: 1 };
 }
 
-function setProfLevel(profession, rank, level) {
-  const st = getSt();
-  if (!st.craftProfs) st.craftProfs = {};
-  st.craftProfs[profession] = {
-    rank: rank === "Professional" ? "Professional" : "Novice",
-    level: Math.max(1, Math.min(50, level | 0))
-  };
-  persist();
-}
-
 function isDoable(recipe) {
-  if (!recipe.rank) return true; // no requirement
+  if (!recipe.rank) return true;
   const user = getProfLevel(recipe.profession);
   if (recipe.rank === "Novice") {
     if (user.rank === "Professional") return true;
     return user.level >= (recipe.level || 1);
   }
-  // recipe needs Professional
   if (user.rank !== "Professional") return false;
   return user.level >= (recipe.level || 1);
 }
@@ -143,8 +132,8 @@ function getLog() {
   const st = getSt();
   if (!st.craftLog) st.craftLog = [];
   if (!st.craftHave) st.craftHave = {};
-  if (!st.craftExpanded) st.craftExpanded = {}; // itemId → true (expand this intermediate)
-  if (!st.craftPrices) st.craftPrices = {};     // itemId → number (manual price)
+  if (!st.craftExpanded) st.craftExpanded = {};
+  if (!st.craftPrices) st.craftPrices = {};
   return st;
 }
 
@@ -152,10 +141,10 @@ function findRecipeByOutput(itemId) {
   return (recipesCache || []).find(r => r.output && String(r.output.itemId) === String(itemId));
 }
 
-// Cascade aggregation (Approach B – only expand when marked)
+// Cascade aggregation (Approach B)
 function aggregateMaterials() {
   const st = getLog();
-  const totals = {}; // itemId → needed
+  const totals = {}; // itemId → { need, expanded, parent? }
   const expanded = st.craftExpanded || {};
 
   function addIngredients(ingredients, multiplier) {
@@ -165,10 +154,14 @@ function aggregateMaterials() {
       const sub = findRecipeByOutput(id);
 
       if (sub && expanded[id]) {
-        // expand this intermediate
+        // still count the parent so it stays visible, but mark as expanded
+        if (!totals[id]) totals[id] = { need: 0, expanded: true };
+        totals[id].need += qty;
+        totals[id].expanded = true;
         addIngredients(sub.ingredients, qty);
       } else {
-        totals[id] = (totals[id] || 0) + qty;
+        if (!totals[id]) totals[id] = { need: 0, expanded: false };
+        totals[id].need += qty;
       }
     }
   }
@@ -184,11 +177,16 @@ function aggregateMaterials() {
 function totalCost(totals) {
   const st = getLog();
   const prices = st.craftPrices || {};
+  const have = st.craftHave || {};
   let sum = 0;
   let missingPrice = 0;
-  for (const [id, need] of Object.entries(totals)) {
-    const have = (st.craftHave || {})[id] || 0;
-    const missing = Math.max(0, need - have);
+
+  for (const [id, info] of Object.entries(totals)) {
+    // only count leaf (non-expanded) materials for cost
+    if (info.expanded) continue;
+    const need = info.need;
+    const haveAmt = have[id] || 0;
+    const missing = Math.max(0, need - haveAmt);
     const price = prices[id];
     if (price != null && price !== "") {
       sum += missing * Number(price);
@@ -218,6 +216,7 @@ export async function drawCraft(app, { onRender }) {
     list = list.filter(r =>
       (r.name || "").toLowerCase().includes(search) ||
       (r.profession || "").toLowerCase().includes(search) ||
+      (r.category || "").toLowerCase().includes(search) ||
       (r.id || "").toLowerCase().includes(search)
     );
   }
@@ -236,18 +235,40 @@ export async function drawCraft(app, { onRender }) {
 
       ${st.craftSub === "log" ? renderLog() :
         st.craftSub === "profs" ? renderProfs() :
-        renderBrowser(list, st)}
+        renderBrowser(list, st, profFilter)}
     </div>
   `;
 }
 
 // ---------- Recipes browser ----------
-function renderBrowser(list, st) {
+function renderBrowser(list, st, profFilter) {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
   const allProfs = ["All", ...existingProfs];
 
   if (loading) {
     return `<div class="panel" style="margin-top:16px"><p class="tip">Loading recipes…</p></div>`;
+  }
+
+  // Group by category when a specific profession is selected
+  let bodyHtml = "";
+  if (profFilter !== "All" && list.length > 0) {
+    const groups = {};
+    for (const r of list) {
+      const cat = r.category || "Other";
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(r);
+    }
+    const cats = Object.keys(groups).sort();
+    bodyHtml = cats.map(cat => `
+      <div style="margin-top:18px">
+        <h3 style="margin:0 0 8px 0; color:var(--mut); font-size:13px; letter-spacing:0.4px;">${esc(cat)}</h3>
+        ${groups[cat].map(r => recipeRow(r)).join("")}
+      </div>
+    `).join("");
+  } else {
+    bodyHtml = list.length === 0
+      ? `<div class="panel"><p class="tip" style="margin:0">No recipes found.</p></div>`
+      : list.map(r => recipeRow(r)).join("");
   }
 
   return `
@@ -263,11 +284,8 @@ function renderBrowser(list, st) {
         </div>
       </div>
 
-      <div style="margin-top:16px">
-        ${list.length === 0
-          ? `<div class="panel"><p class="tip" style="margin:0">No recipes found.</p></div>`
-          : list.map(r => recipeRow(r)).join("")
-        }
+      <div style="margin-top:12px">
+        ${bodyHtml}
       </div>
     </div>
   `;
@@ -314,7 +332,7 @@ function renderProfs() {
     <div style="margin-top:8px">
       <div class="panel">
         <h2>Account Profession Levels</h2>
-        <p class="tip" style="margin-bottom:14px">These are shared across the account. Used to grey out recipes you cannot craft yet.</p>
+        <p class="tip" style="margin-bottom:14px">Shared across the account. Used to grey out recipes you cannot craft yet.</p>
         ${existingProfs.map(p => {
           const cur = profs[p] || { rank: "Novice", level: 1 };
           return `
@@ -346,7 +364,6 @@ function renderLog() {
   const totals = aggregateMaterials();
   const have = st.craftHave || {};
   const prices = st.craftPrices || {};
-  const expanded = st.craftExpanded || {};
   const cost = totalCost(totals);
 
   const plannedHtml = log.length === 0
@@ -384,39 +401,41 @@ function renderLog() {
           <span style="width:60px; text-align:center;">Need</span>
           <span style="width:60px; text-align:center;">Missing</span>
           <span style="width:80px; text-align:center;">Price</span>
-          <span style="width:28px;"></span>
+          <span style="width:70px;"></span>
         </div>
       </div>
       ${matIds.map(id => {
-        const need = totals[id];
+        const info = totals[id];
+        const need = info.need;
         const haveAmt = have[id] || 0;
         const missing = Math.max(0, need - haveAmt);
         const missingClass = missing > 0 ? "craft-missing" : "craft-ok";
         const canExpand = !!findRecipeByOutput(id);
-        const isExpanded = !!expanded[id];
+        const isExpanded = !!info.expanded;
         const priceVal = prices[id] ?? "";
+        const rowClass = isExpanded ? "row dis" : "row";
 
         return `
-          <div class="row">
-            <div class="ic">🧱</div>
+          <div class="${rowClass}">
+            <div class="ic">${isExpanded ? "📂" : "🧱"}</div>
             <div>
               <div class="hd">
                 <h3>${esc(itemName(id))}</h3>
-                ${canExpand ? `<span class="tg">${isExpanded ? "Expanded" : "Craftable"}</span>` : ""}
+                ${isExpanded ? `<span class="tg">Expanded</span>` : canExpand ? `<span class="tg">Craftable</span>` : ""}
               </div>
             </div>
             <div class="ctl" style="gap:10px;">
               <input type="number" min="0" value="${haveAmt}"
-                     data-have="${id}" style="width:60px; text-align:center;">
+                     data-have="${id}" style="width:60px; text-align:center;" ${isExpanded ? "disabled" : ""}>
               <span style="width:60px; text-align:center;">${need}</span>
-              <span class="${missingClass}" style="width:60px; text-align:center; font-weight:600;">${missing}</span>
+              <span class="${missingClass}" style="width:60px; text-align:center; font-weight:600;">${isExpanded ? "—" : missing}</span>
               <input type="number" min="0" step="any" placeholder="—"
-                     value="${priceVal}" data-price="${id}" style="width:80px; text-align:center;">
+                     value="${priceVal}" data-price="${id}" style="width:80px; text-align:center;" ${isExpanded ? "disabled" : ""}>
               ${canExpand
-                ? `<button type="button" class="btn-sm" data-expand="${id}" title="Expand / collapse intermediate">
-                     ${isExpanded ? "⊖" : "⊕"}
+                ? `<button type="button" class="btn-sm" data-expand="${id}" style="width:70px">
+                     ${isExpanded ? "Collapse" : "Expand"}
                    </button>`
-                : `<span style="width:28px;"></span>`
+                : `<span style="width:70px;"></span>`
               }
             </div>
           </div>
@@ -446,8 +465,7 @@ function renderLog() {
       <div class="panel" style="margin-top:16px">
         <h2>Materials Needed</h2>
         <p class="tip" style="margin-bottom:10px">
-          ⊕ expands a craftable intermediate into its own materials (Approach B).
-          Prices are optional and used only for the cost estimate.
+          Expand turns a craftable intermediate into its materials. The parent stays visible (grayed) so you can collapse it again.
         </p>
         ${matsHtml}
         ${costHtml}
