@@ -1,0 +1,36 @@
+[
+  {
+    "id": "bs_orichalcum_ingot",
+    "name": "Orichalcum Ingot",
+    "profession": "Blacksmithing",
+    "rank": "Novice",
+    "level": 1,
+    "category": "Material",
+    "ingredients": [
+      { "itemId": "610620013", "qty": 2 },
+      { "itemId": "630541001", "qty": 1 }
+    ],
+    "output": { "itemId": "610710001", "qty": 1 },
+    "comboChance": 0,
+    "tags": ["material"]
+  },
+  {
+    "id": "bs_true_dragon_longsword",
+    "name": "True Dragon Lord Longsword",
+    "profession": "Blacksmithing",
+    "rank": "Professional",
+    "level": 5,
+    "category": "Weapon",
+    "ingredients": [
+      { "itemId": "110230013", "qty": 1 },
+      { "itemId": "610530010", "qty": 4 },
+      { "itemId": "610710006", "qty": 22 },
+      { "itemId": "610511013", "qty": 10 },
+      { "itemId": "610620016", "qty": 9 },
+      { "itemId": "610610016", "qty": 5 }
+    ],
+    "output": { "itemId": "110230015", "qty": 1 },
+    "comboChance": 0.25,
+    "tags": ["weapon"]
+  }
+]
