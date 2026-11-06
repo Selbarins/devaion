@@ -13,6 +13,76 @@ function getRecipe(id) {
   return (recipesCache || []).find(r => r.id === id);
 }
 
+// ---------- Infer in-game sub-type from recipe ----------
+function inferSubType(r) {
+  const name = (r.name || "").toLowerCase();
+  const cat = (r.category || "").toLowerCase();
+  const prof = r.profession || "";
+
+  // Materials always first
+  if (cat === "material" || name.includes("ingot") || name.includes("horn") ||
+      name.includes("leather") || name.includes("wood") || name.includes("decoration") ||
+      name.includes("powder") || name.includes("paper") || name.includes("solvent") ||
+      name.includes("refining") || name.includes("seasoning") || name.includes("abrasive")) {
+    return "Materials";
+  }
+
+  if (prof === "Blacksmithing") {
+    if (name.includes("greatsword")) return "Greatsword";
+    if (name.includes("longsword") || name.includes("sword")) return "Longsword";
+    if (name.includes("dagger")) return "Dagger";
+    if (name.includes("mace")) return "Mace";
+    if (name.includes("guard") || name.includes("shield")) return "Guard";
+    return "Materials";
+  }
+
+  if (prof === "Armorsmithing") {
+    if (name.includes("helm") || name.includes("helmet")) return "Helm";
+    if (name.includes("pauldron") || name.includes("shoulder")) return "Pauldrons";
+    if (name.includes("breastplate") || name.includes("chest") || name.includes("top") || name.includes("tunic") || name.includes("mail")) return "Top";
+    if (name.includes("greave") || name.includes("leg") || name.includes("pants")) return "Legs";
+    if (name.includes("glove") || name.includes("gauntlet") || name.includes("hand")) return "Gloves";
+    if (name.includes("boot") || name.includes("shoe")) return "Shoes";
+    if (name.includes("cloak") || name.includes("cape")) return "Cloak";
+    return "Materials";
+  }
+
+  if (prof === "Handicrafting") {
+    if (name.includes("bow")) return "Bow";
+    if (name.includes("staff") || name.includes("stave")) return "Staff";
+    if (name.includes("necklace")) return "Necklace";
+    if (name.includes("earring")) return "Earrings";
+    if (name.includes("ring")) return "Ring";
+    if (name.includes("bracelet")) return "Bracelet";
+    return "Materials";
+  }
+
+  if (prof === "Alchemy") {
+    if (name.includes("spellbook") || name.includes("book")) return "Spellbook";
+    if (name.includes("orb")) return "Orb";
+    if (name.includes("potion") || name.includes("serum")) return "Potion";
+    if (name.includes("scroll")) return "Scroll";
+    if (name.includes("manastone") || name.includes("soulstone")) return "Manastone";
+    return "Materials";
+  }
+
+  if (prof === "Cooking") {
+    return "Food";
+  }
+
+  return "Other";
+}
+
+// Official sub-filter order per profession (matches game as closely as possible)
+const SUB_FILTERS = {
+  Blacksmithing: ["All", "Greatsword", "Longsword", "Dagger", "Mace", "Guard", "Materials"],
+  Armorsmithing: ["All", "Helm", "Pauldrons", "Top", "Legs", "Gloves", "Shoes", "Cloak", "Materials"],
+  Handicrafting: ["All", "Bow", "Staff", "Necklace", "Earrings", "Ring", "Bracelet", "Materials"],
+  Alchemy: ["All", "Spellbook", "Orb", "Potion", "Scroll", "Manastone", "Materials"],
+  Cooking: ["All", "Food"]
+};
+
+// ---------- Normalize raw format ----------
 function normalizeRaw(raw) {
   const names = raw.names || {};
   const list = raw.r || [];
@@ -46,6 +116,7 @@ function normalizeRaw(raw) {
     }
 
     const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
+    const subType = inferSubType({ name, category, profession });
 
     return {
       id,
@@ -55,6 +126,7 @@ function normalizeRaw(raw) {
       level: rankLevel,
       rawLevel: level,
       category,
+      subType,
       ingredients,
       output: { itemId: outputId, qty: arr[9] || 1 },
       comboChance,
@@ -98,6 +170,7 @@ async function loadData() {
   }
 }
 
+// ---------- Profession levels ----------
 function getProfs() {
   const st = getSt();
   if (!st.craftProfs) st.craftProfs = {};
@@ -119,6 +192,7 @@ function isDoable(recipe) {
   return user.level >= (recipe.level || 1);
 }
 
+// ---------- Crafting Log helpers ----------
 function getLog() {
   const st = getSt();
   if (!st.craftLog) st.craftLog = [];
@@ -185,6 +259,7 @@ function totalCost(totals) {
   return { sum, missingPrice };
 }
 
+// ---------- Main draw ----------
 export async function drawCraft(app, { onRender }) {
   const st = getSt();
   if (!st.craftSub) st.craftSub = "browser";
@@ -199,12 +274,12 @@ export async function drawCraft(app, { onRender }) {
 
   let list = recipes;
   if (profFilter !== "All") list = list.filter(r => r.profession === profFilter);
-  if (catFilter !== "All") list = list.filter(r => r.category === catFilter);
+  if (catFilter !== "All") list = list.filter(r => r.subType === catFilter);
   if (search) {
     list = list.filter(r =>
       (r.name || "").toLowerCase().includes(search) ||
       (r.profession || "").toLowerCase().includes(search) ||
-      (r.category || "").toLowerCase().includes(search) ||
+      (r.subType || "").toLowerCase().includes(search) ||
       (r.id || "").toLowerCase().includes(search)
     );
   }
@@ -228,24 +303,19 @@ export async function drawCraft(app, { onRender }) {
   `;
 }
 
+// ---------- Recipes browser ----------
 function renderBrowser(list, st, profFilter) {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
   const allProfs = ["All", ...existingProfs];
 
-  // Categories for the currently selected profession
+  // Sub-filters (in-game style)
   let catButtons = "";
-  if (profFilter !== "All") {
-    const cats = [...new Set(
-      (recipesCache || [])
-        .filter(r => r.profession === profFilter)
-        .map(r => r.category || "Other")
-    )].filter(Boolean).sort();
-
-    const allCats = ["All", ...cats];
+  if (profFilter !== "All" && SUB_FILTERS[profFilter]) {
+    const filters = SUB_FILTERS[profFilter];
     catButtons = `
       <div class="ctrl-bar" style="margin-top:8px">
         <div class="seg" style="flex-wrap:wrap">
-          ${allCats.map(c => `
+          ${filters.map(c => `
             <button type="button" data-craft-cat="${esc(c)}"
                     class="${(st.craftCatFilter || "All") === c ? "on" : ""}">${esc(c)}</button>
           `).join("")}
@@ -299,6 +369,7 @@ function recipeRow(r) {
           <h3>${esc(r.name)}</h3>
           <span class="tg">${esc(r.profession)}</span>
           ${rankLabel ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
+          ${r.subType && r.subType !== "Other" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
           ${r.comboChance ? `<span class="tg">Combo ${(r.comboChance * 100).toFixed(0)}%</span>` : ""}
           ${!doable ? `<span class="tg" style="color:var(--amber)">Need higher level</span>` : ""}
         </div>
@@ -311,6 +382,7 @@ function recipeRow(r) {
   `;
 }
 
+// ---------- Professions panel ----------
 function renderProfs() {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
   const profs = getProfs();
@@ -346,6 +418,7 @@ function renderProfs() {
   `;
 }
 
+// ---------- Crafting Log ----------
 function renderLog() {
   const st = getLog();
   const log = st.craftLog || [];
@@ -353,6 +426,13 @@ function renderLog() {
   const have = st.craftHave || {};
   const prices = st.craftPrices || {};
   const cost = totalCost(totals);
+
+  // Sort: expanded parents first, then the rest
+  const matIds = Object.keys(totals).sort((a, b) => {
+    const ea = totals[a].expanded ? 0 : 1;
+    const eb = totals[b].expanded ? 0 : 1;
+    return ea - eb;
+  });
 
   const plannedHtml = log.length === 0
     ? `<p class="tip">No recipes in the log yet. Go to Recipes and click “+ Log”.</p>`
@@ -377,7 +457,6 @@ function renderLog() {
         `;
       }).join("");
 
-  const matIds = Object.keys(totals);
   const matsHtml = matIds.length === 0
     ? `<p class="tip">No materials to show.</p>`
     : `
@@ -451,7 +530,7 @@ function renderLog() {
       <div class="panel" style="margin-top:16px">
         <h2>Materials Needed</h2>
         <p class="tip" style="margin-bottom:10px">
-          Expand turns a craftable intermediate into its materials. The parent stays visible (grayed) so you can collapse it again.
+          Expand moves the intermediate to the top and shows its materials. Collapse returns it to normal.
         </p>
         ${matsHtml}
         ${costHtml}
