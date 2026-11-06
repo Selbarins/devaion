@@ -125,23 +125,37 @@ function normalizeRaw(raw) {
       }
     }
 
-    const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
+        const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
     const subType = inferSubType({ name, category, profession });
 
-    return {
-      id,
-      name,
-      profession,
-      rank,
-      level: rankLevel,
-      rawLevel: level,
-      category,
-      subType,
-      ingredients,
-      output: { itemId: outputId, qty: arr[9] || 1 },
-      comboChance,
-      tags: [category.toLowerCase()].filter(Boolean)
-    };
+    // Detect Transfer recipes:
+    // A recipe is Transfer if one of its ingredients is itself a craftable item
+    // (most Transfer recipes take a previous-tier gear piece)
+    const isTransfer = ingredients.some(ing => {
+      return list.some(other => {
+        const otherOutputId = String(other[7] || other[8] || "");
+        return otherOutputId === String(ing.itemId);
+          });
+        });
+    
+        const tags = [category.toLowerCase()].filter(Boolean);
+        if (isTransfer) tags.push("transfer");
+    
+        return {
+          id,
+          name,
+          profession,
+          rank,
+          level: rankLevel,
+          rawLevel: level,
+          category,
+          subType,
+          ingredients,
+          output: { itemId: outputId, qty: arr[9] || 1 },
+          comboChance,
+          isTransfer,          // boolean for easy checks
+          tags
+        };
   });
 
   recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
@@ -220,6 +234,7 @@ function aggregateMaterials() {
   const st = getLog();
   const totals = {};
   const expanded = st.craftExpanded || {};
+  const have = st.craftHave || {};
 
   function addIngredients(ingredients, multiplier) {
     for (const ing of ingredients || []) {
@@ -228,10 +243,20 @@ function aggregateMaterials() {
       const sub = findRecipeByOutput(id);
 
       if (sub && expanded[id]) {
+        // Expanded intermediate
         if (!totals[id]) totals[id] = { need: 0, expanded: true };
         totals[id].need += qty;
         totals[id].expanded = true;
-        addIngredients(sub.ingredients, qty);
+
+        // Only push what is still missing after "Have"
+        const haveAmt = have[id] || 0;
+        const stillNeeded = Math.max(0, totals[id].need - haveAmt);
+
+        if (stillNeeded > 0) {
+          // Scale children by the remaining need
+          const scale = stillNeeded / qty;
+          addIngredients(sub.ingredients, qty * scale);
+        }
       } else {
         if (!totals[id]) totals[id] = { need: 0, expanded: false };
         totals[id].need += qty;
@@ -260,7 +285,6 @@ function aggregateMaterials() {
 
   return totals;
 }
-
 function totalCost(totals) {
   const st = getLog();
   const prices = st.craftPrices || {};
@@ -394,6 +418,7 @@ function recipeRow(r) {
           <span class="tg">${esc(r.profession)}</span>
           ${rankLabel ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
           ${r.subType && r.subType !== "Other" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
+          ${r.isTransfer ? `<span class="tg" style="background:var(--amber);color:#000">Transfer</span>` : ""}
           ${r.comboChance ? `<span class="tg">Combo ${(r.comboChance * 100).toFixed(0)}%</span>` : ""}
           ${!doable ? `<span class="tg" style="color:var(--amber)">Need higher level</span>` : ""}
         </div>
@@ -517,11 +542,11 @@ function renderLog() {
             </div>
             <div class="ctl" style="gap:10px;">
               <input type="number" min="0" value="${haveAmt}"
-                     data-have="${id}" style="width:60px; text-align:center;" ${isExpanded ? "disabled" : ""}>
+                     data-have="${id}" style="width:60px; text-align:center;">
               <span style="width:60px; text-align:center;">${need}</span>
               <span class="${missingClass}" style="width:60px; text-align:center; font-weight:600;">${isExpanded ? "—" : missing}</span>
               <input type="number" min="0" step="any" placeholder="—"
-                     value="${priceVal}" data-price="${id}" style="width:80px; text-align:center;" ${isExpanded ? "disabled" : ""}>
+                     value="${priceVal}" data-price="${id}" style="width:80px; text-align:center;">
               ${canExpand || isExpanded
                 ? `<button type="button" class="btn-sm" data-expand="${id}"
                      style="width:78px; min-width:78px; opacity:1 !important; pointer-events:auto !important;">
