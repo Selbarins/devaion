@@ -69,21 +69,24 @@ function normalizeRaw(raw) {
 // ---------- Load data ----------
 async function loadData() {
   if (recipesCache && itemsCache) return;
+
   loading = true;
   try {
-    const rawRes = await fetch("/data/recipes.raw.json");
-    if (rawRes.ok) {
-      const raw = await rawRes.json();
-      const normalized = normalizeRaw(raw);
-      recipesCache = normalized.recipes;
-      itemsCache = normalized.items;
-      return;
+    // Prefer the full raw file
+    try {
+      const rawRes = await fetch("/data/recipes.raw.json");
+      if (rawRes.ok) {
+        const raw = await rawRes.json();
+        const normalized = normalizeRaw(raw);
+        recipesCache = normalized.recipes;
+        itemsCache = normalized.items;
+        return;
+      }
+    } catch (e) {
+      console.warn("Could not load recipes.raw.json", e);
     }
-  } catch (e) {
-    console.warn("Could not load recipes.raw.json", e);
-  }
 
-  try {
+    // Fallback to the small clean files
     const [rRes, iRes] = await Promise.all([
       fetch("/data/recipes.json"),
       fetch("/data/items.json")
