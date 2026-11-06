@@ -91,9 +91,19 @@ function normalizeRaw(raw) {
     items[id] = { name };
   }
 
+  // Map internal client names → in-game display names
+  const PROF_MAP = {
+    "Blacksmithing": "Blacksmithing",
+    "Tailoring": "Armorsmithing",
+    "Jewelcrafting": "Handicrafting",
+    "Alchemy": "Alchemy",
+    "Cooking": "Cooking"
+  };
+
   const recipes = list.map(arr => {
     const id = String(arr[0]);
-    const profession = arr[1] || "Unknown";
+    const rawProf = arr[1] || "Unknown";
+    const profession = PROF_MAP[rawProf] || rawProf;
     const category = arr[2] || "Other";
     const level = arr[4] || 0;
     const comboChance = arr[6] || 0;
