@@ -12,7 +12,7 @@ function getRecipe(id) {
   return (recipesCache || []).find(r => r.id === id);
 }
 
-// ---------- Rarity (4 clear tiers + legendary) ----------
+// ---------- Rarity ----------
 function getRarity(r) {
   const n = (r.name || "").toLowerCase();
   if (n.includes("wise dragon") || n.includes("ebony dragon") ||
@@ -26,11 +26,11 @@ function getRarity(r) {
 }
 
 const RARITY_STYLE = {
-  common:    { border: "transparent",          bg: "transparent" },
-  uncommon:  { border: "#4ade80",              bg: "rgba(74,222,128,0.08)" },  // green
-  rare:      { border: "#60a5fa",              bg: "rgba(96,165,250,0.09)" },  // blue
-  epic:      { border: "#c084fc",              bg: "rgba(192,132,252,0.10)" }, // purple
-  legendary: { border: "#fbbf24",              bg: "rgba(251,191,36,0.11)" }   // gold
+  common:    { border: "transparent", bg: "transparent" },
+  uncommon:  { border: "#4ade80", bg: "rgba(74,222,128,0.08)" },
+  rare:      { border: "#60a5fa", bg: "rgba(96,165,250,0.09)" },
+  epic:      { border: "#c084fc", bg: "rgba(192,132,252,0.10)" },
+  legendary: { border: "#fbbf24", bg: "rgba(251,191,36,0.11)" }
 };
 
 // ---------- Sub-type ----------
@@ -280,7 +280,7 @@ export async function drawCraft(app, { onRender }) {
           </button>
         </div>
         <button type="button" data-craft-toggle-profs title="Profession levels"
-                style="padding:6px 10px; font-size:16px; line-height:1; opacity:${st.craftShowProfs ? 1 : 0.7}">
+                style="padding:6px 10px; font-size:15px; line-height:1; opacity:${st.craftShowProfs ? 1 : 0.65}">
           ⚙️
         </button>
       </div>
@@ -310,24 +310,22 @@ function renderBrowser(list, st) {
         </div>
       </div>
 
-      <!-- Profession filters – slightly larger / accent -->
       <div class="ctrl-bar" style="margin-bottom:8px; gap:6px">
         ${profs.map(p => `
           <button type="button" data-craft-prof="${p}"
             class="${profFilter === p ? "on" : ""}"
-            style="font-size:13px; font-weight:600; ${profFilter === p ? "" : "opacity:0.85"}">
+            style="font-size:13px; font-weight:600">
             ${esc(p)}
           </button>
         `).join("")}
       </div>
 
       ${profFilter !== "All" ? `
-        <!-- Category filters – smaller, muted -->
         <div class="ctrl-bar" style="margin-bottom:14px; gap:5px">
           ${subFilters.map(c => `
             <button type="button" data-craft-cat="${esc(c)}"
               class="${catFilter === c ? "on" : ""}"
-              style="font-size:12px; padding:4px 9px; opacity:${catFilter === c ? 1 : 0.75}">
+              style="font-size:12px; padding:4px 9px; opacity:${catFilter === c ? 1 : 0.72}">
               ${esc(c)}
             </button>
           `).join("")}
@@ -423,6 +421,7 @@ function renderLog() {
     return ea - eb;
   });
 
+  // Planned crafts
   const plannedHtml = log.length === 0
     ? `<p class="tip">Nothing planned yet.</p>`
     : log.map(entry => {
@@ -439,14 +438,28 @@ function renderLog() {
             </div>
             <div class="ctl">
               <input type="number" min="1" value="${entry.qty}"
-                     data-log-qty="${entry.recipeId}" style="width:56px; text-align:center">
+                     data-log-qty="${entry.recipeId}" style="width:52px; text-align:center">
               <button type="button" class="btn-sm btn-danger" data-log-remove="${entry.recipeId}" title="Remove">✕</button>
             </div>
           </div>
         `;
       }).join("");
 
-  // Fixed-width columns so Have / Need / Missing / Price stay aligned
+  // Column header (aligned with the numbers)
+  const header = matIds.length === 0 ? "" : `
+    <div class="row" style="opacity:0.55; font-size:11px; font-weight:600; pointer-events:none; border:none; background:transparent">
+      <div class="ic"></div>
+      <div></div>
+      <div class="ctl" style="gap:6px; min-width:280px; justify-content:flex-end">
+        <span style="width:56px; text-align:center">Have</span>
+        <span style="width:40px; text-align:center">Need</span>
+        <span style="width:40px; text-align:center">Miss</span>
+        <span style="width:88px; text-align:center">Kinah</span>
+        <span style="width:32px"></span>
+      </div>
+    </div>
+  `;
+
   const matsHtml = matIds.length === 0
     ? `<p class="tip">No materials.</p>`
     : matIds.map(id => {
@@ -464,60 +477,35 @@ function renderLog() {
             <div>
               <div class="hd">
                 <h3>${esc(itemName(id))}</h3>
-                ${canExpand && !isExpanded ? `<span class="tg">Craftable</span>` : ""}
+                ${canExpand && !isExpanded ? `<span class="tg">craftable</span>` : ""}
               </div>
             </div>
-            <div class="ctl" style="gap:6px; min-width:260px; justify-content:flex-end">
+            <div class="ctl" style="gap:6px; min-width:280px; justify-content:flex-end">
               <input type="number" min="0" value="${haveAmt}" data-have="${id}"
-                     style="width:52px; text-align:center" title="Have">
-              <span style="width:40px; text-align:center; opacity:0.85" title="Need">${need}</span>
-              <span style="width:40px; text-align:center; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}" title="Missing">
+                     style="width:56px; text-align:center" title="Have">
+              <span style="width:40px; text-align:center; opacity:0.9">${need}</span>
+              <span style="width:40px; text-align:center; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}">
                 ${isExpanded ? "—" : missing}
               </span>
               <input type="number" min="0" step="any" placeholder="—" value="${priceVal}"
-                     data-price="${id}" style="width:64px; text-align:center" title="Price">
+                     data-price="${id}" style="width:88px; text-align:right; font-variant-numeric:tabular-nums" title="Price per unit">
               ${canExpand || isExpanded
-                ? `<button type="button" class="btn-sm" data-expand="${id}" title="${isExpanded ? "Collapse" : "Expand"}" style="min-width:32px">
+                ? `<button type="button" class="btn-sm" data-expand="${id}" title="${isExpanded ? "Collapse" : "Expand"}" style="min-width:32px; width:32px">
                      ${isExpanded ? "−" : "+"}
                    </button>`
-                : `<span style="width:32px"></span>`}
+                : `<span style="width:32px; display:inline-block"></span>`}
             </div>
           </div>
         `;
       }).join("");
 
+  // Compact total — same column as the Kinah inputs, no big frame
   const costHtml = matIds.length === 0 ? "" : `
-    <div style="
-      margin-top:14px;
-      padding:10px 14px;
-      border-radius:10px;
-      background: rgba(46,230,255,0.07);
-      border: 1px solid rgba(46,230,255,0.15);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    ">
-      <span style="font-size:13px; opacity:0.8">Total missing cost</span>
-      <span style="font-size:18px; font-weight:700; color:var(--cyan)">
-        ${cost.sum.toLocaleString()} <span style="font-size:12px; font-weight:500; opacity:0.75">Kinah</span>
-      </span>
-      ${cost.missingPrice > 0
-        ? `<span class="tip" style="width:100%; margin:0">${cost.missingPrice} without price</span>`
-        : ""}
-    </div>
-  `;
-
-  return `
-    <div>
-      <div style="margin-bottom:18px">
-        ${plannedHtml}
-      </div>
-      <div>
-        ${matsHtml}
-        ${costHtml}
-      </div>
-    </div>
-  `;
-}
+    <div class="row" style="border:none; background:transparent; margin-top:4px; opacity:0.95">
+      <div class="ic"></div>
+      <div></div>
+      <div class="ctl" style="gap:6px; min-width:280px; justify-content:flex-end; align-items:center">
+        <span style="width:56px"></span>
+        <span style="width:40px"></span>
+        <span style="width:40px; text-align:center; font-size:12px; opacity:0.7">Total</span>
+        <span style="width:88px; 
