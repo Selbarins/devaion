@@ -537,7 +537,7 @@ function renderLog() {
           : "";
 
         return `
-          <div class="row ${isExpanded ? "expanded" : ""}" style="${indentStyle}">
+          <div class="row ${isExpanded ? "expanded" : ""}" style="grid-template-columns: 48px 1fr auto; gap: 10px 14px; ${indentStyle}">
             <div class="ic" style="width:48px; display:flex; align-items:center; justify-content:center">
               ${itemIcon(id, 48)}
             </div>
