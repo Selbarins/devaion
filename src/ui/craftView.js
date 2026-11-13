@@ -274,9 +274,9 @@ export async function drawCraft(app, { onRender }) {
     <div class="panel glass">
       <div class="ctrl-bar" style="margin-bottom:14px; justify-content:space-between">
         <div class="seg">
-          <button type="button" data-craft-sub="browser" class="${st.craftSub !== "log" ? "on" : ""}">Recipes</button>
-          <button type="button" data-craft-sub="log" class="${st.craftSub === "log" ? "on" : ""}">
-            Plan${(st.craftLog && st.craftLog.length) ? ` (${st.craftLog.length})` : ""}
+          <button type="button" data-craft-mode="regular" class="${mode === "regular" ? "on" : ""}">Regular</button>
+          <button type="button" data-craft-mode="transfer" class="${mode === "transfer" ? "on" : ""}" style="${mode === "transfer" ? "background:rgba(251,191,36,0.2); color:#fbbf24;" : ""}">
+            Transfer
           </button>
         </div>
         <button type="button" data-craft-toggle-profs title="Profession levels"
@@ -349,23 +349,33 @@ function renderRecipeCard(r) {
     .map(ing => `${ing.qty}× ${itemName(ing.itemId)}`)
     .join(" · ");
 
-  const rankLabel = r.transfer
+  const isTransfer = !!r.transfer;
+
+  const rankLabel = isTransfer
     ? "Transfer"
     : r.rank
       ? `${r.rank} ${r.level || ""}`
       : "";
 
+  // Different icon + stronger visual for Transfer
+  const icon = isTransfer ? "🔄" : "🔨";
+  const transferBadge = isTransfer
+    ? `<span class="tg" style="background:rgba(251,191,36,0.18); color:#fbbf24; border:1px solid rgba(251,191,36,0.35)">Transfer</span>`
+    : "";
+
   return `
     <div class="row ${doable ? "" : "dis"}" style="
       border-left: 4px solid ${style.border};
       background: ${style.bg};
+      ${isTransfer ? "border-left-style: dashed;" : ""}
     ">
-      <div class="ic">🔨</div>
+      <div class="ic" style="font-size:20px">${icon}</div>
       <div>
         <div class="hd">
           <h3>${esc(r.name)}</h3>
           <span class="tg">${esc(r.profession)}</span>
-          ${rankLabel ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
+          ${rankLabel && !isTransfer ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
+          ${transferBadge}
           ${r.comboChance ? `<span class="tg">Combo ${r.comboChance}%</span>` : ""}
           ${r.subType && r.subType !== "Other" && r.subType !== "Materials" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
         </div>
