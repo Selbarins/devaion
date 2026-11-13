@@ -12,24 +12,25 @@ function getRecipe(id) {
   return (recipesCache || []).find(r => r.id === id);
 }
 
-// ---------- Rarity ----------
+// ---------- Rarity (4 clear tiers + legendary) ----------
 function getRarity(r) {
   const n = (r.name || "").toLowerCase();
-  if (n.startsWith("splendent wise") || n.startsWith("splendent ebony") ||
-      n.includes("wise dragon") || n.includes("ebony dragon")) return "legendary";
-  if (n.startsWith("splendent") && (n.includes("star") || n.includes("true") || n.includes("white") || n.includes("dark"))) return "epic";
-  if (n.includes("star dragon") || n.includes("true dragon") || n.includes("white dragon") || n.includes("dark dragon")) return "epic";
+  if (n.includes("wise dragon") || n.includes("ebony dragon") ||
+      n.startsWith("splendent wise") || n.startsWith("splendent ebony")) return "legendary";
+  if (n.includes("star dragon") || n.includes("true dragon") ||
+      n.includes("white dragon") || n.includes("dark dragon") ||
+      (n.startsWith("splendent") && (n.includes("star") || n.includes("true") || n.includes("white") || n.includes("dark")))) return "epic";
   if (n.startsWith("splendent") || n.startsWith("artisan's")) return "rare";
-  if (n.startsWith("expert's")) return "uncommon";
+  if (n.startsWith("expert's") || n.startsWith("fine ")) return "uncommon";
   return "common";
 }
 
 const RARITY_STYLE = {
-  common:    { border: "transparent", bg: "transparent" },
-  uncommon:  { border: "#38bdf8", bg: "rgba(56,189,248,0.07)" },
-  rare:      { border: "#a78bfa", bg: "rgba(167,139,250,0.09)" },
-  epic:      { border: "#f59e0b", bg: "rgba(245,158,11,0.09)" },
-  legendary: { border: "#e879f9", bg: "rgba(232,121,249,0.11)" }
+  common:    { border: "transparent",          bg: "transparent" },
+  uncommon:  { border: "#4ade80",              bg: "rgba(74,222,128,0.08)" },  // green
+  rare:      { border: "#60a5fa",              bg: "rgba(96,165,250,0.09)" },  // blue
+  epic:      { border: "#c084fc",              bg: "rgba(192,132,252,0.10)" }, // purple
+  legendary: { border: "#fbbf24",              bg: "rgba(251,191,36,0.11)" }   // gold
 };
 
 // ---------- Sub-type ----------
@@ -78,7 +79,6 @@ function normalizeStructured(data) {
   const recipes = list.map(r => {
     const outputId = String(r.output?.id || "");
     const outputName = r.output?.name || r.name || `Recipe ${r.id}`;
-    const outputQty = Number(r.output?.qty) || 1;
     if (outputId) items[outputId] = { name: outputName };
 
     const ingredients = (r.ingredients || []).map(ing => {
@@ -105,7 +105,7 @@ function normalizeStructured(data) {
       subType,
       transfer,
       ingredients,
-      output: { itemId: outputId, qty: outputQty },
+      output: { itemId: outputId, qty: Number(r.output?.qty) || 1 },
       comboChance: r.comboChance ?? null,
       rarity: getRarity({ name: r.name || outputName })
     };
@@ -204,9 +204,7 @@ function aggregateMaterials() {
         totals[id].need += qty;
         totals[id].expanded = true;
         const stillNeeded = Math.max(0, totals[id].need - (have[id] || 0));
-        if (stillNeeded > 0) {
-          addIngredients(sub.ingredients, qty * (stillNeeded / qty));
-        }
+        if (stillNeeded > 0) addIngredients(sub.ingredients, qty * (stillNeeded / qty));
       } else {
         if (!totals[id]) totals[id] = { need: 0, expanded: false };
         totals[id].need += qty;
@@ -222,15 +220,9 @@ function aggregateMaterials() {
 
   let changed = false;
   for (const id of Object.keys(expanded)) {
-    if (!totals[id]) {
-      delete expanded[id];
-      changed = true;
-    }
+    if (!totals[id]) { delete expanded[id]; changed = true; }
   }
-  if (changed) {
-    st.craftExpanded = expanded;
-    persist();
-  }
+  if (changed) { st.craftExpanded = expanded; persist(); }
   return totals;
 }
 
@@ -257,6 +249,7 @@ export async function drawCraft(app, { onRender }) {
   if (!st.craftSub) st.craftSub = "browser";
   if (!st.craftCatFilter) st.craftCatFilter = "All";
   if (st.craftMode == null) st.craftMode = "regular";
+  if (st.craftShowProfs == null) st.craftShowProfs = false;
 
   await loadData();
 
@@ -279,14 +272,21 @@ export async function drawCraft(app, { onRender }) {
 
   app.innerHTML = `
     <div class="panel glass">
-      <div class="ctrl-bar" style="margin-bottom:14px">
+      <div class="ctrl-bar" style="margin-bottom:14px; justify-content:space-between">
         <div class="seg">
-          <button type="button" data-craft-sub="browser" class="${st.craftSub !== "log" && st.craftSub !== "profs" ? "on" : ""}">Recipes</button>
-          <button type="button" data-craft-sub="log" class="${st.craftSub === "log" ? "on" : ""}">My Plan${(st.craftLog && st.craftLog.length) ? ` (${st.craftLog.length})` : ""}</button>
-          <button type="button" data-craft-sub="profs" class="${st.craftSub === "profs" ? "on" : ""}">Professions</button>
+          <button type="button" data-craft-sub="browser" class="${st.craftSub !== "log" ? "on" : ""}">Recipes</button>
+          <button type="button" data-craft-sub="log" class="${st.craftSub === "log" ? "on" : ""}">
+            Plan${(st.craftLog && st.craftLog.length) ? ` (${st.craftLog.length})` : ""}
+          </button>
         </div>
+        <button type="button" data-craft-toggle-profs title="Profession levels"
+                style="padding:6px 10px; font-size:16px; line-height:1; opacity:${st.craftShowProfs ? 1 : 0.7}">
+          ⚙️
+        </button>
       </div>
-      ${st.craftSub === "log" ? renderLog() : st.craftSub === "profs" ? renderProfs() : renderBrowser(list, st)}
+
+      ${st.craftShowProfs ? renderProfsPanel() : ""}
+      ${st.craftSub === "log" ? renderLog() : renderBrowser(list, st)}
     </div>
   `;
 }
@@ -302,31 +302,41 @@ function renderBrowser(list, st) {
   return `
     <div>
       <div class="ctrl-bar" style="margin-bottom:12px">
-        <input type="search" id="craftSearch" placeholder="Search recipes..."
-               value="${esc(st.craftSearch || "")}" style="min-width:200px;flex:1">
+        <input type="search" id="craftSearch" placeholder="Search…"
+               value="${esc(st.craftSearch || "")}" style="min-width:180px; flex:1">
         <div class="seg">
           <button type="button" data-craft-mode="regular" class="${mode === "regular" ? "on" : ""}">Regular</button>
           <button type="button" data-craft-mode="transfer" class="${mode === "transfer" ? "on" : ""}">Transfer</button>
         </div>
       </div>
 
-      <div class="ctrl-bar" style="margin-bottom:10px">
+      <!-- Profession filters – slightly larger / accent -->
+      <div class="ctrl-bar" style="margin-bottom:8px; gap:6px">
         ${profs.map(p => `
-          <button type="button" data-craft-prof="${p}" class="${profFilter === p ? "on" : ""}">${esc(p)}</button>
+          <button type="button" data-craft-prof="${p}"
+            class="${profFilter === p ? "on" : ""}"
+            style="font-size:13px; font-weight:600; ${profFilter === p ? "" : "opacity:0.85"}">
+            ${esc(p)}
+          </button>
         `).join("")}
       </div>
 
       ${profFilter !== "All" ? `
-        <div class="ctrl-bar" style="margin-bottom:14px">
+        <!-- Category filters – smaller, muted -->
+        <div class="ctrl-bar" style="margin-bottom:14px; gap:5px">
           ${subFilters.map(c => `
-            <button type="button" data-craft-cat="${esc(c)}" class="${catFilter === c ? "on" : ""}">${esc(c)}</button>
+            <button type="button" data-craft-cat="${esc(c)}"
+              class="${catFilter === c ? "on" : ""}"
+              style="font-size:12px; padding:4px 9px; opacity:${catFilter === c ? 1 : 0.75}">
+              ${esc(c)}
+            </button>
           `).join("")}
         </div>
       ` : ""}
 
       <div>
         ${list.length === 0
-          ? `<p class="tip">No recipes match your filters.</p>`
+          ? `<p class="tip">No recipes match.</p>`
           : list.map(r => renderRecipeCard(r)).join("")}
       </div>
     </div>
@@ -364,37 +374,33 @@ function renderRecipeCard(r) {
         <p class="tip">${esc(mats)}</p>
       </div>
       <div class="ctl">
-        <button type="button" class="btn-sm" data-add-craft="${r.id}" ${!doable ? "disabled" : ""}>+ Plan</button>
+        <button type="button" class="btn-sm" data-add-craft="${r.id}" ${!doable ? "disabled" : ""} title="Add to Plan">+</button>
       </div>
     </div>
   `;
 }
 
-function renderProfs() {
+function renderProfsPanel() {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean).sort();
   const st = getSt();
   if (!st.craftProfs) st.craftProfs = {};
 
   return `
-    <div>
-      <p class="tip" style="margin-bottom:14px">
-        Set your profession ranks so recipes you can’t craft yet appear dimmed.
-      </p>
+    <div style="margin-bottom:16px; padding:12px 14px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--line)">
+      <div style="font-size:13px; font-weight:600; margin-bottom:10px; opacity:0.9">Profession levels</div>
       ${existingProfs.map(p => {
         const cur = st.craftProfs[p] || { rank: "Novice", level: 1 };
         return `
-          <div class="row">
-            <div class="ic">⚒️</div>
-            <div>
-              <div class="hd"><h3>${esc(p)}</h3></div>
-            </div>
+          <div class="row" style="padding:6px 0">
+            <div class="ic" style="opacity:0.7">⚒️</div>
+            <div><div class="hd"><h3 style="font-size:13.5px">${esc(p)}</h3></div></div>
             <div class="ctl">
-              <select data-prof-rank="${esc(p)}">
+              <select data-prof-rank="${esc(p)}" style="font-size:12px">
                 <option value="Novice" ${cur.rank === "Novice" ? "selected" : ""}>Novice</option>
                 <option value="Professional" ${cur.rank === "Professional" ? "selected" : ""}>Professional</option>
               </select>
               <input type="number" min="1" max="50" value="${cur.level}"
-                     data-prof-level="${esc(p)}" style="width:64px">
+                     data-prof-level="${esc(p)}" style="width:56px; font-size:12px">
             </div>
           </div>
         `;
@@ -418,7 +424,7 @@ function renderLog() {
   });
 
   const plannedHtml = log.length === 0
-    ? `<p class="tip">Nothing planned yet. Go to Recipes and click “+ Plan”.</p>`
+    ? `<p class="tip">Nothing planned yet.</p>`
     : log.map(entry => {
         const r = getRecipe(entry.recipeId);
         if (!r) return "";
@@ -433,15 +439,16 @@ function renderLog() {
             </div>
             <div class="ctl">
               <input type="number" min="1" value="${entry.qty}"
-                     data-log-qty="${entry.recipeId}" style="width:64px">
-              <button type="button" class="btn-sm btn-danger" data-log-remove="${entry.recipeId}">✕</button>
+                     data-log-qty="${entry.recipeId}" style="width:56px; text-align:center">
+              <button type="button" class="btn-sm btn-danger" data-log-remove="${entry.recipeId}" title="Remove">✕</button>
             </div>
           </div>
         `;
       }).join("");
 
+  // Fixed-width columns so Have / Need / Missing / Price stay aligned
   const matsHtml = matIds.length === 0
-    ? `<p class="tip">No materials to show.</p>`
+    ? `<p class="tip">No materials.</p>`
     : matIds.map(id => {
         const info = totals[id];
         const need = info.need;
@@ -450,7 +457,6 @@ function renderLog() {
         const canExpand = !!findRecipeByOutput(id);
         const isExpanded = !!info.expanded;
         const priceVal = prices[id] ?? "";
-        const missingClass = missing > 0 && !isExpanded ? "miss" : "";
 
         return `
           <div class="row ${isExpanded ? "expanded" : ""}">
@@ -458,23 +464,23 @@ function renderLog() {
             <div>
               <div class="hd">
                 <h3>${esc(itemName(id))}</h3>
-                ${isExpanded ? `<span class="tg">Expanded</span>` : canExpand ? `<span class="tg">Craftable</span>` : ""}
+                ${canExpand && !isExpanded ? `<span class="tg">Craftable</span>` : ""}
               </div>
             </div>
-            <div class="ctl" style="gap:8px">
+            <div class="ctl" style="gap:6px; min-width:260px; justify-content:flex-end">
               <input type="number" min="0" value="${haveAmt}" data-have="${id}"
-                     style="width:58px;text-align:center" title="Have">
-              <span style="width:48px;text-align:center" title="Need">${need}</span>
-              <span class="${missingClass}" style="width:48px;text-align:center;font-weight:600" title="Missing">
+                     style="width:52px; text-align:center" title="Have">
+              <span style="width:40px; text-align:center; opacity:0.85" title="Need">${need}</span>
+              <span style="width:40px; text-align:center; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}" title="Missing">
                 ${isExpanded ? "—" : missing}
               </span>
               <input type="number" min="0" step="any" placeholder="—" value="${priceVal}"
-                     data-price="${id}" style="width:72px;text-align:center" title="Price">
+                     data-price="${id}" style="width:64px; text-align:center" title="Price">
               ${canExpand || isExpanded
-                ? `<button type="button" class="btn-sm" data-expand="${id}">
-                     ${isExpanded ? "Collapse" : "Expand"}
+                ? `<button type="button" class="btn-sm" data-expand="${id}" title="${isExpanded ? "Collapse" : "Expand"}" style="min-width:32px">
+                     ${isExpanded ? "−" : "+"}
                    </button>`
-                : `<span style="width:70px"></span>`}
+                : `<span style="width:32px"></span>`}
             </div>
           </div>
         `;
@@ -482,33 +488,36 @@ function renderLog() {
 
   const costHtml = matIds.length === 0 ? "" : `
     <div style="
-      margin-top:18px;
-      padding:16px 18px;
-      border-radius:12px;
-      background: linear-gradient(135deg, rgba(46,230,255,0.08), rgba(192,132,252,0.08));
-      border: 1px solid rgba(46,230,255,0.18);
+      margin-top:14px;
+      padding:10px 14px;
+      border-radius:10px;
+      background: rgba(46,230,255,0.07);
+      border: 1px solid rgba(46,230,255,0.15);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
     ">
-      <div class="tip" style="margin-bottom:4px">Estimated cost of missing materials</div>
-      <div style="font-size:22px;font-weight:700;color:var(--cyan)">
-        ${cost.sum.toLocaleString()} <span style="font-size:14px;font-weight:500;opacity:0.75">Kinah</span>
-      </div>
+      <span style="font-size:13px; opacity:0.8">Total missing cost</span>
+      <span style="font-size:18px; font-weight:700; color:var(--cyan)">
+        ${cost.sum.toLocaleString()} <span style="font-size:12px; font-weight:500; opacity:0.75">Kinah</span>
+      </span>
       ${cost.missingPrice > 0
-        ? `<div class="tip" style="margin-top:6px">${cost.missingPrice} item${cost.missingPrice > 1 ? "s" : ""} without price</div>`
+        ? `<span class="tip" style="width:100%; margin:0">${cost.missingPrice} without price</span>`
         : ""}
     </div>
   `;
 
   return `
     <div>
-      <h2 style="margin:0 0 12px;font-size:16px">Planned Crafts</h2>
-      ${plannedHtml}
-
-      <h2 style="margin:22px 0 8px;font-size:16px">Materials Needed</h2>
-      <p class="tip" style="margin-bottom:12px">
-        Have · Need · Missing · Price. Expand craftable materials to break them down.
-      </p>
-      ${matsHtml}
-      ${costHtml}
+      <div style="margin-bottom:18px">
+        ${plannedHtml}
+      </div>
+      <div>
+        ${matsHtml}
+        ${costHtml}
+      </div>
     </div>
   `;
 }
