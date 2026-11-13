@@ -303,11 +303,11 @@ document.addEventListener("click", e => {
     st.craftSub = b.dataset.craftSub;
     persist();
   } else if (b.dataset.craftMode) {
-  st.craftMode = b.dataset.craftMode;
-  persist();
+    st.craftMode = b.dataset.craftMode;
+    persist();
   } else if (b.dataset.craftToggleProfs !== undefined) {
-  st.craftShowProfs = !st.craftShowProfs;
-  persist();
+    st.craftShowProfs = !st.craftShowProfs;
+    persist();
   } else if (b.dataset.craftProf) {
     st.craftProfFilter = b.dataset.craftProf;
     st.craftCatFilter = "All";
@@ -322,16 +322,16 @@ document.addEventListener("click", e => {
     if (existing) existing.qty += 1;
     else st.craftLog.push({ recipeId: id, qty: 1 });
     persist();
-    // stay on Recipes tab (no auto-switch)
   } else if (b.dataset.logRemove) {
     if (!st.craftLog) st.craftLog = [];
     st.craftLog = st.craftLog.filter(x => x.recipeId !== b.dataset.logRemove);
     persist();
-    } else if (b.dataset.expand) {
+  } else if (b.dataset.expand) {
     if (!st.craftExpanded) st.craftExpanded = {};
     const id = b.dataset.expand;
     st.craftExpanded[id] = !st.craftExpanded[id];
     persist();
+      
   } else if (b.dataset.c) {
     st.activeChar = b.dataset.c;
     if (st.tab !== "missions") { st.tab = "missions"; st.mview = "missions"; }
