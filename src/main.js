@@ -647,7 +647,7 @@ document.addEventListener("input", e => {
         const view = document.getElementById("view");
         if (view) drawCraft(view, { onRender: render });
       }
-    }, 280);
+    }, 320); // wait until user stops typing
   }
 });
 
