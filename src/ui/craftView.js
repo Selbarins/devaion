@@ -15,18 +15,84 @@ function getRecipe(id) {
 
 // ---------- Infer in-game sub-type from recipe ----------
 function inferSubType(r) {
+  // Prefer explicit type from data when available
+  const t = (r.type || r.subType || "").toLowerCase();
   const name = (r.name || "").toLowerCase();
   const cat = (r.category || "").toLowerCase();
   const prof = r.profession || "";
 
-  // Materials always first
-  if (cat === "material" || name.includes("ingot") || name.includes("horn") ||
-      name.includes("leather") || name.includes("wood") || name.includes("decoration") ||
-      name.includes("powder") || name.includes("paper") || name.includes("solvent") ||
-      name.includes("refining") || name.includes("seasoning") || name.includes("abrasive")) {
+  // Map game "type" values → filter labels used by SUB_FILTERS
+  const TYPE_MAP = {
+    greatsword: "Greatsword",
+    sword: "Longsword",
+    longsword: "Longsword",
+    dagger: "Dagger",
+    mace: "Mace",
+    guarder: "Guard",
+    guard: "Guard",
+    shield: "Guard",
+    helmet: "Helm",
+    helm: "Helm",
+    shoulder: "Pauldrons",
+    pauldron: "Pauldrons",
+    torso: "Top",
+    top: "Top",
+    chest: "Top",
+    pants: "Legs",
+    legs: "Legs",
+    greave: "Legs",
+    gloves: "Gloves",
+    gauntlet: "Gloves",
+    boots: "Shoes",
+    shoes: "Shoes",
+    cape: "Cloak",
+    cloak: "Cloak",
+    bow: "Bow",
+    staff: "Staff",
+    stave: "Staff",
+    necklace: "Necklace",
+    earring: "Earrings",
+    earrings: "Earrings",
+    ring: "Ring",
+    bracelet: "Bracelet",
+    magicbook: "Spellbook",
+    spellbook: "Spellbook",
+    book: "Spellbook",
+    orb: "Orb",
+    potion: "Potion",
+    serum: "Potion",
+    scroll: "Scroll",
+    magicstone: "Manastone",
+    manastone: "Manastone",
+    soulstone: "Manastone",
+    food: "Food",
+    drink: "Food"
+  };
+
+  if (t && TYPE_MAP[t]) return TYPE_MAP[t];
+
+  // Materials / misc
+  if (
+    cat === "material" ||
+    t.startsWith("misc_") ||
+    name.includes("ingot") ||
+    name.includes("horn") ||
+    name.includes("leather") ||
+    name.includes("wood") ||
+    name.includes("decoration") ||
+    name.includes("powder") ||
+    name.includes("paper") ||
+    name.includes("solvent") ||
+    name.includes("refining") ||
+    name.includes("seasoning") ||
+    name.includes("abrasive") ||
+    name.includes("ore") ||
+    name.includes("odyle")
+  ) {
     return "Materials";
   }
 
+  // Fallback heuristics by profession + name
   if (prof === "Blacksmithing") {
     if (name.includes("greatsword")) return "Greatsword";
     if (name.includes("longsword") || name.includes("sword")) return "Longsword";
@@ -66,9 +132,7 @@ function inferSubType(r) {
     return "Materials";
   }
 
-  if (prof === "Cooking") {
-    return "Food";
-  }
+  if (prof === "Cooking") return "Food";
 
   return "Other";
 }
@@ -82,24 +146,22 @@ const SUB_FILTERS = {
   Cooking: ["All", "Food"]
 };
 
-// ---------- Normalize raw format ----------
+// ---------- Normalize raw format (kept for future raw files) ----------
 function normalizeRaw(raw) {
   const names = raw.names || {};
   const list = raw.r || [];
   const items = {};
 
-  // Build items dictionary
   for (const [id, name] of Object.entries(names)) {
     items[id] = { name };
   }
 
-  // Map internal client names → real in-game English names
   const PROF_MAP = {
-    "Blacksmithing": "Blacksmithing",
-    "Tailoring": "Armorsmithing",
-    "Jewelcrafting": "Handicrafting",
-    "Alchemy": "Alchemy",
-    "Cooking": "Cooking"
+    Blacksmithing: "Blacksmithing",
+    Tailoring: "Armorsmithing",
+    Jewelcrafting: "Handicrafting",
+    Alchemy: "Alchemy",
+    Cooking: "Cooking"
   };
 
   const recipes = list.map(arr => {
@@ -117,7 +179,6 @@ function normalizeRaw(raw) {
       qty: Number(pair[1]) || 1
     }));
 
-    // Rank logic (matches game)
     let rank = null;
     let rankLevel = level;
     if (level > 0) {
@@ -130,10 +191,7 @@ function normalizeRaw(raw) {
       }
     }
 
-    // Clean name
     const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
-
-    // Infer sub-type for filters
     const subType = inferSubType({ name, category, profession });
 
     return {
@@ -146,18 +204,79 @@ function normalizeRaw(raw) {
       category,
       subType,
       ingredients,
-      output: {
-        itemId: outputId,
-        qty: outputQty
-      },
+      output: { itemId: outputId, qty: outputQty },
       comboChance,
       tags: [category.toLowerCase()].filter(Boolean)
     };
   });
 
-  // Sort by level
   recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
+  return { recipes, items };
+}
 
+// ---------- Normalize the current recipes.json shape ----------
+function normalizeStructured(data) {
+  const list = Array.isArray(data) ? data : (data.recipes || []);
+  const items = {};
+
+  const recipes = list.map(r => {
+    const outputId = String(r.output?.id || r.output?.itemId || "");
+    const outputName = r.output?.name || r.name || `Recipe ${r.id}`;
+    const outputQty = Number(r.output?.qty) || 1;
+
+    // Build items map from embedded names
+    if (outputId) items[outputId] = { name: outputName };
+    if (r.name && outputId) items[outputId] = { name: r.name };
+
+    const ingredients = (r.ingredients || []).map(ing => {
+      const id = String(ing.id || ing.itemId || "");
+      const name = ing.name || id;
+      if (id) items[id] = { name };
+      return {
+        itemId: id,
+        qty: Number(ing.qty) || 1
+      };
+    });
+
+    // Rank / level: data already has rank + level in the structured file
+    let rank = r.rank || null;
+    let level = Number(r.level) || 0;
+    let rawLevel = level;
+    if (!rank && level > 0) {
+      if (level <= 50) {
+        rank = "Novice";
+      } else {
+        rank = "Professional";
+        level = level - 50;
+      }
+    }
+
+    const profession = r.profession || "Unknown";
+    const subType = inferSubType({
+      name: r.name || outputName,
+      category: r.category || r.type || "",
+      profession,
+      type: r.type
+    });
+
+    return {
+      id: String(r.id),
+      name: r.name || outputName,
+      profession,
+      rank,
+      level,
+      rawLevel,
+      category: r.category || r.type || "Other",
+      type: r.type || null,
+      subType,
+      ingredients,
+      output: { itemId: outputId, qty: outputQty },
+      comboChance: r.comboChance ?? null,
+      tags: [(r.type || r.category || "").toLowerCase()].filter(Boolean)
+    };
+  });
+
+  recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
   return { recipes, items };
 }
 
@@ -165,6 +284,7 @@ async function loadData() {
   if (recipesCache && itemsCache) return;
   loading = true;
   try {
+    // 1) Prefer raw if it exists again someday
     try {
       const rawRes = await fetch("/data/recipes.raw.json");
       if (rawRes.ok) {
@@ -178,12 +298,32 @@ async function loadData() {
       console.warn("Could not load recipes.raw.json", e);
     }
 
+    // 2) Structured recipes.json (current format)
     const [rRes, iRes] = await Promise.all([
       fetch("/data/recipes.json"),
-      fetch("/data/items.json")
+      fetch("/data/items.json").catch(() => null)
     ]);
-    recipesCache = await rRes.json();
-    itemsCache = await iRes.json();
+
+    if (!rRes.ok) throw new Error("recipes.json not found");
+
+    const data = await rRes.json();
+    const normalized = normalizeStructured(data);
+    recipesCache = normalized.recipes;
+    itemsCache = normalized.items;
+
+    // Merge any extra names from items.json (optional)
+    if (iRes && iRes.ok) {
+      try {
+        const extra = await iRes.json();
+        if (extra && typeof extra === "object") {
+          for (const [id, val] of Object.entries(extra)) {
+            if (!itemsCache[id] && val?.name) {
+              itemsCache[id] = { name: val.name };
+            }
+          }
+        }
+      } catch (_) {}
+    }
   } catch (e) {
     console.error("Failed to load craft data", e);
     recipesCache = [];
@@ -226,7 +366,9 @@ function getLog() {
 }
 
 function findRecipeByOutput(itemId) {
-  return (recipesCache || []).find(r => r.output && String(r.output.itemId) === String(itemId));
+  return (recipesCache || []).find(
+    r => r.output && String(r.output.itemId) === String(itemId)
+  );
 }
 
 function aggregateMaterials() {
@@ -242,17 +384,14 @@ function aggregateMaterials() {
       const sub = findRecipeByOutput(id);
 
       if (sub && expanded[id]) {
-        // Expanded intermediate
         if (!totals[id]) totals[id] = { need: 0, expanded: true };
         totals[id].need += qty;
         totals[id].expanded = true;
 
-        // Only push what is still missing after "Have"
         const haveAmt = have[id] || 0;
         const stillNeeded = Math.max(0, totals[id].need - haveAmt);
 
         if (stillNeeded > 0) {
-          // Scale children by the remaining need
           const scale = stillNeeded / qty;
           addIngredients(sub.ingredients, qty * scale);
         }
@@ -269,7 +408,6 @@ function aggregateMaterials() {
     addIngredients(recipe.ingredients, entry.qty);
   }
 
-  // Clean up expanded flags for materials that are no longer present
   let changed = false;
   for (const id of Object.keys(expanded)) {
     if (!totals[id]) {
@@ -284,6 +422,7 @@ function aggregateMaterials() {
 
   return totals;
 }
+
 function totalCost(totals) {
   const st = getLog();
   const prices = st.craftPrices || {};
@@ -314,7 +453,7 @@ export async function drawCraft(app, { onRender }) {
 
   await loadData();
 
-  const recipes = recipesCache || [];
+  const recipes = Array.isArray(recipesCache) ? recipesCache : [];
   const search = (st.craftSearch || "").toLowerCase().trim();
   const profFilter = st.craftProfFilter || "All";
   const catFilter = st.craftCatFilter || "All";
@@ -334,93 +473,73 @@ export async function drawCraft(app, { onRender }) {
   app.innerHTML = `
     <div class="panel glass">
       <div class="ctrl-bar">
-        <h2 style="margin:0">Crafting</h2>
-        <div class="seg" style="margin-left:14px">
+        <div class="seg">
           <button type="button" data-craft-sub="browser" class="${st.craftSub !== "log" && st.craftSub !== "profs" ? "on" : ""}">Recipes</button>
           <button type="button" data-craft-sub="log" class="${st.craftSub === "log" ? "on" : ""}">Crafting Log</button>
           <button type="button" data-craft-sub="profs" class="${st.craftSub === "profs" ? "on" : ""}">Professions</button>
         </div>
-        <span class="pct" style="margin-left:auto">${recipes.length} recipes</span>
       </div>
-
-      ${st.craftSub === "log" ? renderLog() :
-        st.craftSub === "profs" ? renderProfs() :
-        renderBrowser(list, st, profFilter)}
+      ${st.craftSub === "log" ? renderLog() : st.craftSub === "profs" ? renderProfs() : renderBrowser(list, st)}
     </div>
   `;
 }
 
-// ---------- Recipes browser ----------
-function renderBrowser(list, st, profFilter) {
+function renderBrowser(list, st) {
   const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
-  const allProfs = ["All", ...existingProfs];
-
-  // Sub-filters (in-game style)
-  let catButtons = "";
-  if (profFilter !== "All" && SUB_FILTERS[profFilter]) {
-    const filters = SUB_FILTERS[profFilter];
-    catButtons = `
-      <div class="ctrl-bar" style="margin-top:8px">
-        <div class="seg" style="flex-wrap:wrap">
-          ${filters.map(c => `
-            <button type="button" data-craft-cat="${esc(c)}"
-                    class="${(st.craftCatFilter || "All") === c ? "on" : ""}">${esc(c)}</button>
-          `).join("")}
-        </div>
-      </div>
-    `;
-  }
-
-  if (loading) {
-    return `<div class="panel" style="margin-top:16px"><p class="tip">Loading recipes…</p></div>`;
-  }
+  const profs = ["All", ...existingProfs.sort()];
+  const profFilter = st.craftProfFilter || "All";
+  const catFilter = st.craftCatFilter || "All";
+  const subFilters = SUB_FILTERS[profFilter] || ["All"];
 
   return `
-    <div style="margin-top:8px">
-      <div class="ctrl-bar">
+    <div style="margin-top:10px">
+      <div class="ctrl-bar" style="flex-wrap:wrap; gap:8px;">
         <input type="search" id="craftSearch" placeholder="Search recipes..."
-               value="${esc(st.craftSearch || "")}" style="min-width:220px">
-        <div class="seg" style="flex-wrap:wrap">
-          ${allProfs.map(p => `
+               value="${esc(st.craftSearch || "")}" style="min-width:180px; flex:1;">
+        <div class="seg">
+          ${profs.map(p => `
             <button type="button" data-craft-prof="${p}"
-                    class="${(st.craftProfFilter || "All") === p ? "on" : ""}">${p}</button>
+              class="${profFilter === p ? "on" : ""}">${esc(p)}</button>
           `).join("")}
         </div>
       </div>
 
-      ${catButtons}
+      ${profFilter !== "All" ? `
+        <div class="ctrl-bar" style="margin-top:8px; flex-wrap:wrap; gap:6px;">
+          ${subFilters.map(c => `
+            <button type="button" data-craft-cat="${esc(c)}"
+              class="${catFilter === c ? "on" : ""}">${esc(c)}</button>
+          `).join("")}
+        </div>
+      ` : ""}
 
-      <div style="margin-top:12px">
+      <div style="margin-top:14px">
         ${list.length === 0
-          ? `<div class="panel"><p class="tip" style="margin:0">No recipes found.</p></div>`
-          : list.map(r => recipeRow(r)).join("")
-        }
+          ? `<p class="tip">No recipes match.</p>`
+          : list.map(r => renderRecipeRow(r)).join("")}
       </div>
     </div>
   `;
 }
 
-function recipeRow(r) {
-  const rankLabel = r.rank ? `${r.rank} ${r.level || ""}`.trim() : (r.level ? `Lv ${r.level}` : "");
+function renderRecipeRow(r) {
+  const doable = isDoable(r);
   const mats = (r.ingredients || [])
     .map(ing => `${ing.qty}× ${itemName(ing.itemId)}`)
     .join(", ");
-  const doable = isDoable(r);
-  const rowClass = doable ? "row" : "row dis";
 
   return `
-    <div class="${rowClass}">
-      <div class="ic">${doable ? "🔨" : "🔒"}</div>
+    <div class="row ${doable ? "" : "dim"}">
+      <div class="ic">🔨</div>
       <div>
         <div class="hd">
           <h3>${esc(r.name)}</h3>
           <span class="tg">${esc(r.profession)}</span>
-          ${rankLabel ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
+          ${r.rank ? `<span class="tg">${esc(r.rank)} ${r.level || ""}</span>` : ""}
           ${r.subType && r.subType !== "Other" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
-          ${r.comboChance ? `<span class="tg">Combo ${(r.comboChance * 100).toFixed(0)}%</span>` : ""}
-          ${!doable ? `<span class="tg" style="color:var(--amber)">Need higher level</span>` : ""}
+          ${r.comboChance ? `<span class="tg">Combo ${r.comboChance}%</span>` : ""}
         </div>
-        <div class="tip">${esc(mats || "No materials listed")}</div>
+        <p class="tip" style="margin-top:4px">${esc(mats)}</p>
       </div>
       <div class="ctl">
         <button type="button" class="btn-sm" data-add-craft="${r.id}" ${!doable ? "disabled" : ""}>+ Log</button>
@@ -429,26 +548,25 @@ function recipeRow(r) {
   `;
 }
 
-// ---------- Professions panel ----------
 function renderProfs() {
-  const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean);
-  const profs = getProfs();
-
-  if (existingProfs.length === 0) {
-    return `<div class="panel" style="margin-top:16px"><p class="tip">No professions found in data.</p></div>`;
-  }
+  const existingProfs = [...new Set((recipesCache || []).map(r => r.profession))].filter(Boolean).sort();
+  const st = getSt();
+  if (!st.craftProfs) st.craftProfs = {};
 
   return `
-    <div style="margin-top:8px">
+    <div style="margin-top:10px">
+      <p class="tip" style="margin-bottom:12px">
+        Set your profession rank & level so the recipe list can grey out what you can’t craft yet.
+      </p>
       <div class="panel">
-        <h2>Account Profession Levels</h2>
-        <p class="tip" style="margin-bottom:14px">Shared across the account. Used to grey out recipes you cannot craft yet.</p>
         ${existingProfs.map(p => {
-          const cur = profs[p] || { rank: "Novice", level: 1 };
+          const cur = st.craftProfs[p] || { rank: "Novice", level: 1 };
           return `
             <div class="row">
               <div class="ic">⚒️</div>
-              <div><div class="hd"><h3>${esc(p)}</h3></div></div>
+              <div>
+                <div class="hd"><h3>${esc(p)}</h3></div>
+              </div>
               <div class="ctl" style="gap:8px;">
                 <select data-prof-rank="${esc(p)}">
                   <option value="Novice" ${cur.rank === "Novice" ? "selected" : ""}>Novice</option>
@@ -474,7 +592,6 @@ function renderLog() {
   const prices = st.craftPrices || {};
   const cost = totalCost(totals);
 
-  // Sort: expanded parents first, then the rest
   const matIds = Object.keys(totals).sort((a, b) => {
     const ea = totals[a].expanded ? 0 : 1;
     const eb = totals[b].expanded ? 0 : 1;
@@ -523,7 +640,7 @@ function renderLog() {
         const need = info.need;
         const haveAmt = have[id] || 0;
         const missing = Math.max(0, need - haveAmt);
-        const missingClass = missing > 0 ? "craft-missing" : "craft-ok";
+        const missingClass = missing > 0 ? "miss" : "";
         const canExpand = !!findRecipeByOutput(id);
         const isExpanded = !!info.expanded;
         const priceVal = prices[id] ?? "";
