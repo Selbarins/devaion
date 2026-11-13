@@ -1,0 +1,1504 @@
+{
+  "110230015": {
+    "name": "True Dragon Lord Longsword",
+    "icon": "icons/16334714331cfa903ff8171c.webp"
+  },
+  "110230013": {
+    "name": "Artisan's Splendent Orichalcum Longsword",
+    "icon": "icons/fe03e53124005ce70c49c9fb.webp"
+  },
+  "610530010": {
+    "name": "Artisan's Ultimate Refining Stone",
+    "icon": "icons/b70128b62539ef3553242282.webp"
+  },
+  "610710006": {
+    "name": "Fine Thick Balaur Horn",
+    "icon": "icons/b2c6f87cae509b2741d82be8.webp"
+  },
+  "610511013": {
+    "name": "Wrathful Mind",
+    "icon": "icons/15a857a1f8d5963c223744e6.webp"
+  },
+  "610620016": {
+    "name": "Radiant Orichalcum Ore",
+    "icon": "icons/12d5dd33749981f35ff02981.webp"
+  },
+  "610610016": {
+    "name": "Radiant Odyle",
+    "icon": "icons/33c78788b1173d99180e4ab2.webp"
+  },
+  "110230017": {
+    "name": "Splendent True Dragon Lord Longsword",
+    "icon": "icons/16334714331cfa903ff8171c.webp"
+  },
+  "110230095": {
+    "name": "White Dragon Lord Longsword",
+    "icon": "icons/baa7a46543d138130c90f5f9.webp"
+  },
+  "610710007": {
+    "name": "Fine Hard Balaur Horn",
+    "icon": "icons/db3209bb3710a32b390a0a82.webp"
+  },
+  "610511014": {
+    "name": "Wrathful Will",
+    "icon": "icons/f64cb309f7c06d02871b525a.webp"
+  },
+  "110230097": {
+    "name": "Splendent White Dragon Lord Longsword",
+    "icon": "icons/baa7a46543d138130c90f5f9.webp"
+  },
+  "110230102": {
+    "name": "Wise Dragon Lord Longsword",
+    "icon": "icons/ca371598572278f36e3b1fa5.webp"
+  },
+  "610710008": {
+    "name": "Fine Durable Balaur Horn",
+    "icon": "icons/736dea3d3d55e12ce1fd9ad3.webp"
+  },
+  "610511015": {
+    "name": "Wrathful Ego",
+    "icon": "icons/e3dad31709c35d731cb97d08.webp"
+  },
+  "110230104": {
+    "name": "Splendent Wise Dragon Lord Longsword",
+    "icon": "icons/ca371598572278f36e3b1fa5.webp"
+  },
+  "110240013": {
+    "name": "Artisan's Orichalcum Longsword",
+    "icon": "icons/fe03e53124005ce70c49c9fb.webp"
+  },
+  "110240012": {
+    "name": "Expert's Splendent Orichalcum Longsword",
+    "icon": "icons/d7bf20c6fbf87aba76ad2cdc.webp"
+  },
+  "610530008": {
+    "name": "Artisan's Refining Stone",
+    "icon": "icons/8c1064b38265aebf7dbbb94d.webp"
+  },
+  "610620015": {
+    "name": "Pure Orichalcum Ore",
+    "icon": "icons/824513f2ae87f921fd312756.webp"
+  },
+  "610610015": {
+    "name": "Pure Odyle",
+    "icon": "icons/59e19cbbaf887c521e48b825.webp"
+  },
+  "110250015": {
+    "name": "Expert's Orichalcum Longsword",
+    "icon": "icons/d7bf20c6fbf87aba76ad2cdc.webp"
+  },
+  "110250014": {
+    "name": "Splendent Orichalcum Longsword",
+    "icon": "icons/2217aa5f6e4b10d63805190e.webp"
+  },
+  "610530005": {
+    "name": "Expert's Refining Stone",
+    "icon": "icons/4b91189babbb1927093ed1ea.webp"
+  },
+  "610620014": {
+    "name": "Fine Orichalcum Ore",
+    "icon": "icons/b2ee9593aa210812703c7c03.webp"
+  },
+  "610610014": {
+    "name": "Fine Odyle",
+    "icon": "icons/7df8cf4e0b9e4f10ec4195a7.webp"
+  },
+  "110260023": {
+    "name": "Orichalcum Longsword",
+    "icon": "icons/2217aa5f6e4b10d63805190e.webp"
+  },
+  "610710001": {
+    "name": "Orichalcum Ingot",
+    "icon": "icons/0b4360edb003352e4ceeed38.webp"
+  },
+  "610530001": {
+    "name": "Refining Stone",
+    "icon": "icons/1463641b7eea2760834d9855.webp"
+  },
+  "610610013": {
+    "name": "Odyle",
+    "icon": "icons/10db95f46fce5f35f518ef7c.webp"
+  },
+  "110130015": {
+    "name": "True Dragon Lord Greatsword",
+    "icon": "icons/3aa4070036c5005c1df2e2d2.webp"
+  },
+  "110130013": {
+    "name": "Artisan's Splendent Orichalcum Greatsword",
+    "icon": "icons/45543dc079498496e8e5cec4.webp"
+  },
+  "110330015": {
+    "name": "True Dragon Lord Dagger",
+    "icon": "icons/e8218054ccdd84b86e26593a.webp"
+  },
+  "110730015": {
+    "name": "True Dragon Lord Mace",
+    "icon": "icons/aa41e86aa86d16301142e71d.webp"
+  },
+  "115030015": {
+    "name": "True Dragon Lord Guard",
+    "icon": "icons/d36dfe4935cc23440ce96b61.webp"
+  },
+  "610620013": {
+    "name": "Orichalcum Ore",
+    "icon": "icons/21332712fa9783fbd1e84beb.webp"
+  },
+  "630541001": {
+    "name": "Orichalcum Solvent (Bound)",
+    "icon": "icons/b5a129fac22e8dfa784f943a.webp"
+  },
+  "600590001": {
+    "name": "Balaur's Essence",
+    "icon": "icons/8f1df4d2c9aa7848e6af890a.webp"
+  },
+  "630520001": {
+    "name": "Zircon Hammer (Bound)",
+    "icon": "icons/fcd728068f252108349450ce.webp"
+  },
+  "630520002": {
+    "name": "Lazuli Hammer (Bound)",
+    "icon": "icons/1d032b0e107852dde0687f41.webp"
+  },
+  "630520003": {
+    "name": "Moonstone Hammer (Bound)",
+    "icon": "icons/ddc5c887bc83843821589770.webp"
+  },
+  "631030001": {
+    "name": "Novice Blacksmith's Hammer (Bound)",
+    "icon": "icons/bf5b8a5ccbe4fd341a20d100.webp"
+  },
+  "631030002": {
+    "name": "Professional Blacksmith's Hammer (Bound)",
+    "icon": "icons/129e01133989cde21ad23c57.webp"
+  },
+  "610730022": {
+    "name": "Enhanced Thick Balaur Scale",
+    "icon": "icons/a11a30a391798ba56924262e.webp"
+  },
+  "610730023": {
+    "name": "Enhanced Hard Balaur Scale",
+    "icon": "icons/9eb0c5a94bbb35df3a06a1ce.webp"
+  },
+  "610730024": {
+    "name": "Enhanced Durable Balaur Scale",
+    "icon": "icons/e1cbcfbf9f19f56350c0d28d.webp"
+  },
+  "610650017": {
+    "name": "Radiant Yggdrasil Log",
+    "icon": "icons/796c5981aa74d0f51128da87.webp"
+  },
+  "610650015": {
+    "name": "Pure Yggdrasil Log",
+    "icon": "icons/7c034ab15f144bebb26d3e74.webp"
+  },
+  "610650013": {
+    "name": "Fine Yggdrasil Log",
+    "icon": "icons/e0c48103079e02fd1b58ce2d.webp"
+  },
+  "610730006": {
+    "name": "Yggdrasil Wood",
+    "icon": "icons/d8aab9be5051e2fc82be35b5.webp"
+  },
+  "610660036": {
+    "name": "Radiant Ruby Gemstone",
+    "icon": "icons/d1c0ba93d79503cb17489634.webp"
+  },
+  "610660035": {
+    "name": "Radiant Diamond Gemstone",
+    "icon": "icons/76f82c4b718ef19d117a9a11.webp"
+  },
+  "610660034": {
+    "name": "Radiant Sapphire Gemstone",
+    "icon": "icons/6a44a6abc6296ed39ce88ef4.webp"
+  },
+  "610730021": {
+    "name": "Ruby Decoration",
+    "icon": "icons/c6455b9c939dfb42fb47cc6e.webp"
+  },
+  "610730020": {
+    "name": "Diamond Decoration",
+    "icon": "icons/5a7acbaccf7823fa863fa36c.webp"
+  },
+  "610730016": {
+    "name": "Sapphire Decoration",
+    "icon": "icons/8946147fb000d4ccf65c9181.webp"
+  },
+  "110430013": {
+    "name": "Artisan's Splendent Yggdrasil Bow",
+    "icon": "icons/afcf258b7080209d0bc0e0d7.webp"
+  },
+  "110430014": {
+    "name": "Artisan's Splendent Asvata Bow",
+    "icon": "icons/afcf258b7080209d0bc0e0d7.webp"
+  },
+  "110430015": {
+    "name": "True Dragon Lord Bow",
+    "icon": "icons/148cd93753893507b34d440e.webp"
+  },
+  "110430019": {
+    "name": "Star Dragon Lord Bow",
+    "icon": "icons/148cd93753893507b34d440e.webp"
+  },
+  "110430095": {
+    "name": "White Dragon Lord Bow",
+    "icon": "icons/94387523ad7dcab816f8f0c4.webp"
+  },
+  "110430096": {
+    "name": "Splendent True Dragon Lord Bow",
+    "icon": "icons/148cd93753893507b34d440e.webp"
+  },
+  "110430097": {
+    "name": "Splendent White Dragon Lord Bow",
+    "icon": "icons/94387523ad7dcab816f8f0c4.webp"
+  },
+  "110430099": {
+    "name": "Dark Dragon Lord Bow",
+    "icon": "icons/94387523ad7dcab816f8f0c4.webp"
+  },
+  "110430100": {
+    "name": "Splendent Star Dragon Lord Bow",
+    "icon": "icons/148cd93753893507b34d440e.webp"
+  },
+  "110430101": {
+    "name": "Splendent Dark Dragon Lord Bow",
+    "icon": "icons/94387523ad7dcab816f8f0c4.webp"
+  },
+  "110430102": {
+    "name": "Wise Dragon Lord Bow",
+    "icon": "icons/79c4f5bf82696b142e800918.webp"
+  },
+  "110430103": {
+    "name": "Ebony Dragon Lord Bow",
+    "icon": "icons/79c4f5bf82696b142e800918.webp"
+  },
+  "110430104": {
+    "name": "Splendent Wise Dragon Lord Bow",
+    "icon": "icons/79c4f5bf82696b142e800918.webp"
+  },
+  "110430105": {
+    "name": "Splendent Ebony Dragon Lord Bow",
+    "icon": "icons/79c4f5bf82696b142e800918.webp"
+  },
+  "110440012": {
+    "name": "Expert's Splendent Yggdrasil Bow",
+    "icon": "icons/0a94c76b1fbfbd9ca9eaee80.webp"
+  },
+  "110440013": {
+    "name": "Artisan's Yggdrasil Bow",
+    "icon": "icons/afcf258b7080209d0bc0e0d7.webp"
+  },
+  "110440014": {
+    "name": "Expert's Splendent Asvata Bow",
+    "icon": "icons/0a94c76b1fbfbd9ca9eaee80.webp"
+  },
+  "110440015": {
+    "name": "Artisan's Asvata Bow",
+    "icon": "icons/afcf258b7080209d0bc0e0d7.webp"
+  },
+  "110450014": {
+    "name": "Splendent Yggdrasil Bow",
+    "icon": "icons/a9ed5fef85057fcc07795c25.webp"
+  },
+  "110450015": {
+    "name": "Expert's Yggdrasil Bow",
+    "icon": "icons/0a94c76b1fbfbd9ca9eaee80.webp"
+  },
+  "110450016": {
+    "name": "Splendent Asvata Bow",
+    "icon": "icons/a9ed5fef85057fcc07795c25.webp"
+  },
+  "110450017": {
+    "name": "Expert's Asvata Bow",
+    "icon": "icons/0a94c76b1fbfbd9ca9eaee80.webp"
+  },
+  "110460023": {
+    "name": "Yggdrasil Bow",
+    "icon": "icons/a9ed5fef85057fcc07795c25.webp"
+  },
+  "110460024": {
+    "name": "Asvata Bow",
+    "icon": "icons/a9ed5fef85057fcc07795c25.webp"
+  },
+  "110530013": {
+    "name": "Artisan's Splendent Truth Spellbook",
+    "icon": "icons/9abfcf1bf5cbcbff4bb58c7c.webp"
+  },
+  "110530014": {
+    "name": "Artisan's Splendent Truth Spellbook",
+    "icon": "icons/9abfcf1bf5cbcbff4bb58c7c.webp"
+  },
+  "110530015": {
+    "name": "True Dragon Lord Spellbook",
+    "icon": "icons/2a57d305653b10bd0453d98d.webp"
+  },
+  "110530019": {
+    "name": "Star Dragon Lord Spellbook",
+    "icon": "icons/2a57d305653b10bd0453d98d.webp"
+  },
+  "110530095": {
+    "name": "White Dragon Lord Spellbook",
+    "icon": "icons/6ea2f0fd5819ed7eb919f175.webp"
+  },
+  "110530096": {
+    "name": "Splendent True Dragon Lord Spellbook",
+    "icon": "icons/2a57d305653b10bd0453d98d.webp"
+  },
+  "110530097": {
+    "name": "Splendent White Dragon Lord Spellbook",
+    "icon": "icons/6ea2f0fd5819ed7eb919f175.webp"
+  },
+  "110530099": {
+    "name": "Dark Dragon Lord Spellbook",
+    "icon": "icons/6ea2f0fd5819ed7eb919f175.webp"
+  },
+  "110530100": {
+    "name": "Splendent Star Dragon Lord Spellbook",
+    "icon": "icons/2a57d305653b10bd0453d98d.webp"
+  },
+  "110530101": {
+    "name": "Splendent Dark Dragon Lord Spellbook",
+    "icon": "icons/6ea2f0fd5819ed7eb919f175.webp"
+  },
+  "110530102": {
+    "name": "Wise Dragon Lord Spellbook",
+    "icon": "icons/638fd478f297d9ce58522928.webp"
+  },
+  "110530103": {
+    "name": "Ebony Dragon Lord Spellbook",
+    "icon": "icons/638fd478f297d9ce58522928.webp"
+  },
+  "110530104": {
+    "name": "Splendent Wise Dragon Lord Spellbook",
+    "icon": "icons/638fd478f297d9ce58522928.webp"
+  },
+  "110530105": {
+    "name": "Splendent Ebony Dragon Lord Spellbook",
+    "icon": "icons/638fd478f297d9ce58522928.webp"
+  },
+  "110540012": {
+    "name": "Expert's Splendent Truth Spellbook",
+    "icon": "icons/b93c4bd146763e10d2fc53d9.webp"
+  },
+  "110540013": {
+    "name": "Artisan's Truth Spellbook",
+    "icon": "icons/9abfcf1bf5cbcbff4bb58c7c.webp"
+  },
+  "110540014": {
+    "name": "Expert's Splendent Truth Spellbook",
+    "icon": "icons/b93c4bd146763e10d2fc53d9.webp"
+  },
+  "110540015": {
+    "name": "Artisan's Truth Spellbook",
+    "icon": "icons/9abfcf1bf5cbcbff4bb58c7c.webp"
+  },
+  "110550014": {
+    "name": "Splendent Truth Spellbook",
+    "icon": "icons/8ecb53bd1f6aca77925e2c80.webp"
+  },
+  "110550015": {
+    "name": "Expert's Truth Spellbook",
+    "icon": "icons/b93c4bd146763e10d2fc53d9.webp"
+  },
+  "110550016": {
+    "name": "Splendent Truth Spellbook",
+    "icon": "icons/8ecb53bd1f6aca77925e2c80.webp"
+  },
+  "110550017": {
+    "name": "Expert's Truth Spellbook",
+    "icon": "icons/b93c4bd146763e10d2fc53d9.webp"
+  },
+  "110560023": {
+    "name": "Truth Spellbook",
+    "icon": "icons/8ecb53bd1f6aca77925e2c80.webp"
+  },
+  "110560024": {
+    "name": "Truth Spellbook",
+    "icon": "icons/8ecb53bd1f6aca77925e2c80.webp"
+  },
+  "110630013": {
+    "name": "Artisan's Splendent Truth Orb",
+    "icon": "icons/ed4a2921218c3bf03ab972c8.webp"
+  },
+  "110630014": {
+    "name": "Artisan's Splendent Truth Orb",
+    "icon": "icons/ed4a2921218c3bf03ab972c8.webp"
+  },
+  "110630015": {
+    "name": "True Dragon Lord Orb",
+    "icon": "icons/5bbc5ea6127c41827e3dc6e0.webp"
+  },
+  "110630019": {
+    "name": "Star Dragon Lord Orb",
+    "icon": "icons/5bbc5ea6127c41827e3dc6e0.webp"
+  },
+  "110630095": {
+    "name": "White Dragon Lord Orb",
+    "icon": "icons/962bfb61bf8500040c216d3b.webp"
+  },
+  "110630096": {
+    "name": "Splendent True Dragon Lord Orb",
+    "icon": "icons/5bbc5ea6127c41827e3dc6e0.webp"
+  },
+  "110630097": {
+    "name": "Splendent White Dragon Lord Orb",
+    "icon": "icons/962bfb61bf8500040c216d3b.webp"
+  },
+  "110630099": {
+    "name": "Dark Dragon Lord Orb",
+    "icon": "icons/962bfb61bf8500040c216d3b.webp"
+  },
+  "110630100": {
+    "name": "Splendent Star Dragon Lord Orb",
+    "icon": "icons/5bbc5ea6127c41827e3dc6e0.webp"
+  },
+  "110630101": {
+    "name": "Splendent Dark Dragon Lord Orb",
+    "icon": "icons/962bfb61bf8500040c216d3b.webp"
+  },
+  "110630102": {
+    "name": "Wise Dragon Lord Orb",
+    "icon": "icons/7033886ee95a5f1ec56f380f.webp"
+  },
+  "110630103": {
+    "name": "Ebony Dragon Lord Orb",
+    "icon": "icons/7033886ee95a5f1ec56f380f.webp"
+  },
+  "110630104": {
+    "name": "Splendent Wise Dragon Lord Orb",
+    "icon": "icons/7033886ee95a5f1ec56f380f.webp"
+  },
+  "110630105": {
+    "name": "Splendent Ebony Dragon Lord Orb",
+    "icon": "icons/7033886ee95a5f1ec56f380f.webp"
+  },
+  "110640012": {
+    "name": "Expert's Splendent Truth Orb",
+    "icon": "icons/7194fd0b48e05a82c98e46a5.webp"
+  },
+  "110640013": {
+    "name": "Artisan's Truth Orb",
+    "icon": "icons/ed4a2921218c3bf03ab972c8.webp"
+  },
+  "110640014": {
+    "name": "Expert's Splendent Truth Orb",
+    "icon": "icons/7194fd0b48e05a82c98e46a5.webp"
+  },
+  "110640015": {
+    "name": "Artisan's Truth Orb",
+    "icon": "icons/ed4a2921218c3bf03ab972c8.webp"
+  },
+  "110650014": {
+    "name": "Splendent Truth Orb",
+    "icon": "icons/094b22e675c99fa8cf281c66.webp"
+  },
+  "110650015": {
+    "name": "Expert's Truth Orb",
+    "icon": "icons/7194fd0b48e05a82c98e46a5.webp"
+  },
+  "110650016": {
+    "name": "Splendent Truth Orb",
+    "icon": "icons/094b22e675c99fa8cf281c66.webp"
+  },
+  "110650017": {
+    "name": "Expert's Truth Orb",
+    "icon": "icons/7194fd0b48e05a82c98e46a5.webp"
+  },
+  "110660023": {
+    "name": "Truth Orb",
+    "icon": "icons/094b22e675c99fa8cf281c66.webp"
+  },
+  "110660024": {
+    "name": "Truth Orb",
+    "icon": "icons/094b22e675c99fa8cf281c66.webp"
+  },
+  "110830013": {
+    "name": "Artisan's Splendent Yggdrasil Staff",
+    "icon": "icons/798fc862f12fdc8d84322eb1.webp"
+  },
+  "110830014": {
+    "name": "Artisan's Splendent Asvata Staff",
+    "icon": "icons/798fc862f12fdc8d84322eb1.webp"
+  },
+  "110830015": {
+    "name": "True Dragon Lord Staff",
+    "icon": "icons/8c114ca2c943f62e36df033c.webp"
+  },
+  "110830019": {
+    "name": "Star Dragon Lord Staff",
+    "icon": "icons/8c114ca2c943f62e36df033c.webp"
+  },
+  "110830095": {
+    "name": "White Dragon Lord Staff",
+    "icon": "icons/c10af3b55aa3f2b389102f67.webp"
+  },
+  "110830096": {
+    "name": "Splendent True Dragon Lord Staff",
+    "icon": "icons/8c114ca2c943f62e36df033c.webp"
+  },
+  "110830097": {
+    "name": "Splendent White Dragon Lord Staff",
+    "icon": "icons/c10af3b55aa3f2b389102f67.webp"
+  },
+  "110830099": {
+    "name": "Dark Dragon Lord Staff",
+    "icon": "icons/c10af3b55aa3f2b389102f67.webp"
+  },
+  "110830100": {
+    "name": "Splendent Star Dragon Lord Staff",
+    "icon": "icons/8c114ca2c943f62e36df033c.webp"
+  },
+  "110830101": {
+    "name": "Splendent Dark Dragon Lord Staff",
+    "icon": "icons/c10af3b55aa3f2b389102f67.webp"
+  },
+  "110830102": {
+    "name": "Wise Dragon Lord Staff",
+    "icon": "icons/e41343c1dad59e4a7dc8488f.webp"
+  },
+  "110830103": {
+    "name": "Ebony Dragon Lord Staff",
+    "icon": "icons/e41343c1dad59e4a7dc8488f.webp"
+  },
+  "110830104": {
+    "name": "Splendent Wise Dragon Lord Staff",
+    "icon": "icons/e41343c1dad59e4a7dc8488f.webp"
+  },
+  "110830105": {
+    "name": "Splendent Ebony Dragon Lord Staff",
+    "icon": "icons/e41343c1dad59e4a7dc8488f.webp"
+  },
+  "110840012": {
+    "name": "Expert's Splendent Yggdrasil Staff",
+    "icon": "icons/7b7f2640c0ddebacb63952fe.webp"
+  },
+  "110840013": {
+    "name": "Artisan's Yggdrasil Staff",
+    "icon": "icons/798fc862f12fdc8d84322eb1.webp"
+  },
+  "110840014": {
+    "name": "Expert's Splendent Asvata Staff",
+    "icon": "icons/7b7f2640c0ddebacb63952fe.webp"
+  },
+  "110840015": {
+    "name": "Artisan's Asvata Staff",
+    "icon": "icons/798fc862f12fdc8d84322eb1.webp"
+  },
+  "110850014": {
+    "name": "Splendent Yggdrasil Staff",
+    "icon": "icons/55d4dfe4d669020a3ece8de8.webp"
+  },
+  "110850015": {
+    "name": "Expert's Yggdrasil Staff",
+    "icon": "icons/7b7f2640c0ddebacb63952fe.webp"
+  },
+  "110850016": {
+    "name": "Splendent Asvata Staff",
+    "icon": "icons/55d4dfe4d669020a3ece8de8.webp"
+  },
+  "110850017": {
+    "name": "Expert's Asvata Staff",
+    "icon": "icons/7b7f2640c0ddebacb63952fe.webp"
+  },
+  "110860023": {
+    "name": "Yggdrasil Staff",
+    "icon": "icons/55d4dfe4d669020a3ece8de8.webp"
+  },
+  "110860024": {
+    "name": "Asvata Staff",
+    "icon": "icons/55d4dfe4d669020a3ece8de8.webp"
+  },
+  "310130013": {
+    "name": "Artisan's Splendent Ruby Necklace",
+    "icon": "icons/cb09712f17070af8c3851cb0.webp"
+  },
+  "310130014": {
+    "name": "Artisan's Splendent Ruby Necklace",
+    "icon": "icons/cb09712f17070af8c3851cb0.webp"
+  },
+  "310130015": {
+    "name": "True Dragon Lord Necklace",
+    "icon": "icons/05033db725e22f95a6eef5d5.webp"
+  },
+  "310130019": {
+    "name": "Star Dragon Lord Necklace",
+    "icon": "icons/05033db725e22f95a6eef5d5.webp"
+  },
+  "310130110": {
+    "name": "White Dragon Lord Necklace",
+    "icon": "icons/f7258b80ec16e3939efa21d9.webp"
+  },
+  "310130111": {
+    "name": "Splendent True Dragon Lord Necklace",
+    "icon": "icons/05033db725e22f95a6eef5d5.webp"
+  },
+  "310130112": {
+    "name": "Splendent White Dragon Lord Necklace",
+    "icon": "icons/f7258b80ec16e3939efa21d9.webp"
+  },
+  "310130114": {
+    "name": "Dark Dragon Lord Necklace",
+    "icon": "icons/f7258b80ec16e3939efa21d9.webp"
+  },
+  "310130115": {
+    "name": "Splendent Star Dragon Lord Necklace",
+    "icon": "icons/05033db725e22f95a6eef5d5.webp"
+  },
+  "310130116": {
+    "name": "Splendent Dark Dragon Lord Necklace",
+    "icon": "icons/f7258b80ec16e3939efa21d9.webp"
+  },
+  "310130117": {
+    "name": "Wise Dragon Lord Necklace",
+    "icon": "icons/1d4cc05ae7aa9a2e8d91cdbe.webp"
+  },
+  "310130118": {
+    "name": "Ebony Dragon Lord Necklace",
+    "icon": "icons/1d4cc05ae7aa9a2e8d91cdbe.webp"
+  },
+  "310130119": {
+    "name": "Splendent Wise Dragon Lord Necklace",
+    "icon": "icons/1d4cc05ae7aa9a2e8d91cdbe.webp"
+  },
+  "310130120": {
+    "name": "Splendent Ebony Dragon Lord Necklace",
+    "icon": "icons/1d4cc05ae7aa9a2e8d91cdbe.webp"
+  },
+  "310140012": {
+    "name": "Expert's Splendent Ruby Necklace",
+    "icon": "icons/08fa15926ff9bb6cefde4e34.webp"
+  },
+  "310140013": {
+    "name": "Artisan's Ruby Necklace",
+    "icon": "icons/cb09712f17070af8c3851cb0.webp"
+  },
+  "310140014": {
+    "name": "Expert's Splendent Ruby Necklace",
+    "icon": "icons/08fa15926ff9bb6cefde4e34.webp"
+  },
+  "310140015": {
+    "name": "Artisan's Ruby Necklace",
+    "icon": "icons/cb09712f17070af8c3851cb0.webp"
+  },
+  "310150010": {
+    "name": "Splendent Ruby Necklace",
+    "icon": "icons/53cf9385f1a77ddcf6238e14.webp"
+  },
+  "310150011": {
+    "name": "Expert's Ruby Necklace",
+    "icon": "icons/08fa15926ff9bb6cefde4e34.webp"
+  },
+  "310150012": {
+    "name": "Splendent Ruby Necklace",
+    "icon": "icons/53cf9385f1a77ddcf6238e14.webp"
+  },
+  "310150013": {
+    "name": "Expert's Ruby Necklace",
+    "icon": "icons/08fa15926ff9bb6cefde4e34.webp"
+  },
+  "310160017": {
+    "name": "Ruby Necklace",
+    "icon": "icons/53cf9385f1a77ddcf6238e14.webp"
+  },
+  "310160018": {
+    "name": "Ruby Necklace",
+    "icon": "icons/53cf9385f1a77ddcf6238e14.webp"
+  },
+  "310230013": {
+    "name": "Artisan's Splendent Diamond Earrings",
+    "icon": "icons/dafecc00ee081297849338ca.webp"
+  },
+  "310230014": {
+    "name": "Artisan's Splendent Diamond Earrings",
+    "icon": "icons/dafecc00ee081297849338ca.webp"
+  },
+  "310230015": {
+    "name": "True Dragon Lord Earrings",
+    "icon": "icons/c1ac8dcd43bc96269c4c7be9.webp"
+  },
+  "310230019": {
+    "name": "Star Dragon Lord Earrings",
+    "icon": "icons/c1ac8dcd43bc96269c4c7be9.webp"
+  },
+  "310230112": {
+    "name": "White Dragon Lord Earrings",
+    "icon": "icons/375bb4fe649d2601e3e783d1.webp"
+  },
+  "310230113": {
+    "name": "Splendent True Dragon Lord Earrings",
+    "icon": "icons/c1ac8dcd43bc96269c4c7be9.webp"
+  },
+  "310230114": {
+    "name": "Splendent White Dragon Lord Earrings",
+    "icon": "icons/375bb4fe649d2601e3e783d1.webp"
+  },
+  "310230116": {
+    "name": "Dark Dragon Lord Earrings",
+    "icon": "icons/375bb4fe649d2601e3e783d1.webp"
+  },
+  "310230117": {
+    "name": "Splendent Star Dragon Lord Earrings",
+    "icon": "icons/c1ac8dcd43bc96269c4c7be9.webp"
+  },
+  "310230118": {
+    "name": "Splendent Dark Dragon Lord Earrings",
+    "icon": "icons/375bb4fe649d2601e3e783d1.webp"
+  },
+  "310230119": {
+    "name": "Wise Dragon Lord Earrings",
+    "icon": "icons/566986b56fc49a33b6d94002.webp"
+  },
+  "310230120": {
+    "name": "Ebony Dragon Lord Earrings",
+    "icon": "icons/566986b56fc49a33b6d94002.webp"
+  },
+  "310230121": {
+    "name": "Splendent Wise Dragon Lord Earrings",
+    "icon": "icons/566986b56fc49a33b6d94002.webp"
+  },
+  "310230122": {
+    "name": "Splendent Ebony Dragon Lord Earrings",
+    "icon": "icons/566986b56fc49a33b6d94002.webp"
+  },
+  "310240012": {
+    "name": "Expert's Splendent Diamond Earrings",
+    "icon": "icons/d610e3d374797ed99c7dc090.webp"
+  },
+  "310240013": {
+    "name": "Artisan's Diamond Earrings",
+    "icon": "icons/dafecc00ee081297849338ca.webp"
+  },
+  "310240014": {
+    "name": "Expert's Splendent Diamond Earrings",
+    "icon": "icons/d610e3d374797ed99c7dc090.webp"
+  },
+  "310240015": {
+    "name": "Artisan's Diamond Earrings",
+    "icon": "icons/dafecc00ee081297849338ca.webp"
+  },
+  "310250010": {
+    "name": "Splendent Diamond Earrings",
+    "icon": "icons/3f38d205127f8d2f862ad08b.webp"
+  },
+  "310250011": {
+    "name": "Expert's Diamond Earrings",
+    "icon": "icons/d610e3d374797ed99c7dc090.webp"
+  },
+  "310250012": {
+    "name": "Splendent Diamond Earrings",
+    "icon": "icons/3f38d205127f8d2f862ad08b.webp"
+  },
+  "310250013": {
+    "name": "Expert's Diamond Earrings",
+    "icon": "icons/d610e3d374797ed99c7dc090.webp"
+  },
+  "310260017": {
+    "name": "Diamond Earrings",
+    "icon": "icons/3f38d205127f8d2f862ad08b.webp"
+  },
+  "310260018": {
+    "name": "Diamond Earrings",
+    "icon": "icons/3f38d205127f8d2f862ad08b.webp"
+  },
+  "310330013": {
+    "name": "Artisan's Splendent Sapphire Ring",
+    "icon": "icons/d3896ebc0f427f470d514a3e.webp"
+  },
+  "310330014": {
+    "name": "Artisan's Splendent Sapphire Ring",
+    "icon": "icons/d3896ebc0f427f470d514a3e.webp"
+  },
+  "310330015": {
+    "name": "True Dragon Lord Ring",
+    "icon": "icons/d7390204e2f88621f62b9a53.webp"
+  },
+  "310330019": {
+    "name": "Star Dragon Lord Ring",
+    "icon": "icons/d7390204e2f88621f62b9a53.webp"
+  },
+  "310330112": {
+    "name": "White Dragon Lord Ring",
+    "icon": "icons/d94a5c0e7bba545eaf618361.webp"
+  },
+  "310330113": {
+    "name": "Splendent True Dragon Lord Ring",
+    "icon": "icons/d7390204e2f88621f62b9a53.webp"
+  },
+  "310330114": {
+    "name": "Splendent White Dragon Lord Ring",
+    "icon": "icons/d94a5c0e7bba545eaf618361.webp"
+  },
+  "310330116": {
+    "name": "Dark Dragon Lord Ring",
+    "icon": "icons/d94a5c0e7bba545eaf618361.webp"
+  },
+  "310330117": {
+    "name": "Splendent Star Dragon Lord Ring",
+    "icon": "icons/d7390204e2f88621f62b9a53.webp"
+  },
+  "310330118": {
+    "name": "Splendent Dark Dragon Lord Ring",
+    "icon": "icons/d94a5c0e7bba545eaf618361.webp"
+  },
+  "310330119": {
+    "name": "Wise Dragon Lord Ring",
+    "icon": "icons/5586b4e2508b2eb1a9e28443.webp"
+  },
+  "310330120": {
+    "name": "Ebony Dragon Lord Ring",
+    "icon": "icons/5586b4e2508b2eb1a9e28443.webp"
+  },
+  "310330121": {
+    "name": "Splendent Wise Dragon Lord Ring",
+    "icon": "icons/5586b4e2508b2eb1a9e28443.webp"
+  },
+  "310330122": {
+    "name": "Splendent Ebony Dragon Lord Ring",
+    "icon": "icons/5586b4e2508b2eb1a9e28443.webp"
+  },
+  "310340012": {
+    "name": "Expert's Splendent Sapphire Ring",
+    "icon": "icons/c8eb983c5cb09efcc989aa08.webp"
+  },
+  "310340013": {
+    "name": "Artisan's Sapphire Ring",
+    "icon": "icons/d3896ebc0f427f470d514a3e.webp"
+  },
+  "310340014": {
+    "name": "Expert's Splendent Sapphire Ring",
+    "icon": "icons/c8eb983c5cb09efcc989aa08.webp"
+  },
+  "310340015": {
+    "name": "Artisan's Sapphire Ring",
+    "icon": "icons/d3896ebc0f427f470d514a3e.webp"
+  },
+  "310350010": {
+    "name": "Splendent Sapphire Ring",
+    "icon": "icons/3452d9b92e226213ae070e98.webp"
+  },
+  "310350011": {
+    "name": "Expert's Sapphire Ring",
+    "icon": "icons/c8eb983c5cb09efcc989aa08.webp"
+  },
+  "310350012": {
+    "name": "Splendent Sapphire Ring",
+    "icon": "icons/3452d9b92e226213ae070e98.webp"
+  },
+  "310350013": {
+    "name": "Expert's Sapphire Ring",
+    "icon": "icons/c8eb983c5cb09efcc989aa08.webp"
+  },
+  "310360017": {
+    "name": "Sapphire Ring",
+    "icon": "icons/3452d9b92e226213ae070e98.webp"
+  },
+  "310360018": {
+    "name": "Sapphire Ring",
+    "icon": "icons/3452d9b92e226213ae070e98.webp"
+  },
+  "310440017": {
+    "name": "Pilgrim Bracelet",
+    "icon": "icons/70d3a89c6b4e9c059e927716.webp"
+  },
+  "310440018": {
+    "name": "Liberator Bracelet",
+    "icon": "icons/70d3a89c6b4e9c059e927716.webp"
+  },
+  "310450017": {
+    "name": "Wind Breeze Bracelet",
+    "icon": "icons/98ee91f7c076decee1c97327.webp"
+  },
+  "310450018": {
+    "name": "Chaser Bracelet",
+    "icon": "icons/98ee91f7c076decee1c97327.webp"
+  },
+  "310460003": {
+    "name": "Dawn Bracelet",
+    "icon": "icons/90db6b9a93578918a8df26fb.webp"
+  },
+  "310460006": {
+    "name": "Old Mercenary Commander Bracelet",
+    "icon": "icons/90db6b9a93578918a8df26fb.webp"
+  },
+  "510116005": {
+    "name": "Wind Serum",
+    "icon": "icons/1317ea9c4dde3bbe43458c44.webp"
+  },
+  "510116006": {
+    "name": "Superior Life Serum",
+    "icon": "icons/c05cafe7ced85ded61514068.webp"
+  },
+  "510116010": {
+    "name": "Superior Wind Serum",
+    "icon": "icons/a47fbab10d623c790b587184.webp"
+  },
+  "510126002": {
+    "name": "Superior Life Potion",
+    "icon": "icons/c49af9d177b0eb2dbc7d10b1.webp"
+  },
+  "510126003": {
+    "name": "Mana Potion",
+    "icon": "icons/e9854d0642a38ba0a02d6b74.webp"
+  },
+  "510146002": {
+    "name": "Superior Healing Potion",
+    "icon": "icons/ed0b531dea19b3ea8c374005.webp"
+  },
+  "510615003": {
+    "name": "White Dragon's Fruit Juice",
+    "icon": "icons/502a33a9a72dc3bde3f6fc81.webp"
+  },
+  "510615004": {
+    "name": "White Dragon's Herb Tea",
+    "icon": "icons/4021d8d4eec6325e64c5ac47.webp"
+  },
+  "510615009": {
+    "name": "Dark Dragon's Fruit Juice",
+    "icon": "icons/502a33a9a72dc3bde3f6fc81.webp"
+  },
+  "510615010": {
+    "name": "Dark Dragon's Herb Tea",
+    "icon": "icons/4021d8d4eec6325e64c5ac47.webp"
+  },
+  "510616001": {
+    "name": "Mela Juice",
+    "icon": "icons/ea8d380fa0d593009eda6cba.webp"
+  },
+  "510616002": {
+    "name": "Coriolus Tea",
+    "icon": "icons/3b80e3e89c336699741017e9.webp"
+  },
+  "510616003": {
+    "name": "Artisan's Mela Juice",
+    "icon": "icons/ea8d380fa0d593009eda6cba.webp"
+  },
+  "510616004": {
+    "name": "Artisan's Coriolus Tea",
+    "icon": "icons/3b80e3e89c336699741017e9.webp"
+  },
+  "510616005": {
+    "name": "Raydam Juice",
+    "icon": "icons/ea8d380fa0d593009eda6cba.webp"
+  },
+  "510616006": {
+    "name": "Morfa Tea",
+    "icon": "icons/3b80e3e89c336699741017e9.webp"
+  },
+  "510616007": {
+    "name": "Artisan's Raydam Juice",
+    "icon": "icons/ea8d380fa0d593009eda6cba.webp"
+  },
+  "510616008": {
+    "name": "Artisan's Morfa Tea",
+    "icon": "icons/3b80e3e89c336699741017e9.webp"
+  },
+  "510715007": {
+    "name": "White Dragon's Chopped Steak",
+    "icon": "icons/fc721a2bcfd8affe35484187.webp"
+  },
+  "510715008": {
+    "name": "White Dragon's Beef Wellington",
+    "icon": "icons/71439b272799614297c4a648.webp"
+  },
+  "510715011": {
+    "name": "White Dragon's Seafood Pasta",
+    "icon": "icons/c763e357514ee620a1d6c38f.webp"
+  },
+  "510715025": {
+    "name": "Dark Dragon's Chopped Steak",
+    "icon": "icons/fc721a2bcfd8affe35484187.webp"
+  },
+  "510715026": {
+    "name": "Dark Dragon's Beef Wellington",
+    "icon": "icons/71439b272799614297c4a648.webp"
+  },
+  "510715029": {
+    "name": "Dark Dragon's Seafood Pasta",
+    "icon": "icons/c763e357514ee620a1d6c38f.webp"
+  },
+  "510716001": {
+    "name": "Curry Meat Stirfry",
+    "icon": "icons/5ba30d453dc31ef92d108c87.webp"
+  },
+  "510716002": {
+    "name": "Fruit Salad",
+    "icon": "icons/96ae5204e203d8caa16b9236.webp"
+  },
+  "510716003": {
+    "name": "Steamed Cypri",
+    "icon": "icons/690c16467c85ba86b9d6cfdb.webp"
+  },
+  "510716004": {
+    "name": "Inina Pasta",
+    "icon": "icons/b1f24c23e7cc66ba3530b517.webp"
+  },
+  "510716005": {
+    "name": "Kukuru Fried Meat",
+    "icon": "icons/c07014c5a4a23c9ffe4d42df.webp"
+  },
+  "510716006": {
+    "name": "Grilled Cypri",
+    "icon": "icons/e32a8aad0f5249fed6adc38b.webp"
+  },
+  "510716007": {
+    "name": "Artisan's Curry Meat Stirfry",
+    "icon": "icons/5ba30d453dc31ef92d108c87.webp"
+  },
+  "510716008": {
+    "name": "Artisan's Fruit Salad",
+    "icon": "icons/96ae5204e203d8caa16b9236.webp"
+  },
+  "510716009": {
+    "name": "Artisan's Steamed Cypri",
+    "icon": "icons/690c16467c85ba86b9d6cfdb.webp"
+  },
+  "510716010": {
+    "name": "Artisan's Inina Pasta",
+    "icon": "icons/b1f24c23e7cc66ba3530b517.webp"
+  },
+  "510716011": {
+    "name": "Artisan's Kukuru Fried Meat",
+    "icon": "icons/c07014c5a4a23c9ffe4d42df.webp"
+  },
+  "510716012": {
+    "name": "Artisan's Grilled Cypri",
+    "icon": "icons/e32a8aad0f5249fed6adc38b.webp"
+  },
+  "510716013": {
+    "name": "Curry Meat Stirfry",
+    "icon": "icons/5ba30d453dc31ef92d108c87.webp"
+  },
+  "510716014": {
+    "name": "Fruit Salad",
+    "icon": "icons/96ae5204e203d8caa16b9236.webp"
+  },
+  "510716015": {
+    "name": "Steamed Pujery",
+    "icon": "icons/690c16467c85ba86b9d6cfdb.webp"
+  },
+  "510716016": {
+    "name": "Conide Pasta",
+    "icon": "icons/b1f24c23e7cc66ba3530b517.webp"
+  },
+  "510716017": {
+    "name": "Ohkra Fried Meat",
+    "icon": "icons/c07014c5a4a23c9ffe4d42df.webp"
+  },
+  "510716018": {
+    "name": "Grilled Pujery",
+    "icon": "icons/e32a8aad0f5249fed6adc38b.webp"
+  },
+  "510716019": {
+    "name": "Artisan's Curry Meat Stirfry",
+    "icon": "icons/5ba30d453dc31ef92d108c87.webp"
+  },
+  "510716020": {
+    "name": "Artisan's Fruit Salad",
+    "icon": "icons/96ae5204e203d8caa16b9236.webp"
+  },
+  "510716021": {
+    "name": "Artisan's Steamed Pujery",
+    "icon": "icons/690c16467c85ba86b9d6cfdb.webp"
+  },
+  "510716022": {
+    "name": "Artisan's Conide Pasta",
+    "icon": "icons/b1f24c23e7cc66ba3530b517.webp"
+  },
+  "510716023": {
+    "name": "Artisan's Ohkra Fried Meat",
+    "icon": "icons/c07014c5a4a23c9ffe4d42df.webp"
+  },
+  "510716024": {
+    "name": "Artisan's Grilled Pujery",
+    "icon": "icons/e32a8aad0f5249fed6adc38b.webp"
+  },
+  "511060015": {
+    "name": "Superior Speed Scroll",
+    "icon": "icons/2e059c942062fa44839ef5c7.webp"
+  },
+  "511060016": {
+    "name": "Superior Courage Scroll",
+    "icon": "icons/5a12a350f78c1959a20fe386.webp"
+  },
+  "511060025": {
+    "name": "Status Effect Resist Scroll",
+    "icon": "icons/77ea183a591d9cd75bc43a6e.webp"
+  },
+  "511060028": {
+    "name": "Superior Benediction Scroll",
+    "icon": "icons/880bd3d86698ea9532eb00cc.webp"
+  },
+  "511351001": {
+    "name": "Lesser Abyssal Manastone",
+    "icon": "icons/b2c90396bebe294db577d2a4.webp"
+  },
+  "511351002": {
+    "name": "Intermediate Abyssal Manastone",
+    "icon": "icons/b525174c01adc4c5d82328a8.webp"
+  },
+  "511360001": {
+    "name": "Lesser Manastone",
+    "icon": "icons/21b46cc68e65348be0d8fbe0.webp"
+  },
+  "511360003": {
+    "name": "Intermediate Manastone",
+    "icon": "icons/60968786c9d1490394a4f467.webp"
+  },
+  "511360004": {
+    "name": "Superior Manastone",
+    "icon": "icons/6e30ac2daeb4ad6e01b871ab.webp"
+  },
+  "513551001": {
+    "name": "Lesser Abyssal Soulstone",
+    "icon": "icons/1ba83fc84ab8c84c7df16046.webp"
+  },
+  "513551002": {
+    "name": "Intermediate Abyssal Soulstone",
+    "icon": "icons/3a8e2c253bce4ccde5e5e870.webp"
+  },
+  "513560001": {
+    "name": "Lesser Soulstone",
+    "icon": "icons/29e156a8acca356042388efa.webp"
+  },
+  "513560003": {
+    "name": "Intermediate Soulstone",
+    "icon": "icons/84997df5b64095890ebed769.webp"
+  },
+  "513560004": {
+    "name": "Superior Soulstone",
+    "icon": "icons/1f0a2c9decd7eef99e7ddee4.webp"
+  },
+  "530116001": {
+    "name": "Life Serum (Bound)",
+    "icon": "icons/bee7dc959ccadbe101914469.webp"
+  },
+  "530126003": {
+    "name": "Life Potion (Bound)",
+    "icon": "icons/4e7d8413f6d2f9c7d86d1832.webp"
+  },
+  "530146001": {
+    "name": "Healing Potion (Bound)",
+    "icon": "icons/a660a8977c9ca5e01f22111a.webp"
+  },
+  "531060003": {
+    "name": "Speed Scroll (Bound)",
+    "icon": "icons/b38e55c36a45648f5c8458b3.webp"
+  },
+  "531060004": {
+    "name": "Courage Scroll (Bound)",
+    "icon": "icons/e5d424904475e7bc3e7c931e.webp"
+  },
+  "531060027": {
+    "name": "Benediction Scroll (Bound)",
+    "icon": "icons/9f9b4fbc21f2a3cb508c0502.webp"
+  },
+  "610512002": {
+    "name": "Soft Balaur Meat",
+    "icon": "icons/b0b042976ce9a1896a01432d.webp"
+  },
+  "610512004": {
+    "name": "Sweet Balaur Berry"
+  },
+  "610530014": {
+    "name": "Spiritstone",
+    "icon": "icons/bf7f5eabc182938e4e595219.webp"
+  },
+  "610531001": {
+    "name": "Fresh Raw Meat",
+    "icon": "icons/24f13faef4767be19d7f9262.webp"
+  },
+  "610531002": {
+    "name": "Fresh Fruit",
+    "icon": "icons/ff35b87087137c0cd85cbf15.webp"
+  },
+  "610650011": {
+    "name": "Yggdrasil Log",
+    "icon": "icons/cbbf38ea95744d057ba33a70.webp"
+  },
+  "610650012": {
+    "name": "Asvata Log",
+    "icon": "icons/cbbf38ea95744d057ba33a70.webp"
+  },
+  "610650014": {
+    "name": "Fine Asvata Log",
+    "icon": "icons/e0c48103079e02fd1b58ce2d.webp"
+  },
+  "610650016": {
+    "name": "Pure Asvata Log",
+    "icon": "icons/7c034ab15f144bebb26d3e74.webp"
+  },
+  "610650018": {
+    "name": "Radiant Asvata Log",
+    "icon": "icons/796c5981aa74d0f51128da87.webp"
+  },
+  "610660025": {
+    "name": "Sapphire Gemstone",
+    "icon": "icons/2b30e1bcb12811d4696a153e.webp"
+  },
+  "610660026": {
+    "name": "Diamond Gemstone",
+    "icon": "icons/858e964f915d2c92bbbbfd5c.webp"
+  },
+  "610660027": {
+    "name": "Ruby Gemstone",
+    "icon": "icons/512ea524c32815bd4a5011de.webp"
+  },
+  "610660028": {
+    "name": "Fine Sapphire Gemstone",
+    "icon": "icons/df4fbf626a257cb7806b85d3.webp"
+  },
+  "610660029": {
+    "name": "Fine Diamond Gemstone",
+    "icon": "icons/7785dcf8fd1e5677c5892303.webp"
+  },
+  "610660030": {
+    "name": "Fine Ruby Gemstone",
+    "icon": "icons/ca0594f03def16ccf8144003.webp"
+  },
+  "610660031": {
+    "name": "Pure Sapphire Gemstone",
+    "icon": "icons/53a089ffbd1ef9455f2d2bff.webp"
+  },
+  "610660032": {
+    "name": "Pure Diamond Gemstone",
+    "icon": "icons/e4144856bf807def28a28a64.webp"
+  },
+  "610660033": {
+    "name": "Pure Ruby Gemstone",
+    "icon": "icons/f3df928740d07f04e0606788.webp"
+  },
+  "610670041": {
+    "name": "Aria",
+    "icon": "icons/1fa9afa56808272f4a6d3b73.webp"
+  },
+  "610670042": {
+    "name": "Targena",
+    "icon": "icons/2dcb0de27537eb17b76efbd6.webp"
+  },
+  "610670043": {
+    "name": "Azpha",
+    "icon": "icons/876db89f87cee2c962f672df.webp"
+  },
+  "610670044": {
+    "name": "Calendula",
+    "icon": "icons/2dcb0de27537eb17b76efbd6.webp"
+  },
+  "610670045": {
+    "name": "Fresh Aria",
+    "icon": "icons/6e37d5cb70fb7269a21e1d15.webp"
+  },
+  "610670046": {
+    "name": "Fresh Targena",
+    "icon": "icons/fd44c687bdfee440a347f76e.webp"
+  },
+  "610670047": {
+    "name": "Fresh Azpha",
+    "icon": "icons/4582c063593d1c95fb786a44.webp"
+  },
+  "610670048": {
+    "name": "Fresh Calendula",
+    "icon": "icons/fd44c687bdfee440a347f76e.webp"
+  },
+  "610680043": {
+    "name": "Coriolus",
+    "icon": "icons/acb960e5b6502d76c1f1483e.webp"
+  },
+  "610680044": {
+    "name": "Kukuru",
+    "icon": "icons/c07014c5a4a23c9ffe4d42df.webp"
+  },
+  "610680045": {
+    "name": "Mela",
+    "icon": "icons/499b2adc6e4dbe51853c51dd.webp"
+  },
+  "610680047": {
+    "name": "Inina",
+    "icon": "icons/b1f24c23e7cc66ba3530b517.webp"
+  },
+  "610680048": {
+    "name": "Cypri",
+    "icon": "icons/6ce764eaac11bd77cccc5a12.webp"
+  },
+  "610680049": {
+    "name": "Morfa",
+    "icon": "icons/acb960e5b6502d76c1f1483e.webp"
+  },
+  "610680050": {
+    "name": "Ohkra",
+    "icon": "icons/c07014c5a4a23c9ffe4d42df.webp"
+  },
+  "610680051": {
+    "name": "Raydam",
+    "icon": "icons/246ca4438c82260e82f0c5bc.webp"
+  },
+  "610680053": {
+    "name": "Conide",
+    "icon": "icons/b1f24c23e7cc66ba3530b517.webp"
+  },
+  "610680054": {
+    "name": "Pujery",
+    "icon": "icons/6ce764eaac11bd77cccc5a12.webp"
+  },
+  "610710009": {
+    "name": "Tanned Thick Balaur Leather",
+    "icon": "icons/885f46f00804fa50fefa8042.webp"
+  },
+  "610730011": {
+    "name": "Asvata Wood",
+    "icon": "icons/32a89c741102cd39b186a749.webp"
+  },
+  "610740001": {
+    "name": "Spiritstone Powder",
+    "icon": "icons/a9ed5fef85057fcc07795c25.webp"
+  },
+  "610740008": {
+    "name": "Sapphire Powder",
+    "icon": "icons/3452d9b92e226213ae070e98.webp"
+  },
+  "610740009": {
+    "name": "Diamond Powder",
+    "icon": "icons/8108d15fa3c03d52cf315aa2.webp"
+  },
+  "610740010": {
+    "name": "Ruby Powder"
+  },
+  "610740011": {
+    "name": "Yggdrasil Paper",
+    "icon": "icons/3ccc89f3a9e985bd2435d41d.webp"
+  },
+  "610740012": {
+    "name": "Asvata Paper",
+    "icon": "icons/3ccc89f3a9e985bd2435d41d.webp"
+  },
+  "610740015": {
+    "name": "Magic Crystal",
+    "icon": "icons/f4b870b310aedeb2dc69ae36.webp"
+  },
+  "630520007": {
+    "name": "Lesser Dragon Scale Hardener (Bound)",
+    "icon": "icons/721a51aa046197170854859e.webp"
+  },
+  "630520008": {
+    "name": "Intermediate Dragon Scale Hardener (Bound)",
+    "icon": "icons/d278f7dc0e3feb7f4b9e616e.webp"
+  },
+  "630520009": {
+    "name": "Superior Dragon Scale Hardener (Bound)",
+    "icon": "icons/aeffc9fffdfaec2ce923e812.webp"
+  },
+  "630542001": {
+    "name": "Abrasive (Bound)",
+    "icon": "icons/a9efa211cd2c5621af91e712.webp"
+  },
+  "630542005": {
+    "name": "Sandpaper (Bound)",
+    "icon": "icons/8b430480c7d21425e5f45e63.webp"
+  },
+  "630543001": {
+    "name": "Glass Bottle (Bound)",
+    "icon": "icons/22e439ea716493c87cbd4fc5.webp"
+  },
+  "630543002": {
+    "name": "Professional Glass Bottle (Bound)",
+    "icon": "icons/0bdb4f92483dd926fd958a59.webp"
+  },
+  "630543005": {
+    "name": "Catalyst (Bound)",
+    "icon": "icons/2a6a09ab81c5f90695c6cac0.webp"
+  },
+  "630543008": {
+    "name": "Professional Ink (Bound)",
+    "icon": "icons/481ea63e898ab10b236269b2.webp"
+  },
+  "630543013": {
+    "name": "Exceptional Ink (Bound)",
+    "icon": "icons/d4725d30288d8257486edc9c.webp"
+  },
+  "630554001": {
+    "name": "Sugar (Bound)",
+    "icon": "icons/1e658440c5feb78809910c67.webp"
+  },
+  "630554002": {
+    "name": "Salt (Bound)",
+    "icon": "icons/4061a2a76231ae82b67a8a8f.webp"
+  },
+  "630554003": {
+    "name": "Ulmus Oil (Bound)",
+    "icon": "icons/e30e586e4eaeea5ed0610de7.webp"
+  },
+  "630554004": {
+    "name": "Soy Sauce (Bound)",
+    "icon": "icons/152818976a24e93dfa5e443a.webp"
+  },
+  "630554005": {
+    "name": "Verteron Pepper (Bound)",
+    "icon": "icons/0e6c1a7172cd0142ef950a8c.webp"
+  },
+  "630554006": {
+    "name": "Curry Powder (Bound)",
+    "icon": "icons/0da1ca696a4cbd8a39f8c58f.webp"
+  },
+  "630554007": {
+    "name": "Abex Butter (Bound)",
+    "icon": "icons/a9efa211cd2c5621af91e712.webp"
+  },
+  "630554008": {
+    "name": "Raw Triora Noodles (Bound)",
+    "icon": "icons/246ca4438c82260e82f0c5bc.webp"
+  },
+  "630554009": {
+    "name": "Cheese (Bound)",
+    "icon": "icons/178291326e71c4104fd23a59.webp"
+  },
+  "630554011": {
+    "name": "Altgard Pepper (Bound)",
+    "icon": "icons/0e6c1a7172cd0142ef950a8c.webp"
+  },
+  "631050001": {
+    "name": "Novice Handicrafter's Magnifying Glass (Bound)",
+    "icon": "icons/4300bf739792a71b63f2bb00.webp"
+  },
+  "631050002": {
+    "name": "Professional Handicrafter's Magnifying Glass (Bound)",
+    "icon": "icons/6315c26b30939cf4a98e75d5.webp"
+  },
+  "631050005": {
+    "name": "Novice Handicrafter's Magnifying Glass (Bound)",
+    "icon": "icons/4300bf739792a71b63f2bb00.webp"
+  },
+  "631050006": {
+    "name": "Professional Handicrafter's Magnifying Glass (Bound)",
+    "icon": "icons/6315c26b30939cf4a98e75d5.webp"
+  },
+  "631060001": {
+    "name": "Novice Alchemist's Scale (Bound)",
+    "icon": "icons/7e15303c3b7e2f6b4dea817f.webp"
+  },
+  "631060002": {
+    "name": "Professional Alchemist's Scale (Bound)",
+    "icon": "icons/ad481febb1c50e8b7249cd4a.webp"
+  },
+  "631060005": {
+    "name": "Novice Alchemist's Scale (Bound)",
+    "icon": "icons/7e15303c3b7e2f6b4dea817f.webp"
+  },
+  "631060006": {
+    "name": "Professional Alchemist's Scale (Bound)",
+    "icon": "icons/ad481febb1c50e8b7249cd4a.webp"
+  },
+  "631070001": {
+    "name": "Novice Chef's Seasoning (Bound)",
+    "icon": "icons/c99ff823f974ac16f2ffe529.webp"
+  },
+  "631070002": {
+    "name": "Professional Chef's Seasoning (Bound)",
+    "icon": "icons/80b70ff1ddd2a60a3893b3d5.webp"
+  },
+  "631070005": {
+    "name": "Novice Chef's Seasoning (Bound)",
+    "icon": "icons/c99ff823f974ac16f2ffe529.webp"
+  },
+  "631070006": {
+    "name": "Professional Chef's Seasoning (Bound)",
+    "icon": "icons/80b70ff1ddd2a60a3893b3d5.webp"
+  }
+}
