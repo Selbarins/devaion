@@ -451,11 +451,11 @@ function renderLog() {
     <div class="row mat-header" style="opacity:0.55; font-size:11px; font-weight:600; pointer-events:none; border:none; background:transparent; margin-bottom:2px">
       <div class="ic" style="width:48px"></div>
       <div style="flex:1"></div>
-      <div class="ctl mat-nums" style="gap:10px; min-width:340px; justify-content:flex-end; font-variant-numeric:tabular-nums">
-        <span style="width:72px; text-align:right">Have</span>
-        <span style="width:64px; text-align:right">Need</span>
-        <span style="width:64px; text-align:right">Miss</span>
-        <span style="width:96px; text-align:right">Price</span>
+      <div class="ctl mat-nums" style="gap:10px; min-width:360px; justify-content:flex-end; font-variant-numeric:tabular-nums">
+        <span style="width:80px; text-align:right">Have</span>
+        <span style="width:68px; text-align:right">Need</span>
+        <span style="width:68px; text-align:right">Miss</span>
+        <span style="width:110px; text-align:right">Price</span>
         <span style="width:36px"></span>
       </div>
     </div>
@@ -471,11 +471,15 @@ function renderLog() {
         const missing = Math.max(0, need - haveAmt);
         const canExpand = !!findRecipeByOutput(id);
         const isExpanded = !!info.expanded;
-        const priceVal = prices[id] ?? "";
+        const priceVal = prices[id];
 
-        // Visual hierarchy
+        // Format with thousand separators for display
+        const haveDisplay = haveAmt ? haveAmt.toLocaleString() : "";
+        const priceDisplay = (priceVal != null && priceVal !== "") ? Number(priceVal).toLocaleString() : "";
+
+        // Visual hierarchy for expanded items
         const indentStyle = isExpanded
-          ? "padding-left: 12px; opacity: 0.82;"
+          ? "padding-left: 14px; opacity: 0.82;"
           : "";
 
         return `
@@ -490,16 +494,15 @@ function renderLog() {
                 ${isExpanded ? `<span class="tg" style="opacity:0.7">expanded</span>` : ""}
               </div>
             </div>
-            <div class="ctl mat-nums" style="gap:10px; min-width:340px; justify-content:flex-end; font-variant-numeric:tabular-nums">
-              <input type="number" min="0" value="${haveAmt}" data-have="${id}"
-                     style="width:72px; text-align:right; font-variant-numeric:tabular-nums" title="Have">
-              <span style="width:64px; text-align:right; opacity:0.9">${need.toLocaleString()}</span>
-              <span style="width:64px; text-align:right; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}">
+            <div class="ctl mat-nums" style="gap:10px; min-width:360px; justify-content:flex-end; font-variant-numeric:tabular-nums">
+              <input type="text" inputmode="numeric" value="${haveDisplay}" data-have="${id}"
+                     style="width:80px; text-align:right; font-variant-numeric:tabular-nums" title="Have" placeholder="0">
+              <span style="width:68px; text-align:right; opacity:0.9">${need.toLocaleString()}</span>
+              <span style="width:68px; text-align:right; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}">
                 ${isExpanded ? "—" : missing.toLocaleString()}
               </span>
-              <input type="number" min="0" step="any" placeholder="—" value="${priceVal}"
-                     data-price="${id}"
-                     style="width:96px; text-align:right; font-variant-numeric:tabular-nums" title="Price per unit">
+              <input type="text" inputmode="numeric" value="${priceDisplay}" data-price="${id}"
+                     style="width:110px; text-align:right; font-variant-numeric:tabular-nums" title="Price per unit" placeholder="—">
               ${canExpand || isExpanded
                 ? `<button type="button" class="btn-sm" data-expand="${id}" title="${isExpanded ? "Collapse" : "Expand"}"
                            style="min-width:36px; width:36px; height:32px">
@@ -511,7 +514,7 @@ function renderLog() {
         `;
       }).join("");
 
-  // ---- Clean Kinah summary (moved out of the dense row) ----
+  // ---- Clean Kinah summary ----
   const costHtml = matIds.length === 0 ? "" : `
     <div style="margin-top:16px; padding:12px 16px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:16px">
       <div style="font-size:13px; opacity:0.75">
