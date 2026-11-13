@@ -270,13 +270,13 @@ export async function drawCraft(app, { onRender }) {
     );
   }
 
-  app.innerHTML = `
+    app.innerHTML = `
     <div class="panel glass">
       <div class="ctrl-bar" style="margin-bottom:14px; justify-content:space-between">
         <div class="seg">
-          <button type="button" data-craft-mode="regular" class="${mode === "regular" ? "on" : ""}">Regular</button>
-          <button type="button" data-craft-mode="transfer" class="${mode === "transfer" ? "on" : ""}" style="${mode === "transfer" ? "background:rgba(251,191,36,0.2); color:#fbbf24;" : ""}">
-            Transfer
+          <button type="button" data-craft-sub="browser" class="${st.craftSub !== "log" ? "on" : ""}">Recipes</button>
+          <button type="button" data-craft-sub="log" class="${st.craftSub === "log" ? "on" : ""}">
+            Plan${(st.craftLog && st.craftLog.length) ? ` (${st.craftLog.length})` : ""}
           </button>
         </div>
         <button type="button" data-craft-toggle-profs title="Profession levels"
