@@ -579,6 +579,7 @@ document.addEventListener("input", e => {
   }
 });
 
+
 document.addEventListener("change", e => {
   const t = e.target;
   const st = getSt();
@@ -654,6 +655,16 @@ document.addEventListener("input", e => {
   }
 });
 
+document.addEventListener("focusin", e => {
+  const t = e.target;
+  if (t.dataset && (t.dataset.have || t.dataset.price)) {
+    // Show the raw number while the user is editing
+    const raw = t.value.replace(/[^\d.]/g, "");
+    t.value = raw;
+    t.select();
+  }
+});
+
 document.addEventListener("change", e => {
   const st = getSt();
 
@@ -675,9 +686,16 @@ document.addEventListener("change", e => {
 
   if (e.target.dataset.have) {
     const id = e.target.dataset.have;
-    const amt = Math.max(0, parseInt(e.target.value, 10) || 0);
+    // Strip thousand separators and any non-digit characters
+    const raw = e.target.value.replace(/[^\d]/g, "");
+    const amt = Math.max(0, parseInt(raw, 10) || 0);
+
     if (!st.craftHave) st.craftHave = {};
     st.craftHave[id] = amt;
+
+    // Re-format with thousand separators
+    e.target.value = amt ? amt.toLocaleString() : "";
+
     persist();
     if (st.tab === "craft") {
       const view = document.getElementById("view");
@@ -688,9 +706,23 @@ document.addEventListener("change", e => {
 
   if (e.target.dataset.price) {
     const id = e.target.dataset.price;
-    const val = e.target.value;
+    // Allow digits and one decimal point, strip everything else (including commas)
+    let raw = e.target.value.replace(/[^\d.]/g, "");
+    // Keep only the first decimal point
+    const parts = raw.split(".");
+    if (parts.length > 2) raw = parts[0] + "." + parts.slice(1).join("");
+
     if (!st.craftPrices) st.craftPrices = {};
-    st.craftPrices[id] = val === "" ? "" : Number(val);
+
+    if (raw === "" || raw === ".") {
+      st.craftPrices[id] = "";
+      e.target.value = "";
+    } else {
+      const num = Number(raw);
+      st.craftPrices[id] = num;
+      e.target.value = num.toLocaleString();
+    }
+
     persist();
     if (st.tab === "craft") {
       const view = document.getElementById("view");
@@ -698,7 +730,7 @@ document.addEventListener("change", e => {
     }
     return;
   }
-
+  
   if (e.target.dataset.profLevel) {
     const profession = e.target.dataset.profLevel;
     const level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
