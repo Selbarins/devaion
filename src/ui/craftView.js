@@ -10,11 +10,10 @@ function itemName(id) {
 
 function itemIcon(id, size = 48) {
   const sid = String(id);
-  // Primary attempt – most community tools use this pattern
   const src = `https://aion2.app/db-item-icons/${sid}.webp`;
-
-  // Fallback placeholder (first letter + subtle background)
-  const letter = (itemName(id) || "?").charAt(0).toUpperCase();
+  const name = itemName(id);
+  // Prefer first letter of the real name, fall back to "?"
+  const letter = (name && !/^\d+$/.test(name) ? name : "?").charAt(0).toUpperCase();
 
   return `
     <div class="item-icon" style="
@@ -397,21 +396,24 @@ function renderRecipeCard(r) {
       ? `${r.rank} ${r.level || ""}`
       : "";
 
-  const icon = isTransfer ? "🔄" : "🔨";
   const transferBadge = isTransfer
     ? `<span class="tg" style="background:rgba(251,191,36,0.18); color:#fbbf24; border:1px solid rgba(251,191,36,0.35)">Transfer</span>`
     : "";
+
+  // Correct output id
+  const outputId = r.output?.itemId || null;
 
   return `
     <div class="row ${doable ? "" : "dis"}" style="
       border-left: 4px solid ${style.border};
       background: ${style.bg};
       ${isTransfer ? "border-left-style: dashed;" : ""}
+      gap: 12px;
     ">
-      <div class="ic" style="width:48px; display:flex; align-items:center; justify-content:center">
-        ${itemIcon(r.outputId || r.id, 48)}
+      <div class="ic" style="width:48px; min-width:48px; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+        ${outputId ? itemIcon(outputId, 48) : (isTransfer ? "🔄" : "🔨")}
       </div>
-      <div>
+      <div style="flex:1; min-width:0">
         <div class="hd">
           <h3>${esc(r.name)}</h3>
           <span class="tg">${esc(r.profession)}</span>
