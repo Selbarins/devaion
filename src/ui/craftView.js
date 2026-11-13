@@ -306,7 +306,10 @@ function renderBrowser(list, st) {
                value="${esc(st.craftSearch || "")}" style="min-width:180px; flex:1">
         <div class="seg">
           <button type="button" data-craft-mode="regular" class="${mode === "regular" ? "on" : ""}">Regular</button>
-          <button type="button" data-craft-mode="transfer" class="${mode === "transfer" ? "on" : ""}">Transfer</button>
+          <button type="button" data-craft-mode="transfer" class="${mode === "transfer" ? "on" : ""}"
+                  style="${mode === "transfer" ? "background:rgba(251,191,36,0.18); color:#fbbf24;" : ""}">
+            Transfer
+          </button>
         </div>
       </div>
 
@@ -357,7 +360,6 @@ function renderRecipeCard(r) {
       ? `${r.rank} ${r.level || ""}`
       : "";
 
-  // Different icon + stronger visual for Transfer
   const icon = isTransfer ? "🔄" : "🔨";
   const transferBadge = isTransfer
     ? `<span class="tg" style="background:rgba(251,191,36,0.18); color:#fbbf24; border:1px solid rgba(251,191,36,0.35)">Transfer</span>`
