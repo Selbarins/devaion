@@ -305,6 +305,9 @@ document.addEventListener("click", e => {
   } else if (b.dataset.craftMode) {
   st.craftMode = b.dataset.craftMode;
   persist();
+  } else if (b.dataset.craftToggleProfs !== undefined) {
+  st.craftShowProfs = !st.craftShowProfs;
+  persist();
   } else if (b.dataset.craftProf) {
     st.craftProfFilter = b.dataset.craftProf;
     st.craftCatFilter = "All";
