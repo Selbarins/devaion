@@ -8,6 +8,43 @@ function itemName(id) {
   return itemsCache?.[id]?.name || String(id);
 }
 
+function itemIcon(id, size = 48) {
+  const sid = String(id);
+  // Primary attempt – most community tools use this pattern
+  const src = `https://aion2.app/db-item-icons/${sid}.webp`;
+
+  // Fallback placeholder (first letter + subtle background)
+  const letter = (itemName(id) || "?").charAt(0).toUpperCase();
+
+  return `
+    <div class="item-icon" style="
+      width:${size}px; height:${size}px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+      flex-shrink:0;
+      position:relative;
+    ">
+      <img src="${src}"
+           alt=""
+           width="${size}" height="${size}"
+           style="width:100%; height:100%; object-fit:contain; display:block;"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div style="
+        display:none;
+        width:100%; height:100%;
+        align-items:center; justify-content:center;
+        font-size:${Math.round(size * 0.42)}px;
+        font-weight:700;
+        color:rgba(255,255,255,0.55);
+        letter-spacing:-0.5px;
+      ">${letter}</div>
+    </div>
+  `;
+}
+
 function getRecipe(id) {
   return (recipesCache || []).find(r => r.id === id);
 }
@@ -371,7 +408,9 @@ function renderRecipeCard(r) {
       background: ${style.bg};
       ${isTransfer ? "border-left-style: dashed;" : ""}
     ">
-      <div class="ic" style="font-size:20px">${icon}</div>
+      <div class="ic" style="width:48px; display:flex; align-items:center; justify-content:center">
+        ${itemIcon(r.outputId || r.id, 48)}
+      </div>
       <div>
         <div class="hd">
           <h3>${esc(r.name)}</h3>
@@ -496,8 +535,8 @@ function renderLog() {
 
         return `
           <div class="row ${isExpanded ? "expanded" : ""}" style="${indentStyle}">
-            <div class="ic" style="width:48px; font-size:20px; display:flex; align-items:center; justify-content:center">
-              ${isExpanded ? "📂" : "🧱"}
+            <div class="ic" style="width:48px; display:flex; align-items:center; justify-content:center">
+              ${itemIcon(id, 48)}
             </div>
             <div style="flex:1; min-width:0">
               <div class="hd">
