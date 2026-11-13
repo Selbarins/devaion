@@ -653,6 +653,17 @@ document.addEventListener("input", e => {
       }
     }, 320); // wait until user stops typing
   }
+
+  // Save profession level while typing
+  if (e.target.dataset.profLevel) {
+    const st = getSt();
+    const profession = e.target.dataset.profLevel;
+    const level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
+    if (!st.craftProfs) st.craftProfs = {};
+    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
+    st.craftProfs[profession] = { rank: cur.rank, level };
+    persist();
+  }
 });
 
 document.addEventListener("focusin", e => {
@@ -731,27 +742,6 @@ document.addEventListener("change", e => {
     return;
   }
   
-  if (e.target.dataset.profLevel) {
-    const profession = e.target.dataset.profLevel;
-    const level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
-    if (!st.craftProfs) st.craftProfs = {};
-    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
-    st.craftProfs[profession] = { rank: cur.rank, level };
-    persist();
-    return;
-  }
-
-  if (e.target.dataset.profRank) {
-    const profession = e.target.dataset.profRank;
-    const rank = e.target.value === "Professional" ? "Professional" : "Novice";
-    if (!st.craftProfs) st.craftProfs = {};
-    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
-    st.craftProfs[profession] = { rank, level: cur.level };
-    persist();
-    if (st.tab === "craft") {
-      const view = document.getElementById("view");
-      if (view) drawCraft(view, { onRender: render });
-    }
   }
 });
 
