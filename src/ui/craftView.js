@@ -10,9 +10,8 @@ function itemName(id) {
 
 function itemIcon(id, size = 48) {
   const sid = String(id);
-  const src = `https://aion2.app/db-item-icons/${sid}.webp`;
+  const src = `/icons/items/${sid}.webp`;   // ← local instead of aion2.app
   const name = itemName(id);
-  // Prefer first letter of the real name, fall back to "?"
   const letter = (name && !/^\d+$/.test(name) ? name : "?").charAt(0).toUpperCase();
 
   return `
