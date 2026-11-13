@@ -403,32 +403,33 @@ function renderRecipeCard(r) {
   // Correct output id
   const outputId = r.output?.itemId || null;
 
-  return `
-    <div class="row ${doable ? "" : "dis"}" style="
-      border-left: 4px solid ${style.border};
-      background: ${style.bg};
-      ${isTransfer ? "border-left-style: dashed;" : ""}
-      gap: 12px;
-    ">
-      <div class="ic" style="width:48px; min-width:48px; display:flex; align-items:center; justify-content:center; flex-shrink:0">
-        ${outputId ? itemIcon(outputId, 48) : (isTransfer ? "🔄" : "🔨")}
-      </div>
-      <div style="flex:1; min-width:0">
-        <div class="hd">
-          <h3>${esc(r.name)}</h3>
-          <span class="tg">${esc(r.profession)}</span>
-          ${rankLabel && !isTransfer ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
-          ${transferBadge}
-          ${r.comboChance ? `<span class="tg">Combo ${r.comboChance}%</span>` : ""}
-          ${r.subType && r.subType !== "Other" && r.subType !== "Materials" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
+    return `
+      <div class="row ${doable ? "" : "dis"}" style="
+        border-left: 4px solid ${style.border};
+        background: ${style.bg};
+        ${isTransfer ? "border-left-style: dashed;" : ""}
+        grid-template-columns: 48px 1fr auto;
+        gap: 10px 14px;
+      ">
+        <div class="ic" style="width:48px; min-width:48px; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+          ${outputId ? itemIcon(outputId, 48) : (isTransfer ? "🔄" : "🔨")}
         </div>
-        <p class="tip">${esc(mats)}</p>
+        <div style="min-width:0">
+          <div class="hd">
+            <h3>${esc(r.name)}</h3>
+            <span class="tg">${esc(r.profession)}</span>
+            ${rankLabel && !isTransfer ? `<span class="tg">${esc(rankLabel)}</span>` : ""}
+            ${transferBadge}
+            ${r.comboChance ? `<span class="tg">Combo ${r.comboChance}%</span>` : ""}
+            ${r.subType && r.subType !== "Other" && r.subType !== "Materials" ? `<span class="tg">${esc(r.subType)}</span>` : ""}
+          </div>
+          <p class="tip">${esc(mats)}</p>
+        </div>
+        <div class="ctl">
+          <button type="button" class="btn-sm" data-add-craft="${r.id}" ${!doable ? "disabled" : ""} title="Add to Plan">+</button>
+        </div>
       </div>
-      <div class="ctl">
-        <button type="button" class="btn-sm" data-add-craft="${r.id}" ${!doable ? "disabled" : ""} title="Add to Plan">+</button>
-      </div>
-    </div>
-  `;
+    `;
 }
 
 function renderProfsPanel() {
