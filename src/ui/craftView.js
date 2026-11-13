@@ -87,11 +87,13 @@ function normalizeRaw(raw) {
   const names = raw.names || {};
   const list = raw.r || [];
   const items = {};
+
+  // Build items dictionary
   for (const [id, name] of Object.entries(names)) {
     items[id] = { name };
   }
 
-  // Map internal client names → in-game display names
+  // Map internal client names → real in-game English names
   const PROF_MAP = {
     "Blacksmithing": "Blacksmithing",
     "Tailoring": "Armorsmithing",
@@ -105,14 +107,17 @@ function normalizeRaw(raw) {
     const rawProf = arr[1] || "Unknown";
     const profession = PROF_MAP[rawProf] || rawProf;
     const category = arr[2] || "Other";
-    const level = arr[4] || 0;
-    const comboChance = arr[6] || 0;
+    const level = Number(arr[4]) || 0;
+    const comboChance = Number(arr[6]) || 0;
     const outputId = String(arr[7] || arr[8] || "");
+    const outputQty = Number(arr[9]) || 1;
+
     const ingredients = (arr[10] || []).map(pair => ({
       itemId: String(pair[0]),
-      qty: pair[1] || 1
+      qty: Number(pair[1]) || 1
     }));
 
+    // Rank logic (matches game)
     let rank = null;
     let rankLevel = level;
     if (level > 0) {
@@ -125,16 +130,10 @@ function normalizeRaw(raw) {
       }
     }
 
-            const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
-    const subType = inferSubType({ name, category, profession });
+    // Clean name
+    const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
 
-    // Better Transfer detection:
-    // A recipe is Transfer if it uses another gear piece (weapon/armor/accessory)
-    // as an ingredient (not just materials like Ingot, Ore, Horn, etc.)
-    const GEAR_KEYWORDS = /longsword|greatsword|dagger|mace|bow|staff|breastplate|greaves|helm|pauldron|glove|boot|cloak|necklace|earring|ring|bracelet|spellbook|orb|guard|amulet|belt/i;
-    const MATERIAL_KEYWORDS = /ingot|ore|horn|leather|wood|powder|paper|solvent|scale|decoration|abrasive|seasoning|refining|fabric|crystal|stone/i;
-
-        const name = names[outputId] || names[arr[8]] || `Recipe ${id}`;
+    // Infer sub-type for filters
     const subType = inferSubType({ name, category, profession });
 
     return {
@@ -147,13 +146,18 @@ function normalizeRaw(raw) {
       category,
       subType,
       ingredients,
-      output: { itemId: outputId, qty: arr[9] || 1 },
+      output: {
+        itemId: outputId,
+        qty: outputQty
+      },
       comboChance,
       tags: [category.toLowerCase()].filter(Boolean)
     };
   });
 
+  // Sort by level
   recipes.sort((a, b) => (a.rawLevel || 0) - (b.rawLevel || 0));
+
   return { recipes, items };
 }
 
