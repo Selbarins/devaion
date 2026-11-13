@@ -54,5 +54,1040 @@
   "610660034": { "name": "Radiant Sapphire Gemstone" },
   "610730021": { "name": "Ruby Decoration" },
   "610730020": { "name": "Diamond Decoration" },
-  "610730016": { "name": "Sapphire Decoration" }
+  "610730016": { "name": "Sapphire Decoration" },
+  "110430013": {
+    "name": "Artisan's Splendent Yggdrasil Bow"
+  },
+  "110430014": {
+    "name": "Artisan's Splendent Asvata Bow"
+  },
+  "110430015": {
+    "name": "True Dragon Lord Bow"
+  },
+  "110430019": {
+    "name": "Star Dragon Lord Bow"
+  },
+  "110430095": {
+    "name": "White Dragon Lord Bow"
+  },
+  "110430096": {
+    "name": "Splendent True Dragon Lord Bow"
+  },
+  "110430097": {
+    "name": "Splendent White Dragon Lord Bow"
+  },
+  "110430099": {
+    "name": "Dark Dragon Lord Bow"
+  },
+  "110430100": {
+    "name": "Splendent Star Dragon Lord Bow"
+  },
+  "110430101": {
+    "name": "Splendent Dark Dragon Lord Bow"
+  },
+  "110430102": {
+    "name": "Wise Dragon Lord Bow"
+  },
+  "110430103": {
+    "name": "Ebony Dragon Lord Bow"
+  },
+  "110430104": {
+    "name": "Splendent Wise Dragon Lord Bow"
+  },
+  "110430105": {
+    "name": "Splendent Ebony Dragon Lord Bow"
+  },
+  "110440012": {
+    "name": "Expert's Splendent Yggdrasil Bow"
+  },
+  "110440013": {
+    "name": "Artisan's Yggdrasil Bow"
+  },
+  "110440014": {
+    "name": "Expert's Splendent Asvata Bow"
+  },
+  "110440015": {
+    "name": "Artisan's Asvata Bow"
+  },
+  "110450014": {
+    "name": "Splendent Yggdrasil Bow"
+  },
+  "110450015": {
+    "name": "Expert's Yggdrasil Bow"
+  },
+  "110450016": {
+    "name": "Splendent Asvata Bow"
+  },
+  "110450017": {
+    "name": "Expert's Asvata Bow"
+  },
+  "110460023": {
+    "name": "Yggdrasil Bow"
+  },
+  "110460024": {
+    "name": "Asvata Bow"
+  },
+  "110530013": {
+    "name": "Artisan's Splendent Truth Spellbook"
+  },
+  "110530014": {
+    "name": "Artisan's Splendent Truth Spellbook"
+  },
+  "110530015": {
+    "name": "True Dragon Lord Spellbook"
+  },
+  "110530019": {
+    "name": "Star Dragon Lord Spellbook"
+  },
+  "110530095": {
+    "name": "White Dragon Lord Spellbook"
+  },
+  "110530096": {
+    "name": "Splendent True Dragon Lord Spellbook"
+  },
+  "110530097": {
+    "name": "Splendent White Dragon Lord Spellbook"
+  },
+  "110530099": {
+    "name": "Dark Dragon Lord Spellbook"
+  },
+  "110530100": {
+    "name": "Splendent Star Dragon Lord Spellbook"
+  },
+  "110530101": {
+    "name": "Splendent Dark Dragon Lord Spellbook"
+  },
+  "110530102": {
+    "name": "Wise Dragon Lord Spellbook"
+  },
+  "110530103": {
+    "name": "Ebony Dragon Lord Spellbook"
+  },
+  "110530104": {
+    "name": "Splendent Wise Dragon Lord Spellbook"
+  },
+  "110530105": {
+    "name": "Splendent Ebony Dragon Lord Spellbook"
+  },
+  "110540012": {
+    "name": "Expert's Splendent Truth Spellbook"
+  },
+  "110540013": {
+    "name": "Artisan's Truth Spellbook"
+  },
+  "110540014": {
+    "name": "Expert's Splendent Truth Spellbook"
+  },
+  "110540015": {
+    "name": "Artisan's Truth Spellbook"
+  },
+  "110550014": {
+    "name": "Splendent Truth Spellbook"
+  },
+  "110550015": {
+    "name": "Expert's Truth Spellbook"
+  },
+  "110550016": {
+    "name": "Splendent Truth Spellbook"
+  },
+  "110550017": {
+    "name": "Expert's Truth Spellbook"
+  },
+  "110560023": {
+    "name": "Truth Spellbook"
+  },
+  "110560024": {
+    "name": "Truth Spellbook"
+  },
+  "110630013": {
+    "name": "Artisan's Splendent Truth Orb"
+  },
+  "110630014": {
+    "name": "Artisan's Splendent Truth Orb"
+  },
+  "110630015": {
+    "name": "True Dragon Lord Orb"
+  },
+  "110630019": {
+    "name": "Star Dragon Lord Orb"
+  },
+  "110630095": {
+    "name": "White Dragon Lord Orb"
+  },
+  "110630096": {
+    "name": "Splendent True Dragon Lord Orb"
+  },
+  "110630097": {
+    "name": "Splendent White Dragon Lord Orb"
+  },
+  "110630099": {
+    "name": "Dark Dragon Lord Orb"
+  },
+  "110630100": {
+    "name": "Splendent Star Dragon Lord Orb"
+  },
+  "110630101": {
+    "name": "Splendent Dark Dragon Lord Orb"
+  },
+  "110630102": {
+    "name": "Wise Dragon Lord Orb"
+  },
+  "110630103": {
+    "name": "Ebony Dragon Lord Orb"
+  },
+  "110630104": {
+    "name": "Splendent Wise Dragon Lord Orb"
+  },
+  "110630105": {
+    "name": "Splendent Ebony Dragon Lord Orb"
+  },
+  "110640012": {
+    "name": "Expert's Splendent Truth Orb"
+  },
+  "110640013": {
+    "name": "Artisan's Truth Orb"
+  },
+  "110640014": {
+    "name": "Expert's Splendent Truth Orb"
+  },
+  "110640015": {
+    "name": "Artisan's Truth Orb"
+  },
+  "110650014": {
+    "name": "Splendent Truth Orb"
+  },
+  "110650015": {
+    "name": "Expert's Truth Orb"
+  },
+  "110650016": {
+    "name": "Splendent Truth Orb"
+  },
+  "110650017": {
+    "name": "Expert's Truth Orb"
+  },
+  "110660023": {
+    "name": "Truth Orb"
+  },
+  "110660024": {
+    "name": "Truth Orb"
+  },
+  "110830013": {
+    "name": "Artisan's Splendent Yggdrasil Staff"
+  },
+  "110830014": {
+    "name": "Artisan's Splendent Asvata Staff"
+  },
+  "110830015": {
+    "name": "True Dragon Lord Staff"
+  },
+  "110830019": {
+    "name": "Star Dragon Lord Staff"
+  },
+  "110830095": {
+    "name": "White Dragon Lord Staff"
+  },
+  "110830096": {
+    "name": "Splendent True Dragon Lord Staff"
+  },
+  "110830097": {
+    "name": "Splendent White Dragon Lord Staff"
+  },
+  "110830099": {
+    "name": "Dark Dragon Lord Staff"
+  },
+  "110830100": {
+    "name": "Splendent Star Dragon Lord Staff"
+  },
+  "110830101": {
+    "name": "Splendent Dark Dragon Lord Staff"
+  },
+  "110830102": {
+    "name": "Wise Dragon Lord Staff"
+  },
+  "110830103": {
+    "name": "Ebony Dragon Lord Staff"
+  },
+  "110830104": {
+    "name": "Splendent Wise Dragon Lord Staff"
+  },
+  "110830105": {
+    "name": "Splendent Ebony Dragon Lord Staff"
+  },
+  "110840012": {
+    "name": "Expert's Splendent Yggdrasil Staff"
+  },
+  "110840013": {
+    "name": "Artisan's Yggdrasil Staff"
+  },
+  "110840014": {
+    "name": "Expert's Splendent Asvata Staff"
+  },
+  "110840015": {
+    "name": "Artisan's Asvata Staff"
+  },
+  "110850014": {
+    "name": "Splendent Yggdrasil Staff"
+  },
+  "110850015": {
+    "name": "Expert's Yggdrasil Staff"
+  },
+  "110850016": {
+    "name": "Splendent Asvata Staff"
+  },
+  "110850017": {
+    "name": "Expert's Asvata Staff"
+  },
+  "110860023": {
+    "name": "Yggdrasil Staff"
+  },
+  "110860024": {
+    "name": "Asvata Staff"
+  },
+  "310130013": {
+    "name": "Artisan's Splendent Ruby Necklace"
+  },
+  "310130014": {
+    "name": "Artisan's Splendent Ruby Necklace"
+  },
+  "310130015": {
+    "name": "True Dragon Lord Necklace"
+  },
+  "310130019": {
+    "name": "Star Dragon Lord Necklace"
+  },
+  "310130110": {
+    "name": "White Dragon Lord Necklace"
+  },
+  "310130111": {
+    "name": "Splendent True Dragon Lord Necklace"
+  },
+  "310130112": {
+    "name": "Splendent White Dragon Lord Necklace"
+  },
+  "310130114": {
+    "name": "Dark Dragon Lord Necklace"
+  },
+  "310130115": {
+    "name": "Splendent Star Dragon Lord Necklace"
+  },
+  "310130116": {
+    "name": "Splendent Dark Dragon Lord Necklace"
+  },
+  "310130117": {
+    "name": "Wise Dragon Lord Necklace"
+  },
+  "310130118": {
+    "name": "Ebony Dragon Lord Necklace"
+  },
+  "310130119": {
+    "name": "Splendent Wise Dragon Lord Necklace"
+  },
+  "310130120": {
+    "name": "Splendent Ebony Dragon Lord Necklace"
+  },
+  "310140012": {
+    "name": "Expert's Splendent Ruby Necklace"
+  },
+  "310140013": {
+    "name": "Artisan's Ruby Necklace"
+  },
+  "310140014": {
+    "name": "Expert's Splendent Ruby Necklace"
+  },
+  "310140015": {
+    "name": "Artisan's Ruby Necklace"
+  },
+  "310150010": {
+    "name": "Splendent Ruby Necklace"
+  },
+  "310150011": {
+    "name": "Expert's Ruby Necklace"
+  },
+  "310150012": {
+    "name": "Splendent Ruby Necklace"
+  },
+  "310150013": {
+    "name": "Expert's Ruby Necklace"
+  },
+  "310160017": {
+    "name": "Ruby Necklace"
+  },
+  "310160018": {
+    "name": "Ruby Necklace"
+  },
+  "310230013": {
+    "name": "Artisan's Splendent Diamond Earrings"
+  },
+  "310230014": {
+    "name": "Artisan's Splendent Diamond Earrings"
+  },
+  "310230015": {
+    "name": "True Dragon Lord Earrings"
+  },
+  "310230019": {
+    "name": "Star Dragon Lord Earrings"
+  },
+  "310230112": {
+    "name": "White Dragon Lord Earrings"
+  },
+  "310230113": {
+    "name": "Splendent True Dragon Lord Earrings"
+  },
+  "310230114": {
+    "name": "Splendent White Dragon Lord Earrings"
+  },
+  "310230116": {
+    "name": "Dark Dragon Lord Earrings"
+  },
+  "310230117": {
+    "name": "Splendent Star Dragon Lord Earrings"
+  },
+  "310230118": {
+    "name": "Splendent Dark Dragon Lord Earrings"
+  },
+  "310230119": {
+    "name": "Wise Dragon Lord Earrings"
+  },
+  "310230120": {
+    "name": "Ebony Dragon Lord Earrings"
+  },
+  "310230121": {
+    "name": "Splendent Wise Dragon Lord Earrings"
+  },
+  "310230122": {
+    "name": "Splendent Ebony Dragon Lord Earrings"
+  },
+  "310240012": {
+    "name": "Expert's Splendent Diamond Earrings"
+  },
+  "310240013": {
+    "name": "Artisan's Diamond Earrings"
+  },
+  "310240014": {
+    "name": "Expert's Splendent Diamond Earrings"
+  },
+  "310240015": {
+    "name": "Artisan's Diamond Earrings"
+  },
+  "310250010": {
+    "name": "Splendent Diamond Earrings"
+  },
+  "310250011": {
+    "name": "Expert's Diamond Earrings"
+  },
+  "310250012": {
+    "name": "Splendent Diamond Earrings"
+  },
+  "310250013": {
+    "name": "Expert's Diamond Earrings"
+  },
+  "310260017": {
+    "name": "Diamond Earrings"
+  },
+  "310260018": {
+    "name": "Diamond Earrings"
+  },
+  "310330013": {
+    "name": "Artisan's Splendent Sapphire Ring"
+  },
+  "310330014": {
+    "name": "Artisan's Splendent Sapphire Ring"
+  },
+  "310330015": {
+    "name": "True Dragon Lord Ring"
+  },
+  "310330019": {
+    "name": "Star Dragon Lord Ring"
+  },
+  "310330112": {
+    "name": "White Dragon Lord Ring"
+  },
+  "310330113": {
+    "name": "Splendent True Dragon Lord Ring"
+  },
+  "310330114": {
+    "name": "Splendent White Dragon Lord Ring"
+  },
+  "310330116": {
+    "name": "Dark Dragon Lord Ring"
+  },
+  "310330117": {
+    "name": "Splendent Star Dragon Lord Ring"
+  },
+  "310330118": {
+    "name": "Splendent Dark Dragon Lord Ring"
+  },
+  "310330119": {
+    "name": "Wise Dragon Lord Ring"
+  },
+  "310330120": {
+    "name": "Ebony Dragon Lord Ring"
+  },
+  "310330121": {
+    "name": "Splendent Wise Dragon Lord Ring"
+  },
+  "310330122": {
+    "name": "Splendent Ebony Dragon Lord Ring"
+  },
+  "310340012": {
+    "name": "Expert's Splendent Sapphire Ring"
+  },
+  "310340013": {
+    "name": "Artisan's Sapphire Ring"
+  },
+  "310340014": {
+    "name": "Expert's Splendent Sapphire Ring"
+  },
+  "310340015": {
+    "name": "Artisan's Sapphire Ring"
+  },
+  "310350010": {
+    "name": "Splendent Sapphire Ring"
+  },
+  "310350011": {
+    "name": "Expert's Sapphire Ring"
+  },
+  "310350012": {
+    "name": "Splendent Sapphire Ring"
+  },
+  "310350013": {
+    "name": "Expert's Sapphire Ring"
+  },
+  "310360017": {
+    "name": "Sapphire Ring"
+  },
+  "310360018": {
+    "name": "Sapphire Ring"
+  },
+  "310440017": {
+    "name": "Pilgrim Bracelet"
+  },
+  "310440018": {
+    "name": "Liberator Bracelet"
+  },
+  "310450017": {
+    "name": "Wind Breeze Bracelet"
+  },
+  "310450018": {
+    "name": "Chaser Bracelet"
+  },
+  "310460003": {
+    "name": "Dawn Bracelet"
+  },
+  "310460006": {
+    "name": "Old Mercenary Commander Bracelet"
+  },
+  "510116005": {
+    "name": "Wind Serum"
+  },
+  "510116006": {
+    "name": "Superior Life Serum"
+  },
+  "510116010": {
+    "name": "Superior Wind Serum"
+  },
+  "510126002": {
+    "name": "Superior Life Potion"
+  },
+  "510126003": {
+    "name": "Mana Potion"
+  },
+  "510146002": {
+    "name": "Superior Healing Potion"
+  },
+  "510615003": {
+    "name": "White Dragon's Fruit Juice"
+  },
+  "510615004": {
+    "name": "White Dragon's Herb Tea"
+  },
+  "510615009": {
+    "name": "Dark Dragon's Fruit Juice"
+  },
+  "510615010": {
+    "name": "Dark Dragon's Herb Tea"
+  },
+  "510616001": {
+    "name": "Mela Juice"
+  },
+  "510616002": {
+    "name": "Coriolus Tea"
+  },
+  "510616003": {
+    "name": "Artisan's Mela Juice"
+  },
+  "510616004": {
+    "name": "Artisan's Coriolus Tea"
+  },
+  "510616005": {
+    "name": "Raydam Juice"
+  },
+  "510616006": {
+    "name": "Morfa Tea"
+  },
+  "510616007": {
+    "name": "Artisan's Raydam Juice"
+  },
+  "510616008": {
+    "name": "Artisan's Morfa Tea"
+  },
+  "510715007": {
+    "name": "White Dragon's Chopped Steak"
+  },
+  "510715008": {
+    "name": "White Dragon's Beef Wellington"
+  },
+  "510715011": {
+    "name": "White Dragon's Seafood Pasta"
+  },
+  "510715025": {
+    "name": "Dark Dragon's Chopped Steak"
+  },
+  "510715026": {
+    "name": "Dark Dragon's Beef Wellington"
+  },
+  "510715029": {
+    "name": "Dark Dragon's Seafood Pasta"
+  },
+  "510716001": {
+    "name": "Curry Meat Stirfry"
+  },
+  "510716002": {
+    "name": "Fruit Salad"
+  },
+  "510716003": {
+    "name": "Steamed Cypri"
+  },
+  "510716004": {
+    "name": "Inina Pasta"
+  },
+  "510716005": {
+    "name": "Kukuru Fried Meat"
+  },
+  "510716006": {
+    "name": "Grilled Cypri"
+  },
+  "510716007": {
+    "name": "Artisan's Curry Meat Stirfry"
+  },
+  "510716008": {
+    "name": "Artisan's Fruit Salad"
+  },
+  "510716009": {
+    "name": "Artisan's Steamed Cypri"
+  },
+  "510716010": {
+    "name": "Artisan's Inina Pasta"
+  },
+  "510716011": {
+    "name": "Artisan's Kukuru Fried Meat"
+  },
+  "510716012": {
+    "name": "Artisan's Grilled Cypri"
+  },
+  "510716013": {
+    "name": "Curry Meat Stirfry"
+  },
+  "510716014": {
+    "name": "Fruit Salad"
+  },
+  "510716015": {
+    "name": "Steamed Pujery"
+  },
+  "510716016": {
+    "name": "Conide Pasta"
+  },
+  "510716017": {
+    "name": "Ohkra Fried Meat"
+  },
+  "510716018": {
+    "name": "Grilled Pujery"
+  },
+  "510716019": {
+    "name": "Artisan's Curry Meat Stirfry"
+  },
+  "510716020": {
+    "name": "Artisan's Fruit Salad"
+  },
+  "510716021": {
+    "name": "Artisan's Steamed Pujery"
+  },
+  "510716022": {
+    "name": "Artisan's Conide Pasta"
+  },
+  "510716023": {
+    "name": "Artisan's Ohkra Fried Meat"
+  },
+  "510716024": {
+    "name": "Artisan's Grilled Pujery"
+  },
+  "511060015": {
+    "name": "Superior Speed Scroll"
+  },
+  "511060016": {
+    "name": "Superior Courage Scroll"
+  },
+  "511060025": {
+    "name": "Status Effect Resist Scroll"
+  },
+  "511060028": {
+    "name": "Superior Benediction Scroll"
+  },
+  "511351001": {
+    "name": "Lesser Abyssal Manastone"
+  },
+  "511351002": {
+    "name": "Intermediate Abyssal Manastone"
+  },
+  "511360001": {
+    "name": "Lesser Manastone"
+  },
+  "511360003": {
+    "name": "Intermediate Manastone"
+  },
+  "511360004": {
+    "name": "Superior Manastone"
+  },
+  "513551001": {
+    "name": "Lesser Abyssal Soulstone"
+  },
+  "513551002": {
+    "name": "Intermediate Abyssal Soulstone"
+  },
+  "513560001": {
+    "name": "Lesser Soulstone"
+  },
+  "513560003": {
+    "name": "Intermediate Soulstone"
+  },
+  "513560004": {
+    "name": "Superior Soulstone"
+  },
+  "530116001": {
+    "name": "Life Serum (Bound)"
+  },
+  "530126003": {
+    "name": "Life Potion (Bound)"
+  },
+  "530146001": {
+    "name": "Healing Potion (Bound)"
+  },
+  "531060003": {
+    "name": "Speed Scroll (Bound)"
+  },
+  "531060004": {
+    "name": "Courage Scroll (Bound)"
+  },
+  "531060027": {
+    "name": "Benediction Scroll (Bound)"
+  },
+  "600590001": {
+    "name": "Balaur's Essence"
+  },
+  "610511013": {
+    "name": "Wrathful Mind"
+  },
+  "610511014": {
+    "name": "Wrathful Will"
+  },
+  "610511015": {
+    "name": "Wrathful Ego"
+  },
+  "610512002": {
+    "name": "Soft Balaur Meat"
+  },
+  "610512004": {
+    "name": "Sweet Balaur Berry"
+  },
+  "610530001": {
+    "name": "Refining Stone"
+  },
+  "610530005": {
+    "name": "Expert's Refining Stone"
+  },
+  "610530008": {
+    "name": "Artisan's Refining Stone"
+  },
+  "610530010": {
+    "name": "Artisan's Ultimate Refining Stone"
+  },
+  "610530014": {
+    "name": "Spiritstone"
+  },
+  "610531001": {
+    "name": "Fresh Raw Meat"
+  },
+  "610531002": {
+    "name": "Fresh Fruit"
+  },
+  "610610013": {
+    "name": "Odyle"
+  },
+  "610610014": {
+    "name": "Fine Odyle"
+  },
+  "610610015": {
+    "name": "Pure Odyle"
+  },
+  "610610016": {
+    "name": "Radiant Odyle"
+  },
+  "610650011": {
+    "name": "Yggdrasil Log"
+  },
+  "610650012": {
+    "name": "Asvata Log"
+  },
+  "610650013": {
+    "name": "Fine Yggdrasil Log"
+  },
+  "610650014": {
+    "name": "Fine Asvata Log"
+  },
+  "610650015": {
+    "name": "Pure Yggdrasil Log"
+  },
+  "610650016": {
+    "name": "Pure Asvata Log"
+  },
+  "610650017": {
+    "name": "Radiant Yggdrasil Log"
+  },
+  "610650018": {
+    "name": "Radiant Asvata Log"
+  },
+  "610660025": {
+    "name": "Sapphire Gemstone"
+  },
+  "610660026": {
+    "name": "Diamond Gemstone"
+  },
+  "610660027": {
+    "name": "Ruby Gemstone"
+  },
+  "610660028": {
+    "name": "Fine Sapphire Gemstone"
+  },
+  "610660029": {
+    "name": "Fine Diamond Gemstone"
+  },
+  "610660030": {
+    "name": "Fine Ruby Gemstone"
+  },
+  "610660031": {
+    "name": "Pure Sapphire Gemstone"
+  },
+  "610660032": {
+    "name": "Pure Diamond Gemstone"
+  },
+  "610660033": {
+    "name": "Pure Ruby Gemstone"
+  },
+  "610660034": {
+    "name": "Radiant Sapphire Gemstone"
+  },
+  "610660035": {
+    "name": "Radiant Diamond Gemstone"
+  },
+  "610660036": {
+    "name": "Radiant Ruby Gemstone"
+  },
+  "610670041": {
+    "name": "Aria"
+  },
+  "610670042": {
+    "name": "Targena"
+  },
+  "610670043": {
+    "name": "Azpha"
+  },
+  "610670044": {
+    "name": "Calendula"
+  },
+  "610670045": {
+    "name": "Fresh Aria"
+  },
+  "610670046": {
+    "name": "Fresh Targena"
+  },
+  "610670047": {
+    "name": "Fresh Azpha"
+  },
+  "610670048": {
+    "name": "Fresh Calendula"
+  },
+  "610680043": {
+    "name": "Coriolus"
+  },
+  "610680044": {
+    "name": "Kukuru"
+  },
+  "610680045": {
+    "name": "Mela"
+  },
+  "610680047": {
+    "name": "Inina"
+  },
+  "610680048": {
+    "name": "Cypri"
+  },
+  "610680049": {
+    "name": "Morfa"
+  },
+  "610680050": {
+    "name": "Ohkra"
+  },
+  "610680051": {
+    "name": "Raydam"
+  },
+  "610680053": {
+    "name": "Conide"
+  },
+  "610680054": {
+    "name": "Pujery"
+  },
+  "610710009": {
+    "name": "Tanned Thick Balaur Leather"
+  },
+  "610730006": {
+    "name": "Yggdrasil Wood"
+  },
+  "610730011": {
+    "name": "Asvata Wood"
+  },
+  "610730016": {
+    "name": "Sapphire Decoration"
+  },
+  "610730020": {
+    "name": "Diamond Decoration"
+  },
+  "610730021": {
+    "name": "Ruby Decoration"
+  },
+  "610730022": {
+    "name": "Enhanced Thick Balaur Scale"
+  },
+  "610730023": {
+    "name": "Enhanced Hard Balaur Scale"
+  },
+  "610730024": {
+    "name": "Enhanced Durable Balaur Scale"
+  },
+  "610740001": {
+    "name": "Spiritstone Powder"
+  },
+  "610740008": {
+    "name": "Sapphire Powder"
+  },
+  "610740009": {
+    "name": "Diamond Powder"
+  },
+  "610740010": {
+    "name": "Ruby Powder"
+  },
+  "610740011": {
+    "name": "Yggdrasil Paper"
+  },
+  "610740012": {
+    "name": "Asvata Paper"
+  },
+  "610740015": {
+    "name": "Magic Crystal"
+  },
+  "630520007": {
+    "name": "Lesser Dragon Scale Hardener (Bound)"
+  },
+  "630520008": {
+    "name": "Intermediate Dragon Scale Hardener (Bound)"
+  },
+  "630520009": {
+    "name": "Superior Dragon Scale Hardener (Bound)"
+  },
+  "630542001": {
+    "name": "Abrasive (Bound)"
+  },
+  "630542005": {
+    "name": "Sandpaper (Bound)"
+  },
+  "630543001": {
+    "name": "Glass Bottle (Bound)"
+  },
+  "630543002": {
+    "name": "Professional Glass Bottle (Bound)"
+  },
+  "630543005": {
+    "name": "Catalyst (Bound)"
+  },
+  "630543008": {
+    "name": "Professional Ink (Bound)"
+  },
+  "630543013": {
+    "name": "Exceptional Ink (Bound)"
+  },
+  "630554001": {
+    "name": "Sugar (Bound)"
+  },
+  "630554002": {
+    "name": "Salt (Bound)"
+  },
+  "630554003": {
+    "name": "Ulmus Oil (Bound)"
+  },
+  "630554004": {
+    "name": "Soy Sauce (Bound)"
+  },
+  "630554005": {
+    "name": "Verteron Pepper (Bound)"
+  },
+  "630554006": {
+    "name": "Curry Powder (Bound)"
+  },
+  "630554007": {
+    "name": "Abex Butter (Bound)"
+  },
+  "630554008": {
+    "name": "Raw Triora Noodles (Bound)"
+  },
+  "630554009": {
+    "name": "Cheese (Bound)"
+  },
+  "630554011": {
+    "name": "Altgard Pepper (Bound)"
+  },
+  "631050001": {
+    "name": "Novice Handicrafter's Magnifying Glass (Bound)"
+  },
+  "631050002": {
+    "name": "Professional Handicrafter's Magnifying Glass (Bound)"
+  },
+  "631050005": {
+    "name": "Novice Handicrafter's Magnifying Glass (Bound)"
+  },
+  "631050006": {
+    "name": "Professional Handicrafter's Magnifying Glass (Bound)"
+  },
+  "631060001": {
+    "name": "Novice Alchemist's Scale (Bound)"
+  },
+  "631060002": {
+    "name": "Professional Alchemist's Scale (Bound)"
+  },
+  "631060005": {
+    "name": "Novice Alchemist's Scale (Bound)"
+  },
+  "631060006": {
+    "name": "Professional Alchemist's Scale (Bound)"
+  },
+  "631070001": {
+    "name": "Novice Chef's Seasoning (Bound)"
+  },
+  "631070002": {
+    "name": "Professional Chef's Seasoning (Bound)"
+  },
+  "631070005": {
+    "name": "Novice Chef's Seasoning (Bound)"
+  },
+  "631070006": {
+    "name": "Professional Chef's Seasoning (Bound)"
+  }
 }
