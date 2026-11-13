@@ -480,35 +480,12 @@ function renderLog() {
     : log.map(entry => {
         const r = getRecipe(entry.recipeId);
         if (!r) return "";
+        const outputId = r.output?.itemId || null;
         return `
           <div class="row">
-            // ---- Planned crafts ----
-const plannedHtml = log.length === 0
-  ? `<p class="tip" style="margin:8px 0 18px">Nothing planned yet. Add recipes from the Recipes tab.</p>`
-  : log.map(entry => {
-      const r = getRecipe(entry.recipeId);
-      if (!r) return "";
-      const outputId = r.output?.itemId || null;
-      return `
-        <div class="row">
-          <div class="ic" style="width:48px; display:flex; align-items:center; justify-content:center">
-            ${outputId ? itemIcon(outputId, 48) : "📋"}
-          </div>
-          <div>
-            <div class="hd">
-              <h3>${esc(r.name)}</h3>
-              <span class="tg">${esc(r.profession)}</span>
+            <div class="ic" style="width:48px; display:flex; align-items:center; justify-content:center">
+              ${outputId ? itemIcon(outputId, 48) : "📋"}
             </div>
-          </div>
-          <div class="ctl" style="gap:8px">
-            <input type="number" min="1" value="${entry.qty}"
-                   data-log-qty="${entry.recipeId}"
-                   style="width:64px; text-align:center; font-variant-numeric:tabular-nums">
-            <button type="button" class="btn-sm btn-danger" data-log-remove="${entry.recipeId}" title="Remove">✕</button>
-          </div>
-        </div>
-      `;
-    }).join("");
             <div>
               <div class="hd">
                 <h3>${esc(r.name)}</h3>
