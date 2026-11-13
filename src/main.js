@@ -741,8 +741,6 @@ document.addEventListener("change", e => {
     }
     return;
   }
-  
-  }
 });
 
 // ========== BOOT ==========
