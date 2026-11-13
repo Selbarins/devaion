@@ -679,6 +679,25 @@ document.addEventListener("focusin", e => {
 document.addEventListener("change", e => {
   const st = getSt();
 
+  // Profession rank / level (saved + recipe list refreshed)
+  if (e.target.dataset.profRank || e.target.dataset.profLevel) {
+    const profession = e.target.dataset.profRank || e.target.dataset.profLevel;
+    if (!st.craftProfs) st.craftProfs = {};
+    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
+    if (e.target.dataset.profRank) {
+      cur.rank = e.target.value === "Professional" ? "Professional" : "Novice";
+    } else {
+      cur.level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
+    }
+    st.craftProfs[profession] = { rank: cur.rank, level: cur.level };
+    persist();
+    if (st.tab === "craft") {
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
+    return;
+  }
+
   if (e.target.dataset.logQty) {
     const id = e.target.dataset.logQty;
     const qty = Math.max(1, parseInt(e.target.value, 10) || 1);
