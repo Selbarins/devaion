@@ -678,12 +678,6 @@ document.addEventListener("focusin", e => {
 
 document.addEventListener("change", e => {
   const st = getSt();
-  const redrawCraft = () => {
-    if (st.tab === "craft") {
-      const view = document.getElementById("view");
-      if (view) drawCraft(view, { onRender: render });
-    }
-  };
 
   if (e.target.dataset.logQty) {
     const id = e.target.dataset.logQty;
@@ -693,29 +687,44 @@ document.addEventListener("change", e => {
     if (entry) {
       entry.qty = qty;
       persist();
-      redrawCraft();
+      if (st.tab === "craft") {
+        const view = document.getElementById("view");
+        if (view) drawCraft(view, { onRender: render });
+      }
     }
     return;
   }
 
   if (e.target.dataset.have) {
     const id = e.target.dataset.have;
+    // Strip thousand separators and any non-digit characters
     const raw = e.target.value.replace(/[^\d]/g, "");
     const amt = Math.max(0, parseInt(raw, 10) || 0);
+
     if (!st.craftHave) st.craftHave = {};
     st.craftHave[id] = amt;
+
+    // Re-format with thousand separators
     e.target.value = amt ? amt.toLocaleString() : "";
+
     persist();
-    redrawCraft();
+    if (st.tab === "craft") {
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
     return;
   }
 
   if (e.target.dataset.price) {
     const id = e.target.dataset.price;
+    // Allow digits and one decimal point, strip everything else (including commas)
     let raw = e.target.value.replace(/[^\d.]/g, "");
+    // Keep only the first decimal point
     const parts = raw.split(".");
     if (parts.length > 2) raw = parts[0] + "." + parts.slice(1).join("");
+
     if (!st.craftPrices) st.craftPrices = {};
+
     if (raw === "" || raw === ".") {
       st.craftPrices[id] = "";
       e.target.value = "";
@@ -724,8 +733,12 @@ document.addEventListener("change", e => {
       st.craftPrices[id] = num;
       e.target.value = num.toLocaleString();
     }
+
     persist();
-    redrawCraft();
+    if (st.tab === "craft") {
+      const view = document.getElementById("view");
+      if (view) drawCraft(view, { onRender: render });
+    }
     return;
   }
 });
