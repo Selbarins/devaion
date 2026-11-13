@@ -421,9 +421,9 @@ function renderLog() {
     return ea - eb;
   });
 
-  // Planned crafts
+  // ---- Planned crafts ----
   const plannedHtml = log.length === 0
-    ? `<p class="tip">Nothing planned yet.</p>`
+    ? `<p class="tip" style="margin:8px 0 18px">Nothing planned yet. Add recipes from the Recipes tab.</p>`
     : log.map(entry => {
         const r = getRecipe(entry.recipeId);
         if (!r) return "";
@@ -436,32 +436,34 @@ function renderLog() {
                 <span class="tg">${esc(r.profession)}</span>
               </div>
             </div>
-            <div class="ctl">
+            <div class="ctl" style="gap:8px">
               <input type="number" min="1" value="${entry.qty}"
-                     data-log-qty="${entry.recipeId}" style="width:52px; text-align:center">
+                     data-log-qty="${entry.recipeId}"
+                     style="width:64px; text-align:center; font-variant-numeric:tabular-nums">
               <button type="button" class="btn-sm btn-danger" data-log-remove="${entry.recipeId}" title="Remove">✕</button>
             </div>
           </div>
         `;
       }).join("");
 
-  // Column header (aligned with the numbers)
+  // ---- Materials header ----
   const header = matIds.length === 0 ? "" : `
-    <div class="row" style="opacity:0.55; font-size:11px; font-weight:600; pointer-events:none; border:none; background:transparent">
-      <div class="ic"></div>
-      <div></div>
-      <div class="ctl" style="gap:6px; min-width:280px; justify-content:flex-end">
-        <span style="width:56px; text-align:center">Have</span>
-        <span style="width:40px; text-align:center">Need</span>
-        <span style="width:40px; text-align:center">Miss</span>
-        <span style="width:88px; text-align:center">Kinah</span>
-        <span style="width:32px"></span>
+    <div class="row mat-header" style="opacity:0.55; font-size:11px; font-weight:600; pointer-events:none; border:none; background:transparent; margin-bottom:2px">
+      <div class="ic" style="width:48px"></div>
+      <div style="flex:1"></div>
+      <div class="ctl mat-nums" style="gap:10px; min-width:340px; justify-content:flex-end; font-variant-numeric:tabular-nums">
+        <span style="width:72px; text-align:right">Have</span>
+        <span style="width:64px; text-align:right">Need</span>
+        <span style="width:64px; text-align:right">Miss</span>
+        <span style="width:96px; text-align:right">Price</span>
+        <span style="width:36px"></span>
       </div>
     </div>
   `;
 
+  // ---- Materials rows ----
   const matsHtml = matIds.length === 0
-    ? `<p class="tip">No materials.</p>`
+    ? `<p class="tip">No materials required.</p>`
     : matIds.map(id => {
         const info = totals[id];
         const need = info.need;
@@ -471,59 +473,66 @@ function renderLog() {
         const isExpanded = !!info.expanded;
         const priceVal = prices[id] ?? "";
 
+        // Visual hierarchy
+        const indentStyle = isExpanded
+          ? "padding-left: 12px; opacity: 0.82;"
+          : "";
+
         return `
-          <div class="row ${isExpanded ? "expanded" : ""}">
-            <div class="ic">${isExpanded ? "📂" : "🧱"}</div>
-            <div>
+          <div class="row ${isExpanded ? "expanded" : ""}" style="${indentStyle}">
+            <div class="ic" style="width:48px; font-size:20px; display:flex; align-items:center; justify-content:center">
+              ${isExpanded ? "📂" : "🧱"}
+            </div>
+            <div style="flex:1; min-width:0">
               <div class="hd">
-                <h3>${esc(itemName(id))}</h3>
+                <h3 style="font-size:14px">${esc(itemName(id))}</h3>
                 ${canExpand && !isExpanded ? `<span class="tg">craftable</span>` : ""}
+                ${isExpanded ? `<span class="tg" style="opacity:0.7">expanded</span>` : ""}
               </div>
             </div>
-            <div class="ctl" style="gap:6px; min-width:280px; justify-content:flex-end">
+            <div class="ctl mat-nums" style="gap:10px; min-width:340px; justify-content:flex-end; font-variant-numeric:tabular-nums">
               <input type="number" min="0" value="${haveAmt}" data-have="${id}"
-                     style="width:56px; text-align:center" title="Have">
-              <span style="width:40px; text-align:center; opacity:0.9">${need}</span>
-              <span style="width:40px; text-align:center; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}">
-                ${isExpanded ? "—" : missing}
+                     style="width:72px; text-align:right; font-variant-numeric:tabular-nums" title="Have">
+              <span style="width:64px; text-align:right; opacity:0.9">${need.toLocaleString()}</span>
+              <span style="width:64px; text-align:right; font-weight:600; color:${missing > 0 && !isExpanded ? "var(--rose,#f43f5e)" : "inherit"}">
+                ${isExpanded ? "—" : missing.toLocaleString()}
               </span>
               <input type="number" min="0" step="any" placeholder="—" value="${priceVal}"
-                     data-price="${id}" style="width:88px; text-align:right; font-variant-numeric:tabular-nums" title="Price per unit">
+                     data-price="${id}"
+                     style="width:96px; text-align:right; font-variant-numeric:tabular-nums" title="Price per unit">
               ${canExpand || isExpanded
-                ? `<button type="button" class="btn-sm" data-expand="${id}" title="${isExpanded ? "Collapse" : "Expand"}" style="min-width:32px; width:32px">
+                ? `<button type="button" class="btn-sm" data-expand="${id}" title="${isExpanded ? "Collapse" : "Expand"}"
+                           style="min-width:36px; width:36px; height:32px">
                      ${isExpanded ? "−" : "+"}
                    </button>`
-                : `<span style="width:32px; display:inline-block"></span>`}
+                : `<span style="width:36px; display:inline-block"></span>`}
             </div>
           </div>
         `;
       }).join("");
 
-  // Compact total — same column as the Kinah inputs, no big frame
-    const costHtml = matIds.length === 0 ? "" : `
-    <div class="row" style="border:none; background:transparent; margin-top:4px; opacity:0.95">
-      <div class="ic"></div>
-      <div></div>
-      <div class="ctl" style="gap:6px; min-width:280px; justify-content:flex-end; align-items:center">
-        <span style="width:56px"></span>
-        <span style="width:40px"></span>
-        <span style="width:40px; text-align:center; font-size:12px; opacity:0.7">Total</span>
-        <span style="width:88px; text-align:right; font-weight:700; font-variant-numeric:tabular-nums; color:var(--cyan); font-size:15px">
-          ${cost.sum.toLocaleString()}
-        </span>
-        <span style="width:32px; font-size:11px; opacity:0.6">K</span>
+  // ---- Clean Kinah summary (moved out of the dense row) ----
+  const costHtml = matIds.length === 0 ? "" : `
+    <div style="margin-top:16px; padding:12px 16px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:16px">
+      <div style="font-size:13px; opacity:0.75">
+        Estimated cost <span style="opacity:0.6">(missing materials only)</span>
+        ${cost.missingPrice > 0 ? `<br><span style="font-size:11px; opacity:0.55">${cost.missingPrice} item${cost.missingPrice > 1 ? "s" : ""} without price</span>` : ""}
+      </div>
+      <div style="font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; color:var(--cyan); letter-spacing:0.3px">
+        ${cost.sum.toLocaleString()} <span style="font-size:14px; opacity:0.7; font-weight:600">K</span>
       </div>
     </div>
-    ${cost.missingPrice > 0
-      ? `<div style="text-align:right; font-size:11px; opacity:0.55; margin-top:2px; padding-right:40px">${cost.missingPrice} without price</div>`
-      : ""}
   `;
-    return `
+
+  return `
     <div>
-      <div style="margin-bottom:16px">
+      <div style="margin-bottom:20px">
+        <div style="font-size:13px; font-weight:600; opacity:0.8; margin-bottom:8px">Planned crafts</div>
         ${plannedHtml}
       </div>
+
       <div>
+        <div style="font-size:13px; font-weight:600; opacity:0.8; margin-bottom:6px">Materials needed</div>
         ${header}
         ${matsHtml}
         ${costHtml}
