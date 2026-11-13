@@ -500,7 +500,7 @@ function renderLog() {
       }).join("");
 
   // Compact total — same column as the Kinah inputs, no big frame
-  const costHtml = matIds.length === 0 ? "" : `
+    const costHtml = matIds.length === 0 ? "" : `
     <div class="row" style="border:none; background:transparent; margin-top:4px; opacity:0.95">
       <div class="ic"></div>
       <div></div>
@@ -508,4 +508,26 @@ function renderLog() {
         <span style="width:56px"></span>
         <span style="width:40px"></span>
         <span style="width:40px; text-align:center; font-size:12px; opacity:0.7">Total</span>
-        <span style="width:88px; 
+        <span style="width:88px; text-align:right; font-weight:700; font-variant-numeric:tabular-nums; color:var(--cyan); font-size:15px">
+          ${cost.sum.toLocaleString()}
+        </span>
+        <span style="width:32px; font-size:11px; opacity:0.6">K</span>
+      </div>
+    </div>
+    ${cost.missingPrice > 0
+      ? `<div style="text-align:right; font-size:11px; opacity:0.55; margin-top:2px; padding-right:40px">${cost.missingPrice} without price</div>`
+      : ""}
+  `;
+    return `
+    <div>
+      <div style="margin-bottom:16px">
+        ${plannedHtml}
+      </div>
+      <div>
+        ${header}
+        ${matsHtml}
+        ${costHtml}
+      </div>
+    </div>
+  `;
+}
