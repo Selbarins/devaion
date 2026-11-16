@@ -468,8 +468,8 @@ function renderProfsPanel() {
                 <option value="Novice" ${cur.rank === "Novice" ? "selected" : ""}>Novice</option>
                 <option value="Professional" ${cur.rank === "Professional" ? "selected" : ""}>Professional</option>
               </select>
-              <input type="number" min="1" max="50" value="${cur.level}"
-                     data-prof-level="${esc(p)}" style="width:56px; font-size:12px">
+              <input type="number" min="1" max="100" value="${cur.level}"
+               data-prof-level="${esc(p)}" style="width:56px; font-size:12px">
             </div>
           </div>
         `;
