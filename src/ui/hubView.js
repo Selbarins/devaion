@@ -60,7 +60,6 @@ function parseKiskUpgrades(md) {
   const cp = cpMatch ? cpMatch[1].replace(/,/g, "") : null;
 
   const actions = [];
-  // Top-level steps start with "N. +XX"
   const blocks = md.split(/\n(?=\d+\.\s\+?\d)/).slice(1);
 
   for (const block of blocks.slice(0, 6)) {
@@ -75,11 +74,9 @@ function parseKiskUpgrades(md) {
     let fromGrade = null, toGrade = null, fromScore = null;
 
     for (const ln of lines.slice(0, 5)) {
-      // Preferred: "Up next **Item Name**"
       const up = ln.match(/Up next\s+\*\*([^*]+)\*\*/i);
       if (up) item = up[1].trim();
 
-      // Fallback: first substantial **text** that isn't a grade/Best/Good/Fine
       if (!item) {
         for (const m of ln.matchAll(/\*\*([^*]+)\*\*/g)) {
           const t = m[1].trim();
@@ -98,12 +95,10 @@ function parseKiskUpgrades(md) {
       }
     }
 
-    // First concrete reroll / bind advice
     let action = null;
     for (const ln of lines) {
       if (/reroll|bind it fully/i.test(ln) && !/on average/i.test(ln)) {
         action = ln.replace(/^\d+\.\s*/, "").replace(/\*\*/g, "").trim();
-        // Drop leading "1 " from nested "1. 1 Reroll ..."
         action = action.replace(/^1\s+/, "");
         break;
       }
@@ -146,9 +141,14 @@ function renderGearCard(c) {
         <div class="kisk-body">
           <p class="gear-card-status tip" style="opacity:0.7">Loading upgrade plan…</p>
         </div>
-        <a class="btn-sm on gear-kisk-link" href="${url}" target="_blank" rel="noopener noreferrer" style="margin-top:10px">
-          Open upgrades ↗
-        </a>
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+          <a class="btn-sm on gear-kisk-link" href="${url}" target="_blank" rel="noopener noreferrer">
+            Open upgrades ↗
+          </a>
+          <button type="button" class="btn-sm" data-kisk-refresh title="Clear cache and re-fetch from kisk">
+            Refresh
+          </button>
+        </div>
       </div>`;
   }
 
@@ -167,7 +167,7 @@ function renderKiskBody(data, url) {
     return `
       <p class="gear-card-status">Upgrade plan available on kisk</p>
       <p class="tip" style="margin-top:6px; opacity:0.55; font-size:11px">
-        kisk hasn’t seen this character yet (or data not cached). Open the link once so kisk can look it up.
+        kisk hasn’t seen this character yet. Open upgrades once (or hit Refresh) so kisk can look it up, then Refresh again.
       </p>`;
   }
 
@@ -206,21 +206,29 @@ function renderKiskBody(data, url) {
   `;
 }
 
-/** After hub render, fetch & fill every gear card that has region+server+name */
-async function loadKiskCards(root) {
-  const cards = root.querySelectorAll("[data-kisk-char]");
-  if (!cards.length) return;
+/** Fetch & fill one gear card. force=true clears local cache first. */
+async function fillOneKiskCard(card, { force = false, openKisk = false } = {}) {
+  const region = card.dataset.kiskRegion;
+  const server = card.dataset.kiskServer;
+  const name = card.dataset.kiskName;
+  const body = card.querySelector(".kisk-body");
+  if (!body || !region || !server || !name) return;
 
-  for (const card of cards) {
-    const region = card.dataset.kiskRegion;
-    const server = card.dataset.kiskServer;
-    const name = card.dataset.kiskName;
-    const body = card.querySelector(".kisk-body");
-    if (!body || !region || !server || !name) continue;
+  const cacheKey = `kisk_${region}_${server}_${name}`.toLowerCase();
+  const url = kiskUpgradesUrl({ region, server, name });
 
-    const cacheKey = `kisk_${region}_${server}_${name}`.toLowerCase();
-    let data = null;
+  if (force) {
+    try { localStorage.removeItem(cacheKey); } catch {}
+    body.innerHTML = `<p class="gear-card-status tip" style="opacity:0.7">Refreshing…</p>`;
+  }
 
+  // Optionally open kisk so it can re-query the armory (markdown alone does not)
+  if (openKisk && url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+
+  let data = null;
+  if (!force) {
     try {
       const raw = localStorage.getItem(cacheKey);
       if (raw) {
@@ -228,31 +236,56 @@ async function loadKiskCards(root) {
         if (parsed && Date.now() - parsed.ts < 180000) data = parsed.data;
       }
     } catch {}
-
-    if (!data) {
-      try {
-        const qs = new URLSearchParams({ region, server, name });
-        const res = await fetch(`/api/kisk?${qs}`);
-        if (!res.ok) throw new Error(res.status);
-        const md = await res.text();
-        data = parseKiskUpgrades(md);
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
-        } catch {}
-      } catch (e) {
-        console.warn("kisk fetch failed", e);
-        body.innerHTML = `
-          <p class="gear-card-status">Upgrade plan available on kisk</p>
-          <p class="tip" style="margin-top:6px; opacity:0.55; font-size:11px">
-            Could not load live data. Open the link below.
-          </p>`;
-        continue;
-      }
-    }
-
-    const url = kiskUpgradesUrl({ region, server, name });
-    body.innerHTML = renderKiskBody(data, url);
   }
+
+  if (!data) {
+    try {
+      const qs = new URLSearchParams({ region, server, name });
+      if (force) qs.set("_", String(Date.now()));
+      const res = await fetch(`/api/kisk?${qs}`);
+      if (!res.ok) throw new Error(res.status);
+      const md = await res.text();
+      data = parseKiskUpgrades(md);
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
+      } catch {}
+    } catch (e) {
+      console.warn("kisk fetch failed", e);
+      body.innerHTML = `
+        <p class="gear-card-status">Upgrade plan available on kisk</p>
+        <p class="tip" style="margin-top:6px; opacity:0.55; font-size:11px">
+          Could not load live data. Open the link below, then hit Refresh.
+        </p>`;
+      return;
+    }
+  }
+
+  body.innerHTML = renderKiskBody(data, url);
+}
+
+/** After hub render, fill every gear card and wire Refresh buttons */
+async function loadKiskCards(root) {
+  const cards = root.querySelectorAll("[data-kisk-char]");
+  if (!cards.length) return;
+
+  for (const card of cards) {
+    await fillOneKiskCard(card, { force: false });
+  }
+
+  root.querySelectorAll("[data-kisk-refresh]").forEach(btn => {
+    btn.onclick = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const card = btn.closest("[data-kisk-char]");
+      if (!card) return;
+      btn.disabled = true;
+      btn.textContent = "…";
+      // force re-fetch; also open kisk so armory data can update
+      await fillOneKiskCard(card, { force: true, openKisk: true });
+      btn.disabled = false;
+      btn.textContent = "Refresh";
+    };
+  });
 }
 
 /** SVG progress ring — pct 0–100 */
