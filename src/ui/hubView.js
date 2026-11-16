@@ -48,26 +48,100 @@ export function kiskUpgradesUrl(c) {
   return `https://kisk.app/c/${region}/${server}/${name}/upgrades`;
 }
 
+/** Parse kisk upgrades.md into { grade, cp, actions[] } */
+function parseKiskUpgrades(md) {
+  if (!md || typeof md !== "string") return null;
+  if (md.includes("kisk hasn't seen this character")) return { unseen: true };
+
+  const gradeMatch = md.match(/\*\*([A-Z+]{1,3})\*\*\s*Gear/i) || md.match(/\*\*([A-Z+]{1,3})\*\*\s*$/m);
+  const grade = gradeMatch ? gradeMatch[1].toUpperCase() : null;
+
+  const cpMatch = md.match(/([\d,]+)\s*CP/);
+  const cp = cpMatch ? cpMatch[1].replace(/,/g, "") : null;
+
+  const actions = [];
+  const blocks = md.split(/\n(?=\d+\.\s)/).slice(1);
+  for (const block of blocks.slice(0, 6)) {
+    const lines = block.trim().split("\n").map(l => l.trim()).filter(Boolean);
+    if (!lines.length) continue;
+
+    const head = lines[0];
+    const enhMatch = head.match(/^\d+\.\s*\+?(\d+)/);
+    const enhance = enhMatch ? "+" + enhMatch[1] : null;
+
+    const nameMatch = head.match(/\*\*([^*]+)\*\*/);
+    const itemName = nameMatch ? nameMatch[1].trim() : null;
+
+    const transMatch = head.match(/\*\*([A-Z+]+)\*\*\s*(\d+)\s*→\s*\*\*([A-Z+]+)\*\*/i);
+    let fromGrade = null, toGrade = null, fromScore = null;
+    if (transMatch) {
+      fromGrade = transMatch[1];
+      fromScore = transMatch[2];
+      toGrade = transMatch[3];
+    } else {
+      const g2 = head.match(/\*\*([A-Z+]{1,3})\*\*/g);
+      if (g2 && g2.length >= 2) {
+        fromGrade = g2[1].replace(/\*/g, "");
+        toGrade = g2[2] ? g2[2].replace(/\*/g, "") : null;
+      }
+    }
+
+    const avgLine = lines.find(l => /on average/i.test(l));
+    const avg = avgLine ? avgLine.replace(/^\d+\.\s*/, "").trim() : null;
+
+    const actionLines = lines.filter(l =>
+      /reroll|bind|then bind/i.test(l) && !/on average/i.test(l)
+    );
+    const firstAction = actionLines[0]
+      ? actionLines[0].replace(/^\d+\.\s*/, "").replace(/\*\*/g, "").trim()
+      : null;
+
+    if (itemName || enhance) {
+      actions.push({
+        enhance,
+        item: itemName,
+        fromGrade,
+        toGrade,
+        fromScore,
+        avg,
+        action: firstAction
+      });
+    }
+  }
+
+  return { grade, cp, actions, unseen: false };
+}
+
+const GRADE_COLORS = {
+  BiS: "#fbbf24",
+  "S+": "#f59e0b",
+  S: "#a78bfa",
+  A: "#60a5fa",
+  B: "#34d399",
+  C: "#94a3b8",
+  D: "#64748b"
+};
+
 function renderGearCard(c) {
   const url = kiskUpgradesUrl(c);
   const regionLabel = (KISK_REGIONS.find(x => x.id === c.region) || {}).label || c.region || "";
   const where = [regionLabel, c.server].filter(Boolean).join(" · ");
+  const charKey = c.id;
 
   if (url) {
     return `
-      <div class="panel glass gear-card">
+      <div class="panel glass gear-card" data-kisk-char="${esc(charKey)}" data-kisk-region="${esc(c.region)}" data-kisk-server="${esc(c.server)}" data-kisk-name="${esc(c.name)}">
         <div class="gear-card-head">
           <span class="gear-card-title">Gear</span>
           <span class="tg" style="opacity:0.75">kisk</span>
         </div>
         <p class="tip gear-card-meta">${esc(where || "Linked")}</p>
-        <p class="gear-card-status">Upgrade plan available on kisk</p>
-        <a class="btn-sm on gear-kisk-link" href="${url}" target="_blank" rel="noopener noreferrer">
+        <div class="kisk-body">
+          <p class="gear-card-status tip" style="opacity:0.7">Loading upgrade plan…</p>
+        </div>
+        <a class="btn-sm on gear-kisk-link" href="${url}" target="_blank" rel="noopener noreferrer" style="margin-top:10px">
           Open upgrades ↗
         </a>
-        <p class="tip" style="margin-top:10px; opacity:0.55; font-size:11px">
-          Grade + next actions will appear here when linked data is available.
-        </p>
       </div>`;
   }
 
@@ -79,6 +153,97 @@ function renderGearCard(c) {
       </div>
       <p class="tip">Set <b>region</b> and <b>server</b> in Roster Management to open this character’s upgrade plan on kisk.</p>
     </div>`;
+}
+
+function renderKiskBody(data, url) {
+  if (!data || data.unseen) {
+    return `
+      <p class="gear-card-status">Upgrade plan available on kisk</p>
+      <p class="tip" style="margin-top:6px; opacity:0.55; font-size:11px">
+        kisk hasn’t seen this character yet (or data not cached). Open the link once so kisk can look it up.
+      </p>`;
+  }
+
+  const gradeColor = GRADE_COLORS[data.grade] || "var(--cyan)";
+  const gradeHtml = data.grade
+    ? `<span class="tg" style="background:${gradeColor}22; color:${gradeColor}; border:1px solid ${gradeColor}55; font-weight:700">${esc(data.grade)}</span>`
+    : "";
+
+  const cpHtml = data.cp ? `<span class="tip" style="margin-left:6px">${Number(data.cp).toLocaleString()} CP</span>` : "";
+
+  let actionsHtml = "";
+  if (data.actions && data.actions.length) {
+    actionsHtml = `<div class="kisk-actions" style="margin-top:10px; display:flex; flex-direction:column; gap:6px">
+      ${data.actions.slice(0, 4).map((a, i) => {
+        const title = [a.enhance, a.item].filter(Boolean).join(" ");
+        const trans = a.fromGrade && a.toGrade
+          ? `${a.fromGrade}${a.fromScore ? " " + a.fromScore : ""} → ${a.toGrade}`
+          : "";
+        return `
+          <div style="font-size:12px; line-height:1.35; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--line)">
+            <div style="font-weight:600; opacity:0.95">${i + 1}. ${esc(title)}</div>
+            ${trans ? `<div class="tip" style="margin-top:2px">${esc(trans)}</div>` : ""}
+            ${a.action ? `<div class="tip" style="margin-top:2px; opacity:0.75">${esc(a.action.slice(0, 90))}${a.action.length > 90 ? "…" : ""}</div>` : ""}
+          </div>`;
+      }).join("")}
+    </div>`;
+  }
+
+  return `
+    <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px">
+      ${gradeHtml}${cpHtml}
+    </div>
+    ${actionsHtml || `<p class="tip" style="opacity:0.6">No detailed next actions parsed.</p>`}
+  `;
+}
+
+/** After hub render, fetch & fill every gear card that has region+server+name */
+async function loadKiskCards(root) {
+  const cards = root.querySelectorAll("[data-kisk-char]");
+  if (!cards.length) return;
+
+  for (const card of cards) {
+    const region = card.dataset.kiskRegion;
+    const server = card.dataset.kiskServer;
+    const name = card.dataset.kiskName;
+    const body = card.querySelector(".kisk-body");
+    if (!body || !region || !server || !name) continue;
+
+    const cacheKey = `kisk_${region}_${server}_${name}`.toLowerCase();
+    let data = null;
+
+    try {
+      const raw = localStorage.getItem(cacheKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Date.now() - parsed.ts < 180000) data = parsed.data;
+      }
+    } catch {}
+
+    if (!data) {
+      try {
+        const qs = new URLSearchParams({ region, server, name });
+        const res = await fetch(`/api/kisk?${qs}`);
+        if (!res.ok) throw new Error(res.status);
+        const md = await res.text();
+        data = parseKiskUpgrades(md);
+        try {
+          localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data }));
+        } catch {}
+      } catch (e) {
+        console.warn("kisk fetch failed", e);
+        body.innerHTML = `
+          <p class="gear-card-status">Upgrade plan available on kisk</p>
+          <p class="tip" style="margin-top:6px; opacity:0.55; font-size:11px">
+            Could not load live data. Open the link below.
+          </p>`;
+        continue;
+      }
+    }
+
+    const url = kiskUpgradesUrl({ region, server, name });
+    body.innerHTML = renderKiskBody(data, url);
+  }
 }
 
 /** SVG progress ring — pct 0–100 */
@@ -402,6 +567,9 @@ export function drawHub(app, { onRender }) {
       </div>
     </div>
   `;
+
+  // Fill kisk gear cards asynchronously
+  loadKiskCards(app);
 
   document.getElementById("om").onchange = () => {
     S.set("a2om", document.getElementById("om").checked ? "1" : "0");
