@@ -239,8 +239,14 @@ function render() {
   const footEl = document.getElementById("floaterFoot");
 
   function closeFloater() {
-    if (backdrop) backdrop.hidden = true;
-    if (panel) panel.hidden = true;
+    if (backdrop) {
+      backdrop.hidden = true;
+      backdrop.setAttribute("hidden", "");
+    }
+    if (panel) {
+      panel.hidden = true;
+      panel.setAttribute("hidden", "");
+    }
   }
 
   function openFloater(kind) {
@@ -255,7 +261,7 @@ function render() {
               <div><div class="mini-title">${esc(u.n)}</div></div>
               <b>${u.remaining} left</b>
             </div>`).join("")}</div>`;
-      footEl.innerHTML = `<button type="button" class="btn-sm on" data-t="missions">Open Missions →</button>`;
+      if (footEl) footEl.innerHTML = `<button type="button" class="btn-sm on" data-floater-nav="missions">Open Missions →</button>`;
     } else {
       titleEl.textContent = "Next Events";
       bodyEl.innerHTML = `<div class="mini-list">${nextEv.map(({ e, s }) => {
@@ -272,32 +278,63 @@ function render() {
             <b style="color:${on ? "var(--green)" : "var(--cyan)"}">${on ? "OPEN" : "in " + fmtShort(s - Date.now())}</b>
           </div>`;
       }).join("")}</div>`;
-      footEl.innerHTML = `<button type="button" class="btn-sm on" data-t="events">Open Events →</button>`;
+      if (footEl) footEl.innerHTML = `<button type="button" class="btn-sm on" data-floater-nav="events">Open Events →</button>`;
     }
-    backdrop.hidden = false;
+    if (backdrop) {
+      backdrop.hidden = false;
+      backdrop.removeAttribute("hidden");
+    }
     panel.hidden = false;
+    panel.removeAttribute("hidden");
   }
 
   document.querySelectorAll("[data-floater]").forEach(btn => {
     btn.onclick = (e) => {
+      e.preventDefault();
       e.stopPropagation();
       openFloater(btn.dataset.floater);
     };
   });
-  document.getElementById("floaterClose")?.addEventListener("click", closeFloater);
-  backdrop?.addEventListener("click", closeFloater);
-  footEl?.addEventListener("click", (e) => {
-    const t = e.target.closest("[data-t]");
-    if (!t) return;
-    closeFloater();
-    // data-t handled by global click listener after this render cycle — set tab now
-    getSt().tab = t.dataset.t;
-    persist();
-    render();
-  });
-  document.addEventListener("keydown", function floaterEsc(ev) {
+
+  const closeBtn = document.getElementById("floaterClose");
+  if (closeBtn) {
+    closeBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFloater();
+    };
+  }
+  if (backdrop) {
+    backdrop.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closeFloater();
+    };
+  }
+  // Clicks inside the panel must not hit the backdrop / document handlers
+  if (panel) {
+    panel.onclick = (e) => e.stopPropagation();
+  }
+  if (footEl) {
+    footEl.onclick = (e) => {
+      const t = e.target.closest("[data-floater-nav]");
+      if (!t) return;
+      e.preventDefault();
+      e.stopPropagation();
+      closeFloater();
+      getSt().tab = t.dataset.floaterNav;
+      persist();
+      render();
+    };
+  }
+
+  // Single Esc handler (replace any previous)
+  if (window._floaterEsc) document.removeEventListener("keydown", window._floaterEsc);
+  window._floaterEsc = (ev) => {
     if (ev.key === "Escape") closeFloater();
-  }, { once: true });
+  };
+  document.addEventListener("keydown", window._floaterEsc);
+
   tick();
 }
 
