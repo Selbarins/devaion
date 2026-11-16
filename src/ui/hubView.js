@@ -6,12 +6,12 @@ import {
   applyOdyleTicks, getOdyleCap, isMembership, getOdyleVal, setOdyleVal,
   batteryLevel, fullInLabel
 } from "../odyle.js";
-import { cnt, unfinishedDailies } from "../missions.js";
+import { cnt } from "../missions.js";
 import { getTicket, adjTicket, getTicketCap } from "../tickets.js";
-import { CHAR_COLORS, EV, DN } from "../data.js";
-import { esc, fmtShort, P2 } from "../helpers.js";
+import { CHAR_COLORS, EV } from "../data.js";
+import { esc } from "../helpers.js";
 
-function nextEventTimes() {
+export function nextEventTimes() {
   const n = Date.now();
   return EV.map(e => {
     let best = null;
@@ -29,6 +29,56 @@ function nextEventTimes() {
     .filter(o => o.s)
     .sort((a, b) => a.s - b.s)
     .slice(0, 5);
+}
+
+export const KISK_REGIONS = [
+  { id: "naw", label: "NA West" },
+  { id: "nae", label: "NA East" },
+  { id: "eu", label: "Europe" },
+  { id: "as", label: "Asia" },
+  { id: "la", label: "LatAm" }
+];
+
+/** Build kisk upgrades URL when region + server + name are set */
+export function kiskUpgradesUrl(c) {
+  if (!c || !c.region || !c.server || !c.name) return null;
+  const region = String(c.region).toLowerCase().trim();
+  const server = encodeURIComponent(String(c.server).trim());
+  const name = encodeURIComponent(String(c.name).trim());
+  return `https://kisk.app/c/${region}/${server}/${name}/upgrades`;
+}
+
+function renderGearCard(c) {
+  const url = kiskUpgradesUrl(c);
+  const regionLabel = (KISK_REGIONS.find(x => x.id === c.region) || {}).label || c.region || "";
+  const where = [regionLabel, c.server].filter(Boolean).join(" · ");
+
+  if (url) {
+    return `
+      <div class="panel glass gear-card">
+        <div class="gear-card-head">
+          <span class="gear-card-title">Gear</span>
+          <span class="tg" style="opacity:0.75">kisk</span>
+        </div>
+        <p class="tip gear-card-meta">${esc(where || "Linked")}</p>
+        <p class="gear-card-status">Upgrade plan available on kisk</p>
+        <a class="btn-sm on gear-kisk-link" href="${url}" target="_blank" rel="noopener noreferrer">
+          Open upgrades ↗
+        </a>
+        <p class="tip" style="margin-top:10px; opacity:0.55; font-size:11px">
+          Grade + next actions will appear here when linked data is available.
+        </p>
+      </div>`;
+  }
+
+  return `
+    <div class="panel glass gear-card gear-card-empty">
+      <div class="gear-card-head">
+        <span class="gear-card-title">Gear</span>
+        <span class="tg" style="opacity:0.5">kisk</span>
+      </div>
+      <p class="tip">Set <b>region</b> and <b>server</b> in Roster Management to open this character’s upgrade plan on kisk.</p>
+    </div>`;
 }
 
 /** SVG progress ring — pct 0–100 */
@@ -79,9 +129,6 @@ export function drawHub(app, { onRender }) {
   const dim = getTicket("dim");
   const shugoCap = getTicketCap("shugo");
   const dimCap = getTicketCap("dim");
-  const unfinished = unfinishedDailies();
-  const nextEv = nextEventTimes();
-
   app.innerHTML = `
     <div class="panel glass wing-motif">
       <div class="ctrl-bar">
@@ -150,6 +197,7 @@ export function drawHub(app, { onRender }) {
           ].filter(Boolean).join(" ");
 
           return `
+          <div class="char-stack">
           <div class="${cardCls}" style="border-left:3px solid ${r.color}" data-char-card="${r.id}">
 
             <div class="hub-card-head">
@@ -250,49 +298,10 @@ export function drawHub(app, { onRender }) {
 
               <button type="button" data-open="${r.id}" class="btn-open">Open Missions →</button>
             </div>
+          </div>
+          ${renderGearCard(r)}
           </div>`;
         }).join("")}
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="panel glass">
-        <h2>Today · Unfinished Dailies</h2>
-        ${unfinished.length === 0
-          ? `<div class="empty-celebrate">
-               <div class="celebrate-icon">🎉</div>
-               <p class="tip">All clear — great work</p>
-             </div>`
-          : `<div class="mini-list">
-              ${unfinished.slice(0, 8).map(u => `
-              <div class="mini-row">
-                  <span class="ic">${u.ic}</span>
-                  <div>
-                    <div class="mini-title">${esc(u.n)}</div>
-                  </div>
-                  <b>${u.remaining} left</b>
-                </div>`).join("")}
-            </div>`}
-      </div>
-
-      <div class="panel glass">
-        <h2>Next Events</h2>
-        <div class="mini-list">
-        ${nextEv.map(({ e, s }) => {
-            const on = s <= Date.now();
-            const d = new Date(s);
-            const label = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes()) + " UTC";
-            return `
-              <div class="mini-row ${on ? "open" : ""}" data-ev-start="${s}">
-                <span class="ic">${e[1]}</span>
-                <div>
-                  <div class="mini-title">${esc(e[0])}</div>
-                  <div class="tip">${label}</div>
-                </div>
-              <b class="ev-countdown" style="color:${on ? "var(--green)" : "var(--cyan)"}">${on ? "OPEN" : "in " + fmtShort(s - Date.now())}</b>
-              </div>`;
-          }).join("")}
-        </div>
       </div>
     </div>
 
@@ -319,6 +328,17 @@ export function drawHub(app, { onRender }) {
           <label class="tip">GS</label>
           <input type="number" id="newGS" value="0" min="0">
         </div>
+        <div>
+          <label class="tip">Region</label>
+          <select id="newRegion">
+            <option value="">—</option>
+            ${KISK_REGIONS.map(rg => `<option value="${rg.id}">${rg.label}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label class="tip">Server</label>
+          <input type="text" id="newServer" placeholder="e.g. Nezekan" maxlength="24">
+        </div>
         <div class="color-pick" id="newColorPick">
           ${CHAR_COLORS.map(col =>
             `<button type="button" class="color-swatch" data-color="${col}" style="background:${col}"></button>`
@@ -343,6 +363,13 @@ export function drawHub(app, { onRender }) {
                   <option value="main" ${c.role === "main" ? "selected" : ""}>Main</option>
                   <option value="alt" ${c.role === "alt" ? "selected" : ""}>Alt</option>
                 </select>
+                <select id="editRegion" title="Region">
+                  <option value="">Region —</option>
+                  ${KISK_REGIONS.map(rg =>
+                    `<option value="${rg.id}" ${c.region === rg.id ? "selected" : ""}>${rg.label}</option>`
+                  ).join("")}
+                </select>
+                <input type="text" id="editServer" value="${esc(c.server || "")}" maxlength="24" style="width:120px" placeholder="Server">
                 <div class="color-pick" id="editColorPick">
                   ${CHAR_COLORS.map(col =>
                     `<button type="button" class="color-swatch ${col === c.color ? "on" : ""}" data-color="${col}" style="background:${col}"></button>`
@@ -356,13 +383,15 @@ export function drawHub(app, { onRender }) {
               </div>
             </div>`;
           }
+          const regionLbl = (KISK_REGIONS.find(x => x.id === c.region) || {}).label || "";
+          const whereMeta = [regionLbl, c.server].filter(Boolean).join(" · ");
           return `
           <div class="char-card ${c.id === st.activeChar ? "active" : ""}" style="border-left:3px solid ${c.color}">
             <div class="name">
               <span class="char-dot" style="background:${c.color}"></span>
               ${esc(c.name)} ${c.role === "main" ? '<span class="tg main">Main</span>' : ""}
             </div>
-            <div class="meta">${esc(c.class || "—")} · GS ${c.gs || "—"}</div>
+            <div class="meta">${esc(c.class || "—")} · GS ${c.gs || "—"}${whereMeta ? ` · ${esc(whereMeta)}` : ""}</div>
             <div class="stats">
               <button type="button" data-edit-char="${c.id}" class="btn-sm">Edit</button>
               <button type="button" data-set-active="${c.id}" class="btn-sm">Select</button>
@@ -433,6 +462,8 @@ export function drawHub(app, { onRender }) {
       role,
       class: document.getElementById("newClass").value.trim(),
       gs: +document.getElementById("newGS").value || 0,
+      region: document.getElementById("newRegion")?.value || "",
+      server: document.getElementById("newServer")?.value.trim() || "",
       color: document.getElementById("newColor").value || CHAR_COLORS[0]
     });
     setRoster(list);
