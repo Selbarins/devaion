@@ -46,6 +46,7 @@ if (st.tab === "goals") {
   st.mview = "goals";
 }
 if (st.tab === "resources" || st.tab === "roster" || st.tab === "dash") st.tab = "hub";
+if (!["hub", "missions", "craft", "events", "settings"].includes(st.tab)) st.tab = "hub";
 if (!st.mview) st.mview = "missions";
 if (!st.gCharFilter) st.gCharFilter = "all";
 if (!roster.find(c => c.id === st.activeChar)) st.activeChar = roster[0]?.id || "c1";
