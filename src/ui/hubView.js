@@ -134,7 +134,6 @@ function renderGearCard(c) {
       <div class="panel glass gear-card" style="border-left:3px solid ${color}"
            data-kisk-char="${esc(charKey)}" data-kisk-region="${esc(c.region)}" data-kisk-server="${esc(c.server)}" data-kisk-name="${esc(c.name)}">
         <div class="gear-card-head">
-          <span class="gear-card-title">Gear</span>
           <span class="tg" style="opacity:0.75">kisk</span>
         </div>
         <p class="tip gear-card-meta">${esc(where || "Linked")}</p>
@@ -155,10 +154,9 @@ function renderGearCard(c) {
   return `
     <div class="panel glass gear-card gear-card-empty" style="border-left:3px solid ${color}">
       <div class="gear-card-head">
-        <span class="gear-card-title">Gear</span>
         <span class="tg" style="opacity:0.5">kisk</span>
       </div>
-      <p class="tip">Set <b>region</b> and <b>server</b> in Roster Management to open this character’s upgrade plan on kisk.</p>
+      <p class="tip">Set <b>region</b> and <b>server</b> in Settings → Roster to open this character’s upgrade plan on kisk.</p>
     </div>`;
 }
 
@@ -192,7 +190,15 @@ function renderKiskBody(data, url) {
           <div style="font-size:12px; line-height:1.35; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid var(--line)">
             <div style="font-weight:600; opacity:0.95">${i + 1}. ${esc(title)}</div>
             ${trans ? `<div class="tip" style="margin-top:2px">${esc(trans)}</div>` : ""}
-            ${a.action ? `<div class="tip" style="margin-top:2px; opacity:0.75">${esc(a.action.slice(0, 100))}${a.action.length > 100 ? "…" : ""}</div>` : ""}
+            ${a.action ? (() => {
+              const m = a.action.match(/(\d+(?:\.\d+)?)\s*%\s*(?:a try|chance|success)?/i);
+              const pct = m ? m[1] : null;
+              const rest = pct ? a.action.replace(m[0], "").replace(/\s{2,}/g, " ").trim() : a.action;
+              return `<div class="tip" style="margin-top:2px; opacity:0.85; display:flex; align-items:center; gap:6px; flex-wrap:wrap">
+                ${pct ? `<span class="tg" style="font-variant-numeric:tabular-nums">${esc(pct)}%</span>` : ""}
+                <span style="opacity:0.75">${esc((rest || a.action).slice(0, 90))}${(rest || a.action).length > 90 ? "…" : ""}</span>
+              </div>`;
+            })() : ""}
           </div>`;
       }).join("")}
     </div>`;
@@ -419,9 +425,6 @@ export function drawHub(app, { onRender }) {
                   <div class="tip">${esc(r.class || "—")}</div>
                 </div>
               </div>
-              <label class="gs" onclick="event.stopPropagation()">
-                GS <input type="number" min="0" data-gs="${r.id}" value="${r.gs || 0}">
-              </label>
             </div>
 
             <div class="hub-odyle-row">
@@ -453,8 +456,8 @@ export function drawHub(app, { onRender }) {
               </div>
             </div>
 
-            <button type="button" class="hub-expand-btn" data-toggle-expand="${r.id}">
-              ${isExp ? "Hide details ▴" : "Show details ▾"}
+            <button type="button" class="hub-expand-btn" data-toggle-expand="${r.id}" title="${isExp ? "Collapse" : "Expand"}">
+              ${isExp ? "−" : "+"}
             </button>
 
             <div class="card-details" ${isExp ? "" : "hidden"}>
@@ -511,103 +514,6 @@ export function drawHub(app, { onRender }) {
         }).join("")}
       </div>
     </div>
-
-    <div class="panel glass">
-      <h2>Roster Management</h2>
-
-      <div class="roster-add">
-        <div>
-          <label class="tip">Name</label>
-          <input type="text" id="newName" placeholder="Character name" maxlength="20">
-        </div>
-        <div>
-          <label class="tip">Role</label>
-          <select id="newRole">
-            <option value="alt">Alt</option>
-            <option value="main">Main</option>
-          </select>
-        </div>
-        <div>
-          <label class="tip">Class</label>
-          <input type="text" id="newClass" placeholder="Class" maxlength="16">
-        </div>
-        <div>
-          <label class="tip">GS</label>
-          <input type="number" id="newGS" value="0" min="0">
-        </div>
-        <div>
-          <label class="tip">Region</label>
-          <select id="newRegion">
-            <option value="">—</option>
-            ${KISK_REGIONS.map(rg => `<option value="${rg.id}">${rg.label}</option>`).join("")}
-          </select>
-        </div>
-        <div>
-          <label class="tip">Server</label>
-          <input type="text" id="newServer" placeholder="e.g. Nezekan" maxlength="24">
-        </div>
-        <div class="color-pick" id="newColorPick">
-          ${CHAR_COLORS.map(col =>
-            `<button type="button" class="color-swatch" data-color="${col}" style="background:${col}"></button>`
-          ).join("")}
-          <input type="hidden" id="newColor" value="${CHAR_COLORS[0]}">
-        </div>
-        <button type="button" id="addChar" class="btn-sm on">+ Add</button>
-      </div>
-
-      <div class="roster-grid">
-        ${roster.map(c => {
-          if (st.editingChar === c.id) {
-            return `
-            <div class="char-card editing" style="border-left:3px solid ${c.color}">
-              <div class="row-fields">
-                <input type="text" id="editName" value="${esc(c.name)}" maxlength="20">
-                <input type="text" id="editClass" value="${esc(c.class || "")}" maxlength="16" style="width:110px" placeholder="Class">
-                <input type="number" id="editGS" value="${c.gs || 0}" min="0" style="width:70px">
-              </div>
-              <div class="row-fields">
-                <select id="editRole">
-                  <option value="main" ${c.role === "main" ? "selected" : ""}>Main</option>
-                  <option value="alt" ${c.role === "alt" ? "selected" : ""}>Alt</option>
-                </select>
-                <select id="editRegion" title="Region">
-                  <option value="">Region —</option>
-                  ${KISK_REGIONS.map(rg =>
-                    `<option value="${rg.id}" ${c.region === rg.id ? "selected" : ""}>${rg.label}</option>`
-                  ).join("")}
-                </select>
-                <input type="text" id="editServer" value="${esc(c.server || "")}" maxlength="24" style="width:120px" placeholder="Server">
-                <div class="color-pick" id="editColorPick">
-                  ${CHAR_COLORS.map(col =>
-                    `<button type="button" class="color-swatch ${col === c.color ? "on" : ""}" data-color="${col}" style="background:${col}"></button>`
-                  ).join("")}
-                </div>
-                <input type="hidden" id="editColor" value="${c.color}">
-              </div>
-              <div class="actions">
-                <button type="button" data-save-char="${c.id}" class="btn-sm on">Save</button>
-                <button type="button" data-cancel-char class="btn-sm">Cancel</button>
-              </div>
-            </div>`;
-          }
-          const regionLbl = (KISK_REGIONS.find(x => x.id === c.region) || {}).label || "";
-          const whereMeta = [regionLbl, c.server].filter(Boolean).join(" · ");
-          return `
-          <div class="char-card ${c.id === st.activeChar ? "active" : ""}" style="border-left:3px solid ${c.color}">
-            <div class="name">
-              <span class="char-dot" style="background:${c.color}"></span>
-              ${esc(c.name)} ${c.role === "main" ? '<span class="tg main">Main</span>' : ""}
-            </div>
-            <div class="meta">${esc(c.class || "—")} · GS ${c.gs || "—"}${whereMeta ? ` · ${esc(whereMeta)}` : ""}</div>
-            <div class="stats">
-              <button type="button" data-edit-char="${c.id}" class="btn-sm">Edit</button>
-              <button type="button" data-set-active="${c.id}" class="btn-sm">Select</button>
-              ${roster.length > 1 ? `<button type="button" data-del="${c.id}" class="btn-sm btn-danger">Delete</button>` : ""}
-            </div>
-          </div>`;
-        }).join("")}
-      </div>
-    </div>
   `;
 
   // Fill kisk gear cards asynchronously
@@ -632,17 +538,6 @@ export function drawHub(app, { onRender }) {
     };
   });
 
-  document.querySelectorAll("#newColorPick .color-swatch, #editColorPick .color-swatch").forEach(btn => {
-    btn.onclick = () => {
-      const pick = btn.closest(".color-pick");
-      pick.querySelectorAll(".color-swatch").forEach(s => s.classList.remove("on"));
-      btn.classList.add("on");
-      const hidden = pick.querySelector("input[type=hidden]") ||
-        document.getElementById(pick.id === "newColorPick" ? "newColor" : "editColor");
-      if (hidden) hidden.value = btn.dataset.color;
-    };
-  });
-
   app.querySelectorAll("[data-tk]").forEach(btn => {
     btn.onclick = () => {
       adjTicket(btn.dataset.tk, +btn.dataset.d, btn.dataset.char || null);
@@ -660,44 +555,11 @@ export function drawHub(app, { onRender }) {
     };
   });
 
-  document.getElementById("addChar").onclick = () => {
-    const name = document.getElementById("newName").value.trim();
-    if (!name) return;
-    const role = document.getElementById("newRole").value;
-    const list = getRoster();
-    if (role === "main") list.forEach(c => { c.role = "alt"; });
-    list.push({
-      id: "c" + Date.now(),
-      name,
-      role,
-      class: document.getElementById("newClass").value.trim(),
-      gs: +document.getElementById("newGS").value || 0,
-      region: document.getElementById("newRegion")?.value || "",
-      server: document.getElementById("newServer")?.value.trim() || "",
-      color: document.getElementById("newColor").value || CHAR_COLORS[0]
-    });
-    setRoster(list);
-    persist();
-    onRender();
-  };
-
   app.querySelectorAll("[data-oe-input]").forEach(inp => {
     inp.addEventListener("change", () => {
       setOdyleVal(inp.dataset.oeInput, inp.value);
       persist();
       onRender();
-    });
-  });
-
-  app.querySelectorAll("[data-gs]").forEach(inp => {
-    inp.addEventListener("change", () => {
-      const list = getRoster();
-      const c = list.find(x => x.id === inp.dataset.gs);
-      if (c) {
-        c.gs = Math.max(0, +inp.value || 0);
-        setRoster(list);
-        persist();
-      }
     });
   });
 }
