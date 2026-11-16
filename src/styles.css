@@ -1757,9 +1757,10 @@ footer {
 
 .hub-expand-btn {
   width: 100%;
-  padding: 6px 8px;
-  font-size: 12px;
+  padding: 4px 8px;
+  font-size: 16px;
   font-weight: 600;
+  line-height: 1;
   color: var(--mut);
   background: transparent;
   border: 1px dashed var(--line);
@@ -2209,28 +2210,33 @@ footer {
   line-height: 1.45;
 }
 
-/* ===== Sidebar quick actions (Dailies / Events) ===== */
-.side-quick {
-  margin-top: 18px;
-  padding-top: 14px;
+/* ===== Sidebar bottom (Dailies / Events / Settings) ===== */
+.side-bottom {
+  margin-top: auto;
+  padding-top: 10px;
   border-top: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
+}
+.side-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 .side-quick-btn {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 8px;
   width: 100%;
   text-align: left;
   background: transparent;
   border: none;
   color: var(--mut);
-  padding: 10px 12px;
+  padding: 6px 10px;
   border-radius: var(--radius-sm);
-  font-size: 13.5px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.12s;
@@ -2239,20 +2245,32 @@ footer {
   color: var(--tx);
   background: rgba(255, 255, 255, 0.04);
 }
+.side-quick-btn.on {
+  color: var(--cyan);
+  background: var(--cyan-soft);
+}
 .side-quick-btn .icon {
-  width: 18px;
+  width: 16px;
   text-align: center;
-  font-size: 15px;
+  font-size: 13px;
+  opacity: 0.9;
 }
 .side-dot {
   position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 8px;
-  height: 8px;
+  top: 7px;
+  right: 10px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--danger, #f87171);
   box-shadow: 0 0 0 2px var(--bg2);
+}
+.side-footer {
+  padding-top: 4px;
+}
+.side-footer .sync-pill {
+  font-size: 11px;
+  padding: 3px 8px;
 }
 
 /* ===== Floaters ===== */
