@@ -7,15 +7,15 @@ import {
   getSt, getRoster, setRoster, getGoals, setGoals, getNotes, setNotes,
   getMissions, setMissions, activeChar, persist
 } from "./state.js";
-import { CHAR_COLORS, NC, SIEGE_DAYS } from "./data.js";   // ← added SIEGE_DAYS
-import { tog, fmt, lastReset, pk, esc, fmtShort } from "./helpers.js";
+import { CHAR_COLORS, NC, SIEGE_DAYS, DN } from "./data.js";
+import { tog, fmt, lastReset, pk, esc, fmtShort, P2 } from "./helpers.js";
 import { applyOdyleTicks, setOdyleVal, getOdyleVal, nextUtcTick } from "./odyle.js";
-import { getAllMissions, max, val, key, ordered, prog } from "./missions.js";
+import { getAllMissions, max, val, key, ordered, prog, unfinishedDailies } from "./missions.js";
 import { applyTicketTicks, adjTicket } from "./tickets.js";
 import { gval, gmax, gkey, createOrUpdateGoalFromForm } from "./goals.js";
 import { drawMissions } from "./ui/missionsView.js";
 import { drawEvents } from "./ui/eventsView.js";
-import { drawHub } from "./ui/hubView.js";
+import { drawHub, nextEventTimes } from "./ui/hubView.js";
 import { initNotifications, scheduleEventNotifications } from "./notifications.js";
 import { drawCraft } from "./ui/craftView.js";
 
@@ -164,6 +164,18 @@ function render() {
             `<button type="button" data-t="${k}" class="${st.tab === k ? "on" : ""}"><span class="icon">${icon}</span>${label}</button>`
           ).join("")}
         </nav>
+        <div class="side-quick">
+          <button type="button" class="side-quick-btn" data-floater="dailies" title="Unfinished dailies">
+            <span class="icon">📋</span>
+            <span>Dailies</span>
+            <span class="side-dot" id="dot-dailies" hidden></span>
+          </button>
+          <button type="button" class="side-quick-btn" data-floater="events" title="Next events">
+            <span class="icon">⏱</span>
+            <span>Events</span>
+            <span class="side-dot" id="dot-events" hidden></span>
+          </button>
+        </div>
         <div class="side-footer">
           <div class="sync-pill ${hasSupabase ? (sync === "error" ? "warn" : "ok") : ""}">
             ${hasSupabase
@@ -191,6 +203,16 @@ function render() {
         </header>
         <div class="content" id="view"></div>
       </div>
+    </div>
+
+    <div class="floater-backdrop" id="floaterBackdrop" hidden></div>
+    <div class="floater panel glass" id="floaterPanel" hidden>
+      <div class="floater-head">
+        <h2 id="floaterTitle">—</h2>
+        <button type="button" class="btn-sm" id="floaterClose" title="Close">✕</button>
+      </div>
+      <div class="floater-body" id="floaterBody"></div>
+      <div class="floater-foot" id="floaterFoot"></div>
     </div>`;
 
   const view = document.getElementById("view");
@@ -198,6 +220,84 @@ function render() {
   else if (st.tab === "events") drawEvents(view);
   else if (st.tab === "hub") drawHub(view, { onRender: render });
   else if (st.tab === "craft") drawCraft(view, { onRender: render });
+
+  // Sidebar floater dots + handlers
+  const unfinished = unfinishedDailies();
+  const nextEv = nextEventTimes();
+  const dotD = document.getElementById("dot-dailies");
+  const dotE = document.getElementById("dot-events");
+  if (dotD) dotD.hidden = unfinished.length === 0;
+  if (dotE) {
+    const soon = nextEv.some(({ s }) => s - Date.now() < 2 * 3600 * 1000);
+    dotE.hidden = !soon;
+  }
+
+  const backdrop = document.getElementById("floaterBackdrop");
+  const panel = document.getElementById("floaterPanel");
+  const titleEl = document.getElementById("floaterTitle");
+  const bodyEl = document.getElementById("floaterBody");
+  const footEl = document.getElementById("floaterFoot");
+
+  function closeFloater() {
+    if (backdrop) backdrop.hidden = true;
+    if (panel) panel.hidden = true;
+  }
+
+  function openFloater(kind) {
+    if (!panel || !bodyEl || !titleEl) return;
+    if (kind === "dailies") {
+      titleEl.textContent = "Unfinished Dailies";
+      bodyEl.innerHTML = unfinished.length === 0
+        ? `<div class="empty-celebrate"><div class="celebrate-icon">🎉</div><p class="tip">All clear — great work</p></div>`
+        : `<div class="mini-list">${unfinished.slice(0, 12).map(u => `
+            <div class="mini-row">
+              <span class="ic">${u.ic || "•"}</span>
+              <div><div class="mini-title">${esc(u.n)}</div></div>
+              <b>${u.remaining} left</b>
+            </div>`).join("")}</div>`;
+      footEl.innerHTML = `<button type="button" class="btn-sm on" data-t="missions">Open Missions →</button>`;
+    } else {
+      titleEl.textContent = "Next Events";
+      bodyEl.innerHTML = `<div class="mini-list">${nextEv.map(({ e, s }) => {
+        const on = s <= Date.now();
+        const d = new Date(s);
+        const label = DN[d.getUTCDay()] + " " + P2(d.getUTCHours()) + ":" + P2(d.getUTCMinutes()) + " UTC";
+        return `
+          <div class="mini-row ${on ? "open" : ""}">
+            <span class="ic">${e[1]}</span>
+            <div>
+              <div class="mini-title">${esc(e[0])}</div>
+              <div class="tip">${label}</div>
+            </div>
+            <b style="color:${on ? "var(--green)" : "var(--cyan)"}">${on ? "OPEN" : "in " + fmtShort(s - Date.now())}</b>
+          </div>`;
+      }).join("")}</div>`;
+      footEl.innerHTML = `<button type="button" class="btn-sm on" data-t="events">Open Events →</button>`;
+    }
+    backdrop.hidden = false;
+    panel.hidden = false;
+  }
+
+  document.querySelectorAll("[data-floater]").forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      openFloater(btn.dataset.floater);
+    };
+  });
+  document.getElementById("floaterClose")?.addEventListener("click", closeFloater);
+  backdrop?.addEventListener("click", closeFloater);
+  footEl?.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-t]");
+    if (!t) return;
+    closeFloater();
+    // data-t handled by global click listener after this render cycle — set tab now
+    getSt().tab = t.dataset.t;
+    persist();
+    render();
+  });
+  document.addEventListener("keydown", function floaterEsc(ev) {
+    if (ev.key === "Escape") closeFloater();
+  }, { once: true });
   tick();
 }
 
@@ -366,7 +466,13 @@ document.addEventListener("click", e => {
     const color = document.getElementById("newColor")?.value || CHAR_COLORS[roster.length % CHAR_COLORS.length];
     const id = "c" + Date.now();
     if (role === "main") roster.forEach(c => (c.role = "alt"));
-    roster.push({ id, name, role, class: cls, gs: +document.getElementById("newGS").value || 0, color });
+    roster.push({
+      id, name, role, class: cls,
+      gs: +document.getElementById("newGS").value || 0,
+      region: document.getElementById("newRegion")?.value || "",
+      server: document.getElementById("newServer")?.value.trim() || "",
+      color
+    });
     setRoster(roster);
     st.activeChar = id;
   } else if (b.dataset.editChar) {
@@ -382,6 +488,8 @@ document.addEventListener("click", e => {
       const role = document.getElementById("editRole").value;
       if (role === "main") roster.forEach(x => (x.role = "alt"));
       c.role = role;
+      c.region = document.getElementById("editRegion")?.value || "";
+      c.server = document.getElementById("editServer")?.value.trim() || "";
       c.color = document.getElementById("editColor")?.value || c.color;
     }
     st.editingChar = null;
