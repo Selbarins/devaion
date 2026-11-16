@@ -654,11 +654,13 @@ document.addEventListener("input", e => {
     }, 320); // wait until user stops typing
   }
 
-  // Save profession level while typing
+  // Save profession level while typing (don't clamp empty field to 1 mid-edit)
   if (e.target.dataset.profLevel) {
     const st = getSt();
     const profession = e.target.dataset.profLevel;
-    const level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
+    const raw = e.target.value.trim();
+    if (raw === "") return; // wait until user types a number or blurs
+    const level = Math.max(1, Math.min(50, parseInt(raw, 10) || 1));
     if (!st.craftProfs) st.craftProfs = {};
     const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
     st.craftProfs[profession] = { rank: cur.rank, level };
@@ -679,17 +681,19 @@ document.addEventListener("focusin", e => {
 document.addEventListener("change", e => {
   const st = getSt();
 
-  // Profession rank / level (saved + recipe list refreshed)
+  // Profession rank / level (saved to st + localStorage + cloud, then list refreshed)
   if (e.target.dataset.profRank || e.target.dataset.profLevel) {
     const profession = e.target.dataset.profRank || e.target.dataset.profLevel;
     if (!st.craftProfs) st.craftProfs = {};
-    const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
-    if (e.target.dataset.profRank) {
-      cur.rank = e.target.value === "Professional" ? "Professional" : "Novice";
-    } else {
-      cur.level = Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1));
-    }
-    st.craftProfs[profession] = { rank: cur.rank, level: cur.level };
+    const prev = st.craftProfs[profession] || { rank: "Novice", level: 1 };
+    const rank = e.target.dataset.profRank
+      ? (e.target.value === "Professional" ? "Professional" : "Novice")
+      : prev.rank;
+    const level = e.target.dataset.profLevel
+      ? Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1))
+      : prev.level;
+    // Always assign a fresh plain object so JSON + cloud see the update
+    st.craftProfs[profession] = { rank, level };
     persist();
     if (st.tab === "craft") {
       const view = document.getElementById("view");
