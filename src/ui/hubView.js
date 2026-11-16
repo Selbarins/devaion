@@ -132,10 +132,12 @@ function renderGearCard(c) {
   const regionLabel = (KISK_REGIONS.find(x => x.id === c.region) || {}).label || c.region || "";
   const where = [regionLabel, c.server].filter(Boolean).join(" · ");
   const charKey = c.id;
+  const color = c.color || "var(--cyan)";
 
   if (url) {
     return `
-      <div class="panel glass gear-card" data-kisk-char="${esc(charKey)}" data-kisk-region="${esc(c.region)}" data-kisk-server="${esc(c.server)}" data-kisk-name="${esc(c.name)}">
+      <div class="panel glass gear-card" style="border-left:3px solid ${color}"
+           data-kisk-char="${esc(charKey)}" data-kisk-region="${esc(c.region)}" data-kisk-server="${esc(c.server)}" data-kisk-name="${esc(c.name)}">
         <div class="gear-card-head">
           <span class="gear-card-title">Gear</span>
           <span class="tg" style="opacity:0.75">kisk</span>
@@ -151,7 +153,7 @@ function renderGearCard(c) {
   }
 
   return `
-    <div class="panel glass gear-card gear-card-empty">
+    <div class="panel glass gear-card gear-card-empty" style="border-left:3px solid ${color}">
       <div class="gear-card-head">
         <span class="gear-card-title">Gear</span>
         <span class="tg" style="opacity:0.5">kisk</span>
