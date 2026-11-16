@@ -18,6 +18,7 @@ import { drawEvents } from "./ui/eventsView.js";
 import { drawHub, nextEventTimes } from "./ui/hubView.js";
 import { initNotifications, scheduleEventNotifications } from "./notifications.js";
 import { drawCraft } from "./ui/craftView.js";
+import { drawSettings } from "./ui/settingsView.js";
 
 
 function drawLogin() {
@@ -92,6 +93,10 @@ const TABS = [
   ["craft", "🔨", "Craft"],
   ["events", "⏱", "Events"]
 ];
+
+const BOTTOM_TABS = [
+  ["settings", "⚙", "Settings"]
+];
 // Apply saved theme as early as possible
 document.documentElement.setAttribute("data-theme", getSt().theme === "light" ? "light" : "dark");
 
@@ -164,37 +169,41 @@ function render() {
             `<button type="button" data-t="${k}" class="${st.tab === k ? "on" : ""}"><span class="icon">${icon}</span>${label}</button>`
           ).join("")}
         </nav>
-        <div class="side-quick">
-          <button type="button" class="side-quick-btn" data-floater="dailies" title="Unfinished dailies">
-            <span class="icon">📋</span>
-            <span>Dailies</span>
-            <span class="side-dot" id="dot-dailies" hidden></span>
-          </button>
-          <button type="button" class="side-quick-btn" data-floater="events" title="Next events">
-            <span class="icon">⏱</span>
-            <span>Events</span>
-            <span class="side-dot" id="dot-events" hidden></span>
-          </button>
-        </div>
-        <div class="side-footer">
-          <div class="sync-pill ${hasSupabase ? (sync === "error" ? "warn" : "ok") : ""}">
-            ${hasSupabase
-              ? (sync === "synced" ? "● Cloud Synced" : sync === "syncing" ? "● Syncing…" : "● Cloud Ready")
-              : "○ Local Only"}
+        <div class="side-bottom">
+          <div class="side-quick">
+            <button type="button" class="side-quick-btn" data-floater="dailies" title="Unfinished dailies">
+              <span class="icon">📋</span>
+              <span>Dailies</span>
+              <span class="side-dot" id="dot-dailies" hidden></span>
+            </button>
+            <button type="button" class="side-quick-btn" data-floater="events" title="Next events">
+              <span class="icon">⏱</span>
+              <span>Events</span>
+              <span class="side-dot" id="dot-events" hidden></span>
+            </button>
+            ${BOTTOM_TABS.map(([k, icon, label]) =>
+              `<button type="button" class="side-quick-btn ${st.tab === k ? "on" : ""}" data-t="${k}" title="${label}">
+                <span class="icon">${icon}</span>
+                <span>${label}</span>
+              </button>`
+            ).join("")}
           </div>
-          <div class="theme-toggle seg" style="width:100%; margin-top:10px;">
-            <button type="button" data-theme-set="dark" class="${(st.theme || "dark") !== "light" ? "on" : ""}" style="flex:1">Dark</button>
-            <button type="button" data-theme-set="light" class="${st.theme === "light" ? "on" : ""}" style="flex:1">Light</button>
+          <div class="side-footer">
+            <div class="sync-pill ${hasSupabase ? (sync === "error" ? "warn" : "ok") : ""}">
+              ${hasSupabase
+                ? (sync === "synced" ? "● Cloud" : sync === "syncing" ? "● …" : "● Ready")
+                : "○ Local"}
+            </div>
+            <button type="button" class="btn-sm" id="logoutBtn" style="width:100%; margin-top:6px;">
+              Sign out
+            </button>
+            <div style="margin-top:4px; font-size:10px; opacity:0.55">v5.6</div>
           </div>
-          <button type="button" class="btn-sm" id="logoutBtn" style="width:100%; margin-top:8px;">
-            Sign out
-          </button>
-          <div style="margin-top:6px;">v5.5 · Desktop</div>
         </div>
       </aside>
       <div class="main-area">
         <header class="topbar">
-          <h1>${TABS.find(t => t[0] === st.tab)?.[2] || "Devaion"}</h1>
+          <h1>${[...TABS, ...BOTTOM_TABS].find(t => t[0] === st.tab)?.[2] || "Devaion"}</h1>
           <span class="meta">${esc(char.name)} · ${esc(char.class || "—")}</span>
           <div class="clocks">
             <div>Daily <b id="cd">--</b> <span class="prog-mini"><i id="pd"></i></span></div>
@@ -220,6 +229,8 @@ function render() {
   else if (st.tab === "events") drawEvents(view);
   else if (st.tab === "hub") drawHub(view, { onRender: render });
   else if (st.tab === "craft") drawCraft(view, { onRender: render });
+  else if (st.tab === "settings") drawSettings(view, { onRender: render });
+  else { st.tab = "hub"; drawHub(view, { onRender: render }); }
 
   // Sidebar floater dots + handlers
   const unfinished = unfinishedDailies();
@@ -498,15 +509,15 @@ document.addEventListener("click", e => {
       return;
     }
   } else if (b.id === "addChar") {
-    const name = document.getElementById("newName").value.trim() || "Alt";
-    const role = document.getElementById("newRole").value;
-    const cls = document.getElementById("newClass").value.trim() || "";
+    const name = document.getElementById("newName")?.value.trim() || "Alt";
+    const role = document.getElementById("newRole")?.value || "alt";
+    const cls = document.getElementById("newClass")?.value.trim() || "";
     const color = document.getElementById("newColor")?.value || CHAR_COLORS[roster.length % CHAR_COLORS.length];
     const id = "c" + Date.now();
     if (role === "main") roster.forEach(c => (c.role = "alt"));
     roster.push({
       id, name, role, class: cls,
-      gs: +document.getElementById("newGS").value || 0,
+      gs: 0,
       region: document.getElementById("newRegion")?.value || "",
       server: document.getElementById("newServer")?.value.trim() || "",
       color
@@ -520,10 +531,9 @@ document.addEventListener("click", e => {
   } else if (b.dataset.saveChar) {
     const c = roster.find(x => x.id === b.dataset.saveChar);
     if (c) {
-      c.name = document.getElementById("editName").value.trim() || c.name;
-      c.class = document.getElementById("editClass").value.trim();
-      c.gs = +document.getElementById("editGS").value || 0;
-      const role = document.getElementById("editRole").value;
+      c.name = document.getElementById("editName")?.value.trim() || c.name;
+      c.class = document.getElementById("editClass")?.value.trim() || "";
+      const role = document.getElementById("editRole")?.value || c.role;
       if (role === "main") roster.forEach(x => (x.role = "alt"));
       c.role = role;
       c.region = document.getElementById("editRegion")?.value || "";
@@ -733,9 +743,6 @@ document.addEventListener("change", e => {
     const [id, i] = t.dataset.st.split("|");
     const g = getGoals().find(x => x.id === id);
     if (g) { g.steps[+i].d = t.checked; persist(); render(); }
-  } else if (t.dataset.gs) {
-    const r = getRoster().find(x => x.id === t.dataset.gs);
-    if (r) { r.gs = +t.value || 0; persist(); render(); }
   } else if (t.id === "gF") { st.gcat = t.value; persist(); render(); }
   else if (t.id === "gCharFilter") { st.gCharFilter = t.value; persist(); render(); }
   else if (t.id === "gS") {
