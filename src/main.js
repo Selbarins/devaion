@@ -660,7 +660,7 @@ document.addEventListener("input", e => {
     const profession = e.target.dataset.profLevel;
     const raw = e.target.value.trim();
     if (raw === "") return; // wait until user types a number or blurs
-    const level = Math.max(1, Math.min(50, parseInt(raw, 10) || 1));
+    const level = Math.max(1, Math.min(100, parseInt(raw, 10) || 1));
     if (!st.craftProfs) st.craftProfs = {};
     const cur = st.craftProfs[profession] || { rank: "Novice", level: 1 };
     st.craftProfs[profession] = { rank: cur.rank, level };
@@ -690,7 +690,7 @@ document.addEventListener("change", e => {
       ? (e.target.value === "Professional" ? "Professional" : "Novice")
       : prev.rank;
     const level = e.target.dataset.profLevel
-      ? Math.max(1, Math.min(50, parseInt(e.target.value, 10) || 1))
+      ? Math.max(1, Math.min(100, parseInt(e.target.value, 10) || 1))
       : prev.level;
     // Always assign a fresh plain object so JSON + cloud see the update
     st.craftProfs[profession] = { rank, level };
