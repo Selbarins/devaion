@@ -218,6 +218,19 @@ function getLog() {
   return st;
 }
 
+/** Drop plan entries whose recipe no longer exists (keeps badge + list in sync). */
+function cleanCraftLog() {
+  const st = getSt();
+  if (!st.craftLog || !st.craftLog.length) return st.craftLog || [];
+  const before = st.craftLog.length;
+  st.craftLog = st.craftLog.filter(entry => {
+    if (!entry || entry.recipeId == null) return false;
+    return !!getRecipe(String(entry.recipeId));
+  });
+  if (st.craftLog.length !== before) persist();
+  return st.craftLog;
+}
+
 function findRecipeByOutput(itemId) {
   return (recipesCache || []).find(r => r.output && String(r.output.itemId) === String(itemId));
 }
@@ -288,6 +301,9 @@ export async function drawCraft(app, { onRender }) {
 
   await loadData();
 
+  // Keep plan list + badge accurate (drop orphan recipeIds)
+  const validLog = cleanCraftLog();
+
   const recipes = Array.isArray(recipesCache) ? recipesCache : [];
   const search = (st.craftSearch || "").toLowerCase().trim();
   const profFilter = st.craftProfFilter || "All";
@@ -305,13 +321,15 @@ export async function drawCraft(app, { onRender }) {
     );
   }
 
-    app.innerHTML = `
+  const planCount = validLog.length;
+
+  app.innerHTML = `
     <div class="panel glass">
       <div class="ctrl-bar" style="margin-bottom:14px; justify-content:space-between">
         <div class="seg">
           <button type="button" data-craft-sub="browser" class="${st.craftSub !== "log" ? "on" : ""}">Recipes</button>
           <button type="button" data-craft-sub="log" class="${st.craftSub === "log" ? "on" : ""}">
-            Plan${(st.craftLog && st.craftLog.length) ? ` (${st.craftLog.length})` : ""}
+            Plan${planCount ? ` (${planCount})` : ""}
           </button>
         </div>
         <button type="button" data-craft-toggle-profs title="Profession levels"
