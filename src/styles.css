@@ -2261,6 +2261,9 @@ footer {
   background: rgba(0, 0, 0, 0.35);
   z-index: 80;
 }
+.floater-backdrop[hidden] {
+  display: none !important;
+}
 .floater {
   position: fixed;
   top: 72px;
@@ -2273,6 +2276,10 @@ footer {
   padding: 0;
   overflow: hidden;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+}
+/* Author display:flex beats the default [hidden] rule without this */
+.floater[hidden] {
+  display: none !important;
 }
 .floater-head {
   display: flex;
